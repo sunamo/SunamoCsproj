@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace SunamoCsproj._sunamo;
 internal class CA
 {
-    public static List<T> GetDuplicities<T>(List<T> clipboardL)
+    internal static List<T> GetDuplicities<T>(List<T> clipboardL)
     {
         var alreadyProcessed = new List<T>(clipboardL.Count);
         List<T> duplicated = new List<T>();
@@ -33,4 +27,3 @@ internal class CA
         return duplicated;
     }
 }
-

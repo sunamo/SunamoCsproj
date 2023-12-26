@@ -1,7 +1,3 @@
-using System;
-
-using SunamoCsproj.Items;
-
 namespace SunamoCsproj;
 
 public class CsprojHelper
@@ -41,7 +37,6 @@ public class CsprojHelper
     public static async Task<string> DetectDuplicatedProjectAndPackageReferences(List<string> csprojs)
     {
         StringBuilder sb = new StringBuilder();
-
 
         foreach (var item in csprojs)
         {
@@ -182,7 +177,7 @@ csprojNameToRelativePath.Add(key, v);
         }
     }
 
-    private static void RemoveSingleItemGroup(XmlDocument xd, string attrValue, ItemGroupTagName tagName)
+    public static void RemoveSingleItemGroup(XmlDocument xd, string attrValue, ItemGroupTagName tagName)
     {
         var t = xd.SelectSingleNode($"/Project/ItemGroup/{tagName}[@{Include} = '{attrValue}']");
         t.ParentNode?.RemoveChild(t);
@@ -270,11 +265,7 @@ Diacritics (>= 3.3.18) (via package/SunamoShared 23.12.15.1) Framework: (.NETCor
             // Pokud už jej mám na nugetu
             if (availableNugetPackages.Contains(fnwoe))
             {
-                var newEl = xd.CreateElement(ItemGroupTagName.PackageReference.ToString());
-                var attr = CreateAttr(newEl, Include, fnwoe, xd);
-                newEl.Attributes.Append(attr);
-                var attrVersion = CreateAttr(newEl, Version, "*", xd);
-                newEl.Attributes.Append(attrVersion);
+
 
                 item.ParentNode?.ReplaceChild(newEl, item);
             }
@@ -285,13 +276,36 @@ Diacritics (>= 3.3.18) (via package/SunamoShared 23.12.15.1) Framework: (.NETCor
 
         // TODO: z SunamoXml udělat formát
 
-        return xd.OuterXml;
+        return XHelper.FormatXmlInMemory( xd.OuterXml);
     }
 
-    private static XmlAttribute CreateAttr(XmlElement newEl, string include, string fnwoe, XmlDocument xd)
+    static XmlElement CreateNewPackageReference(XmlDocument xd, string include, string version)
     {
-        var attr = xd.CreateAttribute(include);
-        attr.Value = fnwoe;
+        return CreateNewItemGroupElement(xd, ItemGroupTagName.PackageReference, include, version);
+    }
+
+    static XmlElement CreateNewItemGroupElement(XmlDocument xd, ItemGroupTagName tagName, string include, string version)
+    {
+        var newEl = xd.CreateElement(ItemGroupTagName.PackageReference.ToString());
+        if (include != null)
+        {
+            var attr = CreateAttr(newEl, Include, include, xd);
+            newEl.Attributes.Append(attr);
+        }
+
+        if (version != null)
+        {
+            var attrVersion = CreateAttr(newEl, Version, "*", xd);
+            newEl.Attributes.Append(attrVersion);
+        }
+
+        return newEl;
+    }
+
+    private static XmlAttribute CreateAttr(XmlElement newEl, string attrName, string attrValue, XmlDocument xd)
+    {
+        var attr = xd.CreateAttribute(attrName);
+        attr.Value = attrValue;
 
         var newAttr = newEl.Attributes.Append(attr);
         return newAttr;
