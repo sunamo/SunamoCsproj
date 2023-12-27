@@ -1,4 +1,5 @@
 namespace SunamoCsproj;
+
 // Tady jde vidět že soubor jde generovat i pomocí 
 internal class MsBuildNuget
 {

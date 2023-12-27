@@ -1,4 +1,5 @@
 namespace SunamoCsproj._sunamo;
+
 internal class CA
 {
     internal static List<T> GetDuplicities<T>(List<T> clipboardL)

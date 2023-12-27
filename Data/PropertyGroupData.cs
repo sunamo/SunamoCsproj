@@ -1,4 +1,5 @@
 namespace SunamoCsproj.Data;
+
 public class PropertyGroupData
 {
     public FrameworkProperties FrameworkProperties { get; set; }
