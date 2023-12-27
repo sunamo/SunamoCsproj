@@ -216,17 +216,17 @@ csprojNameToRelativePath.Add(key, v);
     public static async Task<string> ReplaceProjectReferenceForPackageReference(string pathOrContentCsproj, List<string> availableNugetPackages, bool isTests)
     {
         /*
-Takhle to má být správné
+        Takhle to má být správné
         Testy mají připojovat jen assembly kterou testují, případně projekt se testovacími daty
 
         nicméně takto to nepůjde, pak mám milion chyb jako:
-        Unable to satisfy conflicting requests for 'Diacritics': 
+        Unable to satisfy conflicting requests for 'Diacritics':
 
-Diacritics (>= 3.3.18) (via project/SunamoShared 23.12.15.1), 
-Diacritics (>= 3.3.18) (via package/SunamoShared 23.12.15.1), 
-Diacritics (>= 3.3.18) (via package/SunamoShared 23.12.15.1),
-Diacritics (>= 3.3.18) (via package/SunamoShared 23.12.15.1), 
-Diacritics (>= 3.3.18) (via package/SunamoShared 23.12.15.1) Framework: (.NETCoreApp,Version=v8.0)
+        Diacritics (>= 3.3.18) (via project/SunamoShared 23.12.15.1),
+        Diacritics (>= 3.3.18) (via package/SunamoShared 23.12.15.1),
+        Diacritics (>= 3.3.18) (via package/SunamoShared 23.12.15.1),
+        Diacritics (>= 3.3.18) (via package/SunamoShared 23.12.15.1),
+        Diacritics (>= 3.3.18) (via package/SunamoShared 23.12.15.1) Framework: (.NETCoreApp,Version=v8.0)
 
         pokud připojím nuget místo projektu chyba hned zmizí
 
@@ -234,7 +234,7 @@ Diacritics (>= 3.3.18) (via package/SunamoShared 23.12.15.1) Framework: (.NETCor
         ve testech nepřipojovat žádné nugety a už vůbec ne SunamoShared, má spoustu deps, dělalo by to neplechu
         tímhle ty testy nebudou fungovat v pipeline ale to se dořeší později
         akorát jsem smazal původní sunamo.Tests.sln a teď ho musím složitě zase dovytvářet :-(
-         */
+        */
 
         if (!pathOrContentCsproj.StartsWith("<") && (pathOrContentCsproj.EndsWith("Tests.csproj") || pathOrContentCsproj.Contains("TestValues")))
         {
@@ -265,7 +265,7 @@ Diacritics (>= 3.3.18) (via package/SunamoShared 23.12.15.1) Framework: (.NETCor
             // Pokud už jej mám na nugetu
             if (availableNugetPackages.Contains(fnwoe))
             {
-
+                var newEl = CreateNewPackageReference(xd, Include, "*");
 
                 item.ParentNode?.ReplaceChild(newEl, item);
             }
@@ -276,7 +276,7 @@ Diacritics (>= 3.3.18) (via package/SunamoShared 23.12.15.1) Framework: (.NETCor
 
         // TODO: z SunamoXml udělat formát
 
-        return XHelper.FormatXmlInMemory( xd.OuterXml);
+        return XHelper.FormatXmlInMemory(xd.OuterXml);
     }
 
     static XmlElement CreateNewPackageReference(XmlDocument xd, string include, string version)

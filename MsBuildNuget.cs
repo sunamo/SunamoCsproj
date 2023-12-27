@@ -1,6 +1,6 @@
 namespace SunamoCsproj;
 
-// Tady jde vidět že soubor jde generovat i pomocí 
+// Tady jde vidět že soubor jde generovat i pomocí
 internal class MsBuildNuget
 {
     static void Main(string[] args)
