@@ -15,8 +15,8 @@ public class ItemGroupElement
         }
 
         ItemGroupElement ige = new ItemGroupElement();
-        ige.Include = XmlHelper.Attr(item, CsprojHelper.Include);
-        ige.Version = XmlHelper.Attr(item, CsprojHelper.Version);
+        ige.Include = XmlHelper.Attr(item, CsprojInstance.Include);
+        ige.Version = XmlHelper.Attr(item, CsprojInstance.Version);
         ige.ItemGroupTagName = itemGroupTagName;
 
         return ige;

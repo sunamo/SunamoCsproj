@@ -14,3 +14,4 @@ global using SunamoCsproj.Data;
 global using SunamoCsproj.Items;
 
 global using SunamoExceptions;
+global using SunamoCsproj;
