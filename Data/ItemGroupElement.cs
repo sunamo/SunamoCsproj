@@ -6,7 +6,7 @@ public class ItemGroupElement
     public string Version { get; set; }
     public ItemGroupTagName ItemGroupTagName { get; set; }
 
-    internal static ItemGroupElement Parse(XmlNode item)
+    public static ItemGroupElement Parse(XmlNode item)
     {
         var tagName = item.Name;
         if (!Enum.TryParse<ItemGroupTagName>(tagName, false, out var itemGroupTagName))

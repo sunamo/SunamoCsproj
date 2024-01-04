@@ -2,7 +2,7 @@ namespace SunamoCsproj._sunamo.swod;
 
 public class RHSE2
 {
-    internal static void SetPropertyToInnerClass<T>(T propertyGroup, XName name, string value)
+    public static void SetPropertyToInnerClass<T>(T propertyGroup, XName name, string value)
     {
         /*
         RH.GetValuesOfProperty
