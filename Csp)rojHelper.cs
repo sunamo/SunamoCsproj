@@ -1,3 +1,6 @@
+using SunamoExceptions.InSunamoIsDerivedFrom;
+using SunamoXml;
+
 namespace SunamoCsproj;
 
 /// <summary>
@@ -232,7 +235,7 @@ csprojNameToRelativePath.Add(key, v);
             // Pokud už jej mám na nugetu
             if (availableNugetPackages.Contains(fnwoe))
             {
-                var newEl = csi.CreateNewPackageReference(Include, "*");
+                var newEl = csi.CreateNewPackageReference(fnwoe, "*");
 
                 item.ParentNode?.ReplaceChild(newEl, item);
             }
