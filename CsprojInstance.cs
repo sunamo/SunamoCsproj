@@ -2,16 +2,21 @@ namespace SunamoCsproj;
 
 /// <summary>
 /// Zde jsou ty co používají xd
-/// => snadno
+/// Už tu nic nepřidávat, vše už jen do 
 /// </summary>
 public class CsprojInstance : CsprojConsts
 {
     public XmlDocument xd { get; set; }
-
+    public string Path = null;
     public CsprojInstance(string path)
     {
         this.xd = new XmlDocument();
         xd.LoadXml(path);
+    }
+
+    public void Save()
+    {
+        xd.Save(Path);
     }
 
     public CsprojInstance()

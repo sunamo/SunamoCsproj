@@ -1,6 +1,3 @@
-using SunamoExceptions.InSunamoIsDerivedFrom;
-using SunamoXml;
-
 namespace SunamoCsproj;
 
 /// <summary>
@@ -21,11 +18,8 @@ public class CsprojHelper : CsprojConsts
         var packagesNames = packages.Select(d => d.Include).ToList();
         var projectsNames = projects.Select(d => Path.GetFileNameWithoutExtension(d.Include)).ToList();
 
-        //var duplicatedPackages = packagesNames.GroupBy(d => d.Key).Where(d => d.Count() > 1);
-        //var duplicatedProjects = packagesNames.GroupBy(d => d).Where(d => d.Count() > 1);
-
-        var duplicatedPackages = SunamoCsproj._sunamo.CA.GetDuplicities<string>(packagesNames);
-        var duplicatedProjects = SunamoCsproj._sunamo.CA.GetDuplicities<string>(projectsNames);
+        var duplicatedPackages = CAGSH.GetDuplicities<string>(packagesNames);
+        var duplicatedProjects = CAGSH.GetDuplicities<string>(projectsNames);
 
         var both = packagesNames.Intersect(projectsNames).ToList();
 
@@ -180,6 +174,29 @@ csprojNameToRelativePath.Add(key, v);
         return sb.ToString();
     }
 
+    public static async Task<string> ReplacePackageReferenceForProjectReference(string pathCsproj, string pathSlnFolder)
+    {
+        pathSlnFolder = FS.WithEndSlash(pathSlnFolder);
+
+        CsprojInstance csp = new CsprojInstance(pathCsproj);
+
+        var packagesRef = ItemsInItemGroup(ItemGroupTagName.PackageReference, pathCsproj);
+
+        foreach (var item in packagesRef)
+        {
+            //var fnwoe = Path.GetFileNameWithoutExtension(item.Include);
+            csp.RemoveSingleItemGroup(item.Include, ItemGroupTagName.PackageReference);
+            csp.CreateNewItemGroupElement(ItemGroupTagName.ProjectReference, "..\\" + item.Include + "\\" + item.Include + ".csproj", null);
+
+
+        }
+
+        csp.Save();
+    }
+
+
+
+
     public static async Task<string> ReplaceProjectReferenceForPackageReference(string pathOrContentCsproj, List<string> availableNugetPackages, bool isTests)
     {
         /*
@@ -268,7 +285,7 @@ csprojNameToRelativePath.Add(key, v);
         {
             if (item.Name == "PropertyGroup")
             {
-                RHSE2.SetPropertyToInnerClass(d.PropertyGroup, item.Name, item.Value);
+                RH.SetPropertyToInnerClass(d.PropertyGroup, item.Name, item.Value);
             }
         }
     }
