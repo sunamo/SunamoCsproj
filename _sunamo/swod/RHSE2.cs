@@ -1,6 +1,8 @@
+namespace SunamoCsproj._sunamo.swod;
+
 //namespace SunamoCsproj._sunamo.swod;
 
-//public class RHSE2
+//internal class RHSE2
 //{
 
 //}

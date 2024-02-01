@@ -1,8 +1,10 @@
+namespace SunamoCsproj._sunamo;
+
 //namespace SunamoCsproj._sunamo;
 
-//public class CA
+//internal class CA
 //{
-//    public static List<T> GetDuplicities<T>(List<T> clipboardL)
+//    internal static List<T> GetDuplicities<T>(List<T> clipboardL)
 //    {
 //        var alreadyProcessed = new List<T>(clipboardL.Count);
 //        List<T> duplicated = new List<T>();

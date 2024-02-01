@@ -1,4 +1,9 @@
+
 namespace SunamoCsproj;
+
+using SunamoCsproj._sunamo;
+using SunamoXml;
+
 
 /// <summary>
 /// Zde jsou ty co nepoužívají xd
@@ -18,8 +23,8 @@ public class CsprojHelper : CsprojConsts
         var packagesNames = packages.Select(d => d.Include).ToList();
         var projectsNames = projects.Select(d => Path.GetFileNameWithoutExtension(d.Include)).ToList();
 
-        var duplicatedPackages = CAGSH.GetDuplicities<string>(packagesNames);
-        var duplicatedProjects = CAGSH.GetDuplicities<string>(projectsNames);
+        var duplicatedPackages = CAG.GetDuplicities<string>(packagesNames);
+        var duplicatedProjects = CAG.GetDuplicities<string>(projectsNames);
 
         var both = packagesNames.Intersect(projectsNames).ToList();
 
@@ -58,7 +63,7 @@ public class CsprojHelper : CsprojConsts
         foreach (var item in l)
         {
             var xmlContent = await RemoveDuplicatedProjectAndPackageReferences(item);
-            await TFSE.WriteAllText(item, xmlContent);
+            await File.WriteAllTextAsync(item, xmlContent);
         }
     }
 
@@ -174,9 +179,9 @@ csprojNameToRelativePath.Add(key, v);
         return sb.ToString();
     }
 
-    public static async Task<string> ReplacePackageReferenceForProjectReference(string pathCsproj, string pathSlnFolder)
+    public static async Task ReplacePackageReferenceForProjectReference(string pathCsproj, string pathSlnFolder)
     {
-        pathSlnFolder = FS.WithEndSlash(pathSlnFolder);
+        //pathSlnFolder = pathSlnFolder.TrimEnd('\\') + "\\";
 
         CsprojInstance csp = new CsprojInstance(pathCsproj);
 
@@ -222,7 +227,7 @@ csprojNameToRelativePath.Add(key, v);
 
         if (!pathOrContentCsproj.StartsWith("<") && (pathOrContentCsproj.EndsWith("Tests.csproj") || pathOrContentCsproj.Contains("TestValues")))
         {
-            return await TFSE.ReadAllText(pathOrContentCsproj);
+            return await File.ReadAllTextAsync(pathOrContentCsproj);
         }
         XmlDocument xd = new XmlDocument();
         if (pathOrContentCsproj.StartsWith("<"))
@@ -285,7 +290,7 @@ csprojNameToRelativePath.Add(key, v);
         {
             if (item.Name == "PropertyGroup")
             {
-                RH.SetPropertyToInnerClass(d.PropertyGroup, item.Name, item.Value);
+                //RH.SetPropertyToInnerClass(d.PropertyGroup, item.Name, item.Value);
             }
         }
     }

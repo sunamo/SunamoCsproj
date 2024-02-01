@@ -2,12 +2,12 @@ namespace SunamoCsproj.Data;
 public class ItemGroupElements
 {
     /// <summary>
-    /// Všechny package references
+    /// Vï¿½echny package references
     /// </summary>
     public List<ItemGroupElement> list = new List<ItemGroupElement>();
 
     /// <summary>
-    /// A1 = Seznam který má mít všechno v 1. lize
+    /// A1 = Seznam kterï¿½ mï¿½ mï¿½t vï¿½echno v 1. lize
     /// </summary>
     /// <param name="deps"></param>
     /// <returns></returns>
