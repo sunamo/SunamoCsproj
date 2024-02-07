@@ -1,11 +1,4 @@
-﻿using SunamoCollectionWithoutDuplicates;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SunamoCsproj._sunamo;
+﻿namespace SunamoCsproj._sunamo;
 
 internal class CAG
 {
@@ -18,7 +11,7 @@ internal class CAG
     internal static List<T> GetDuplicities<T>(List<T> clipboardL, out List<T> alreadyProcessed)
     {
         alreadyProcessed = new List<T>(clipboardL.Count);
-        CollectionWithoutDuplicates<T> duplicated = new CollectionWithoutDuplicates<T>();
+        List<T> duplicated = new List<T>();
         foreach (var item in clipboardL)
         {
             if (alreadyProcessed.Contains(item))
@@ -30,6 +23,6 @@ internal class CAG
                 alreadyProcessed.Add(item);
             }
         }
-        return duplicated.c;
+        return duplicated.Distinct().ToList();
     }
 }
