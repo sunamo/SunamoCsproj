@@ -10,6 +10,11 @@ using SunamoXml;
 /// </summary>
 public class CsprojHelper : CsprojConsts
 {
+    public static async Task AddLinkToCsproj(string target, string source, string csprojPath)
+    {
+
+    }
+
     public static async Task<DuplicatesInItemGroup> DetectDuplicatedProjectAndPackageReferences(string pathOrContentCsproj)
     {
         if (!pathOrContentCsproj.StartsWith("<"))

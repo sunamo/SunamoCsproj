@@ -11,7 +11,16 @@ public class CsprojInstance : CsprojConsts
     public CsprojInstance(string path)
     {
         this.xd = new XmlDocument();
-        xd.LoadXml(path);
+        this.Path = path;
+        try
+        {
+            xd.LoadXml(path);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message + " Path: " + path);
+
+        }
     }
 
     public void Save()
@@ -27,7 +36,11 @@ public class CsprojInstance : CsprojConsts
     public void RemoveSingleItemGroup(string attrValue, ItemGroupTagName tagName)
     {
         var t = xd.SelectSingleNode($"/Project/ItemGroup/{tagName}[@{Include} = '{attrValue}']");
-        t.ParentNode?.RemoveChild(t);
+        if (t != null)
+        {
+            t.ParentNode?.RemoveChild(t);
+        }
+
     }
 
     public void CreateElementInPropertyGroupWhichDoesNotExists()
