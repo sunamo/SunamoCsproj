@@ -1,3 +1,6 @@
+
+using SunamoXml;
+
 namespace SunamoCsproj;
 
 /// <summary>
@@ -8,13 +11,30 @@ public class CsprojInstance : CsprojConsts
 {
     public XmlDocument xd { get; set; }
     public string Path = null;
-    public CsprojInstance(string path)
+
+    public CsprojInstance(XmlDocument xd)
+    {
+        this.xd = xd;
+    }
+
+    public CsprojInstance(string path, string content = null)
     {
         this.xd = new XmlDocument();
         this.Path = path;
         try
         {
-            xd.LoadXml(path);
+            if (content != null)
+            {
+                xd.LoadXml(path);
+            }
+            else if (path != null)
+            {
+                xd.Load(path);
+            }
+            else
+            {
+                throw new Exception("Was not entered path neither content");
+            }
         }
         catch (Exception ex)
         {
@@ -28,10 +48,18 @@ public class CsprojInstance : CsprojConsts
         xd.Save(Path);
     }
 
-    public CsprojInstance()
+    /// <summary>
+    /// Je tento ctor k nečemu?
+    /// 
+    /// potřebuji path abych mohl vytvořit xd atd.
+    /// Ano, je k nečemu, když vkládám jen xd - na to vytvořím samostatný ctor.
+    /// </summary>
+    private CsprojInstance()
     {
 
     }
+
+
 
     public void RemoveSingleItemGroup(string attrValue, ItemGroupTagName tagName)
     {
@@ -86,5 +114,96 @@ public class CsprojInstance : CsprojConsts
 
         var newAttr = newEl.Attributes.Append(attr);
         return newAttr;
+    }
+
+
+    public string TurnOnOffAsyncConditionalCompilationSymbol(bool add)
+    {
+        return AddRemoveDefineConstant(add, ASYNC);
+    }
+
+    public string AddRemoveDefineConstant(bool add, string defineConstant)
+    {
+        //XmlDocument xd = new XmlDocument();
+        //try
+        //{
+        //    xd.LoadXml(content);
+        //}
+        //catch (Exception)
+        //{
+        //    Console.WriteLine("Error! Probably not valid xml! " + content);
+        //    return null;
+        //}
+
+        var nodes = xd.SelectNodes("/Project/PropertyGroup/DefineConstants");
+
+        bool isRelease = false;
+        bool isDebug = false;
+
+        foreach (XmlElement item2 in nodes)
+        {
+            var d = XmlHelper.GetAttributeWithNameValue(item2.ParentNode, "Condition");
+            if (d == Release)
+            {
+                isRelease = true;
+            }
+            else if (d == Debug)
+            {
+                isDebug = true;
+            }
+
+            item2.InnerXml = OnOff(item2.InnerXml, add, defineConstant);
+        }
+
+        // First must be debug due to unit tests
+        if (!isDebug)
+        {
+            AddPropertyGroupToProject(xd, Debug, add, defineConstant);
+        }
+
+        if (!isRelease)
+        {
+            AddPropertyGroupToProject(xd, Release, add, defineConstant);
+        }
+
+        return XHelper.FormatXmlInMemory(xd.OuterXml);
+    }
+
+    private static string OnOff(string innerXml, bool add, string defineConstant)
+    {
+        var parts = innerXml.Split(';').ToList();
+
+        if (add)
+        {
+            if (!parts.Contains(defineConstant))
+            {
+                parts.Add(defineConstant);
+            }
+        }
+        else
+        {
+            parts.Remove(defineConstant);
+        }
+
+        return string.Join(';', parts);
+    }
+
+    private static void AddPropertyGroupToProject(XmlDocument xd, string innerAttrValue, bool add, string defineConstantValue)
+    {
+        var project = xd.SelectSingleNode("/Project");
+
+        var propertyGroup = xd.CreateNode(XmlNodeType.Element, PropertyGroup, null);
+        var defineConstant = xd.CreateNode(XmlNodeType.Element, DefineConstants, null);
+
+        defineConstant.InnerXml = DefineConstantsInner + (add ? ";" + defineConstantValue : "");
+        propertyGroup.AppendChild(defineConstant);
+
+        var propertyGroupConditionAttr = xd.CreateAttribute(Condition);
+        propertyGroupConditionAttr.Value = innerAttrValue;
+
+        propertyGroup.Attributes.Append(propertyGroupConditionAttr);
+
+
+        project.AppendChild(propertyGroup);
     }
 }

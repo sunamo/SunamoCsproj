@@ -1,0 +1,17 @@
+CsprojConsts
+Is
+ItemGroupTagNme
+ProjectReference
+PackageReference
+Include
+Version
+Link
+Release
+Configuration
+Platform
+AnyCPU
+Debug
+PropertyGroup
+DefineConstantsInner
+DefineConstants
+Condition

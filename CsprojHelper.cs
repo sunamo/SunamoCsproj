@@ -3,6 +3,7 @@ namespace SunamoCsproj;
 
 using SunamoCsproj._sunamo;
 using SunamoXml;
+using System;
 
 
 /// <summary>
@@ -13,6 +14,20 @@ public class CsprojHelper : CsprojConsts
     public static async Task AddLinkToCsproj(string target, string source, string csprojPath)
     {
 
+    }
+
+    public static string GetCsprojFromCsPath(string path)
+    {
+        while (true)
+        {
+            path = Path.GetDirectoryName(path);
+
+            var csprojs = Directory.GetFiles(path, "*.csproj");
+            if (csprojs.Any())
+            {
+                return path;
+            }
+        }
     }
 
     public static async Task<DuplicatesInItemGroup> DetectDuplicatedProjectAndPackageReferences(string pathOrContentCsproj)
@@ -105,14 +120,12 @@ public class CsprojHelper : CsprojConsts
 #else
 csprojNameToRelativePath.Add(key, v);
 #endif
-
-
         }
 
         List<string> alreadyProcessedPackages = new List<string>();
         List<string> alreadyProcessedProjects = new List<string>();
 
-        CsprojInstance csi = new CsprojInstance() { xd = xd };
+        CsprojInstance csi = new CsprojInstance(xd);
 
 
         foreach (var item in d.DuplicatedPackages)
@@ -204,9 +217,6 @@ csprojNameToRelativePath.Add(key, v);
         csp.Save();
     }
 
-
-
-
     public static async Task<string> ReplaceProjectReferenceForPackageReference(string pathOrContentCsproj, List<string> availableNugetPackages, bool isTests)
     {
         /*
@@ -250,8 +260,7 @@ csprojNameToRelativePath.Add(key, v);
 
         var versionEl = xd.SelectNodes("/Project/ItemGroup/" + ItemGroupTagName.ProjectReference.ToString());
 
-        var csi = new CsprojInstance() { xd = xd };
-
+        var csi = new CsprojInstance(xd);
 
         foreach (XmlNode item in versionEl)
         {
@@ -298,5 +307,22 @@ csprojNameToRelativePath.Add(key, v);
                 //RH.SetPropertyToInnerClass(d.PropertyGroup, item.Name, item.Value);
             }
         }
+    }
+
+    public static string ParseNamespaceFromCsFile(string content)
+    {
+        var l = SHGetLines.GetLines(content);
+
+        foreach (var item in l)
+        {
+            if (item.StartsWith("namespace "))
+            {
+                var d = item.Trim().TrimEnd(';').TrimEnd('{').Trim();
+                d = d.Replace("namespace ", "");
+                return d;
+            }
+        }
+
+        return null;
     }
 }
