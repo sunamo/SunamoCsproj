@@ -11,8 +11,10 @@ using System.Threading.Tasks;
 namespace SunamoCsproj;
 public class CsprojNsHelper
 {
-    public static async Task WriteNew(List<string> reallyOccuredInFiles, string path, List<string> content, List<string> AllNamespaces)
+    public static async Task WriteNew(List<string> reallyOccuredInFiles2, string path, List<string> content, List<string> AllNamespaces)
     {
+        var reallyOccuredInFiles = reallyOccuredInFiles2.ToList();
+
         var c = content ?? (await File.ReadAllLinesAsync(path)).ToList();
         var result = await ParseSharpIfToFirstCodeElement(path, content, AllNamespaces);
 
@@ -24,10 +26,27 @@ public class CsprojNsHelper
 
             StringBuilder sb = new StringBuilder();
 
+            // nepotřebuji, protože budu přidávat až na místo #else
+            //if (addEarlierAddedToFile)
+            //{
+            //    reallyOccuredInFiles.AddRange(existingNamespace);
+            //    reallyOccuredInFiles = reallyOccuredInFiles.Distinct().ToList();
+            //}
+
+            /*
+            teď je nejzásadnější jak to bude pracovat když je třída partial
+            mělo by to mít svázané tokeny se souborem
+            takže mi bude přidávat ns jen do těch souborů kde jsou potřeba
+            na první pohled vše je zalité sluncem, uvidíme jak potom
+             */
+
             foreach (var item in reallyOccuredInFiles)
             {
-                sb.AppendLine("#elif " + item);
-                sb.AppendLine(item);
+                if (!existingNamespace.Contains(item))
+                {
+                    sb.AppendLine("#elif " + item);
+                    sb.AppendLine(item);
+                }
             }
 
             var ts = sb.ToString();
@@ -75,13 +94,28 @@ public class CsprojNsHelper
             }
             sb.AppendLine("#endif");
 
+            var dx = SH.GetIndexesOfLinesStartingWith(c, d => d.StartsWith("namespace"));
+            var ts = sb.ToString();
 
+            if (!dx.Any())
+            {
+                c.InsertMultilineString(0, ts);
+            }
+            else
+            {
+                c.InsertMultilineString(dx.First(), ts);
+            }
+
+            await ThrowWhenThereIsNamespaceOutsideOfSharpIf(c, AllNamespaces);
+
+            await File.WriteAllLinesAsync(path, c.ToArray());
         }
-
     }
 
     private static string GenerateNsFromPath(string path)
     {
+        // Už řeším v _5AddNamespaceByInputFolderName v CommandsToAllCsFiles.Cmd
+
         var csprojPath = CsprojHelper.GetCsprojFromCsPath(path);
         var csprojDir = FS.WithEndBs(Path.GetDirectoryName(csprojPath));
 
