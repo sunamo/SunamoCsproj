@@ -1,4 +1,5 @@
 
+using SunamoExceptions.OnlyInSE;
 using SunamoXml;
 
 namespace SunamoCsproj;
@@ -33,12 +34,12 @@ public class CsprojInstance : CsprojConsts
             }
             else
             {
-                throw new Exception("Was not entered path neither content");
+                ThrowEx.Custom("Was not entered path neither content");
             }
         }
         catch (Exception ex)
         {
-            throw new Exception(ex.Message + " Path: " + path);
+            ThrowEx.Custom(ex.Message + " Path: " + path);
 
         }
     }

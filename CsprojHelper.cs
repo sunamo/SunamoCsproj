@@ -3,7 +3,6 @@ namespace SunamoCsproj;
 
 using SunamoCsproj._sunamo;
 using SunamoXml;
-using System;
 
 
 /// <summary>
@@ -25,7 +24,7 @@ public class CsprojHelper : CsprojConsts
             var csprojs = Directory.GetFiles(path, "*.csproj");
             if (csprojs.Any())
             {
-                return path;
+                return csprojs.First();
             }
         }
     }
@@ -309,20 +308,76 @@ csprojNameToRelativePath.Add(key, v);
         }
     }
 
-    public static string ParseNamespaceFromCsFile(string content)
+    static readonly List<string> classCodeElements = new List<string>() { "class ", "interface ", "enum ", "struct " };
+
+    public static (string, string) ParseNamespaceFromCsFile(string content, string path)
     {
+        /*
+Nemůže obsahovat ;
+SunamoDateTime chybí
+ */
+
+        // zjistit zda tu mám SunamoPercentCalculator a pokud ne, proč?
         var l = SHGetLines.GetLines(content);
 
-        foreach (var item in l)
+#if DEBUG
+        if (path == @"E:\vs\Projects\sunamoWithoutLocalDep\SunamoPercentCalculator\PercentCalculator.cs")
         {
+
+        }
+#endif
+
+        for (int i = 0; i < l.Count; i++)
+        {
+            var item = l[i];
+            if (classCodeElements.Any(d=> item.Contains(d)))
+            {
+                break;
+            }
+
+            if (item.StartsWith("#else"))
+            {
+                var line = l[i + 1].Trim();
+                var firstPart = line.Split('.')[0];
+                return (firstPart, line);
+            }
+
             if (item.StartsWith("namespace "))
             {
                 var d = item.Trim().TrimEnd(';').TrimEnd('{').Trim();
                 d = d.Replace("namespace ", "");
-                return d;
+
+
+
+                var firstPart = d.Split('.')[0];
+
+#if DEBUG
+                //if (d.Contains(";"))
+                //{
+                //    ThrowEx.Custom("NS can't contains ;");
+                //}
+                //if (d == "SunamoDateTime")
+                //{
+                //}
+
+                if (d == "SunamoData")
+                {
+
+                }
+                if (d == "SunamoData.Data")
+                {
+
+                }
+                if (firstPart == "SunamoText" || d == "SunamoText")
+                {
+
+                }
+#endif
+
+                return (firstPart, CsprojNsHelper.SanitizeProjectName(d));
             }
         }
 
-        return null;
+        return (null, null);
     }
 }
