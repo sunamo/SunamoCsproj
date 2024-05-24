@@ -1,7 +1,9 @@
 ﻿using SunamoCsproj._sunamo;
 using SunamoCsproj.Results;
-using SunamoExceptions.OnlyInSE;
+
 using SunamoExtensions;
+using SunamoFileIO;
+using System.Diagnostics;
 
 
 namespace SunamoCsproj;
@@ -9,34 +11,46 @@ public class CsprojNsHelper
 {
     /// <summary>
     /// Zapíše mi do .cs nové #elif
+    /// 
+    /// A1 je zde velmi důležité. Je třeba tam předávat fnwoe csproj než cs cesty. Tím jak přilinkovávám soubory, přidávají se mi elif podle projektu kde je soubor fyzicky. 
     /// </summary>
-    /// <param name="reallyOccuredInFiles2"></param>
-    /// <param name="pathCs"></param>
+    /// <param name="reallyOccuredInFilesOrProjectNames"></param>
+    /// <param name="pathCsToAppendElif"></param>
     /// <param name="contentCs"></param>
     /// <param name="AllNamespaces"></param>
     /// <returns></returns>
-    public static async Task WriteNew(List<string> reallyOccuredInFiles2, string pathCs, List<string> contentCs, List<string> AllNamespaces)
+    public static async Task WriteNew(List<string> reallyOccuredInFilesOrProjectNames, string pathCsToAppendElif, List<string> contentCs, List<string> AllNamespaces)
     {
 #if DEBUG
-        if (pathCs == @"E:\vs\Projects\sunamoWithoutLocalDep\SunamoData\Data\Date.cs")
+        if (pathCsToAppendElif == @"E:\vs\Projects\sunamoWithoutLocalDep\SunamoData\Data\Date.cs")
         {
             // zjistit proč mi stále nedává namespace a ;
         }
-#endif
 
-        var isCsFiles = reallyOccuredInFiles2.First().EndsWith(".cs");
-        var reallyOccuredInFiles = reallyOccuredInFiles2.ToList();
-
-        var c = contentCs ?? (await File.ReadAllLinesAsync(pathCs)).ToList();
-
-#if DEBUG
-        if (pathCs == @"E:\vs\Projects\sunamoWithoutLocalDep\SunamoExceptions\OnlyInSE\Types.cs")
+        if (pathCsToAppendElif == @"E:\vs\Projects\sunamoWithoutLocalDep\SunamoCollectionsGeneric\CAG.cs")
         {
 
         }
 #endif
 
-        var result = await ParseSharpIfToFirstCodeElement(pathCs, contentCs, AllNamespaces);
+        var isCsFiles = reallyOccuredInFilesOrProjectNames.First().EndsWith(".cs");
+        var reallyOccuredInFiles = reallyOccuredInFilesOrProjectNames.ToList();
+
+        var c = contentCs ?? (await File.ReadAllLinesAsync(pathCsToAppendElif)).ToList();
+
+#if DEBUG
+        if (pathCsToAppendElif == @"E:\vs\Projects\sunamoWithoutLocalDep\SunamoExceptions\OnlyInSE\Types.cs")
+        {
+
+        }
+
+        if (pathCsToAppendElif == @"E:\vs\Projects\sunamoWithoutLocalDep\SunamoArgs\MSSloupecDBArgs.cs")
+        {
+
+        }
+#endif
+
+        var result = await ParseSharpIfToFirstCodeElement(pathCsToAppendElif, contentCs, AllNamespaces);
 
         var existingNamespace = result.foundedNamespaces;
         // pokud už je #if zavedený
@@ -73,11 +87,12 @@ public class CsprojNsHelper
             var ts = sb.ToString();
             c.InsertMultilineString(dx, ts);
 
-            await ThrowWhenThereIsNamespaceOutsideOfSharpIf(pathCs, c, AllNamespaces);
+            await ThrowWhenThereIsNamespaceOutsideOfSharpIf(pathCsToAppendElif, c, AllNamespaces);
 
             var t = SHJoin.JoinNL(c);
 
-            await File.WriteAllTextAsync(pathCs, t);
+            // TODO2
+            await TF.WriteAllTextAsync(pathCsToAppendElif, t);
         }
         else
         {
@@ -90,7 +105,7 @@ public class CsprojNsHelper
             string nsToElse = null;
             if (!nss.Any())
             {
-                nsToElse = GenerateNsFromPath(pathCs);
+                nsToElse = GenerateNsFromPath(pathCsToAppendElif);
             }
             else
             {
@@ -112,9 +127,14 @@ public class CsprojNsHelper
             }
 
 #if DEBUG
-            if (pathCs == @"E:\vs\Projects\sunamoWithoutLocalDep\SunamoData\Data\AzureBuildUriArgs.cs")
+            if (pathCsToAppendElif == @"E:\vs\Projects\sunamoWithoutLocalDep\SunamoData\Data\AzureBuildUriArgs.cs")
             {
 
+            }
+
+            if (pathCsToAppendElif == @"E:\vs\Projects\sunamoWithoutLocalDep\SunamoExceptions\ai\AIWinPi.cs")
+            {
+                // mám namespace a na dalším řádku #else
             }
 #endif
 
@@ -127,10 +147,20 @@ public class CsprojNsHelper
             foreach (var item in reallyOccuredInFiles)
             {
                 var projectName = isCsFiles ? ProjectNameFromCsPath(item) : item;
+                if (projectName == nsToElse)
+                {
+                    continue;
+                }
+
                 if (!projectNames.Contains(projectName))
                 {
                     projectNames.Add(projectName);
                 }
+            }
+
+            if (projectNames.Count == 0)
+            {
+                return;
             }
 
             foreach (var projectName in projectNames)
@@ -159,17 +189,17 @@ public class CsprojNsHelper
                 c.InsertMultilineString(dx.First(), ts);
             }
 
-            await ThrowWhenThereIsNamespaceOutsideOfSharpIf(pathCs, c, AllNamespaces);
+            await ThrowWhenThereIsNamespaceOutsideOfSharpIf(pathCsToAppendElif, c, AllNamespaces);
 
 #if DEBUG
-            if (pathCs == @"E:\vs\Projects\sunamoWithoutLocalDep\SunamoEnums\Enums\Langs.cs")
+            if (pathCsToAppendElif == @"E:\vs\Projects\sunamoWithoutLocalDep\SunamoEnums\Enums\Langs.cs")
             {
 
             }
 #endif
             var t = SHJoin.JoinNL(c);
 
-            await File.WriteAllTextAsync(pathCs, t);
+            await TF.WriteAllTextAsync(pathCsToAppendElif, t);
         }
     }
 
@@ -178,7 +208,7 @@ public class CsprojNsHelper
         return string.Concat(s.Where(d => char.IsLetterOrDigit(d)));
     }
 
-    private static string ProjectNameFromCsPath(string csPath)
+    public static string ProjectNameFromCsPath(string csPath)
     {
         var csprojPath = CsprojHelper.GetCsprojFromCsPath(csPath);
         var sanitized = SanitizeProjectName(Path.GetFileNameWithoutExtension(csprojPath));
@@ -245,6 +275,7 @@ public class CsprojNsHelper
             }
             else
             {
+                Debugger.Break();
                 ThrowEx.Custom($"On index {item + 1} is not namespace but should be after #elif");
             }
         }
@@ -324,8 +355,6 @@ public class CsprojNsHelper
         List<string> result = new List<string>();
         List<string> linesBefore = new List<string>();
 
-        
-
         var c = content ?? (await File.ReadAllLinesAsync(path)).ToList();
 
 #if DEBUG
@@ -344,7 +373,6 @@ public class CsprojNsHelper
 
         }
 #endif
-
 
         for (int i = 0; i < c.Count; i++)
         {

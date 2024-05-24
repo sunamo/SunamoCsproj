@@ -2,7 +2,10 @@
 namespace SunamoCsproj;
 
 using SunamoCsproj._sunamo;
+using SunamoCsproj.Extensions;
+using SunamoFileIO;
 using SunamoXml;
+using System;
 
 
 /// <summary>
@@ -10,6 +13,19 @@ using SunamoXml;
 /// </summary>
 public class CsprojHelper : CsprojConsts
 {
+    public static string CsprojPathFromName(string slnFolder, string fnwoe)
+    {
+        //GetCsprojsGlobal.
+        var path = Path.Combine(slnFolder, fnwoe, fnwoe + ".csproj");
+
+        if (!File.Exists(path))
+        {
+            ThrowEx.Custom(path + " does not exists!");
+        }
+
+        return path;
+    }
+
     public static async Task AddLinkToCsproj(string target, string source, string csprojPath)
     {
 
@@ -17,9 +33,21 @@ public class CsprojHelper : CsprojConsts
 
     public static string GetCsprojFromCsPath(string path)
     {
+        string pathCopy = new string( path);
+
         while (true)
         {
+
+
+
             path = Path.GetDirectoryName(path);
+
+#if DEBUG
+            if (string.IsNullOrWhiteSpace(path))
+            {
+
+            }
+#endif
 
             var csprojs = Directory.GetFiles(path, "*.csproj");
             if (csprojs.Any())
@@ -82,7 +110,7 @@ public class CsprojHelper : CsprojConsts
         foreach (var item in l)
         {
             var xmlContent = await RemoveDuplicatedProjectAndPackageReferences(item);
-            await File.WriteAllTextAsync(item, xmlContent);
+            await TF.WriteAllTextAsync(item, xmlContent);
         }
     }
 
@@ -154,6 +182,12 @@ csprojNameToRelativePath.Add(key, v);
         return xd.OuterXml;
     }
 
+    /// <summary>
+    /// Nepotřebuji tu vracet XmlDocument, je v každém vráceném prvku.OwnerDocument
+    /// </summary>
+    /// <param name="tagName"></param>
+    /// <param name="pathOrContentCsproj"></param>
+    /// <returns></returns>
     public static List<ItemGroupElement> ItemsInItemGroup(ItemGroupTagName tagName, string pathOrContentCsproj)
     {
         XmlDocument xd = new XmlDocument();
@@ -308,7 +342,7 @@ csprojNameToRelativePath.Add(key, v);
         }
     }
 
-    static readonly List<string> classCodeElements = new List<string>() { "class ", "interface ", "enum ", "struct " };
+    public static readonly List<string> classCodeElements = new List<string>() { "class ", "interface ", "enum ", "struct " };
 
     public static (string, string) ParseNamespaceFromCsFile(string content, string path)
     {
@@ -379,5 +413,41 @@ SunamoDateTime chybí
         }
 
         return (null, null);
+    }
+
+    /// <summary>
+    /// Protože mám často null v hodnotách kde mi čisté where selže, je tu tato metdoa
+    /// </summary>
+    /// <param name="tagName"></param>
+    /// <param name="attr"></param>
+    /// <param name="mustContains"></param>
+    /// <param name="pathCsproj"></param>
+    /// <returns></returns>
+    public static List<ItemGroupElement> GetAllItemsInItemGroupWhichContainsInInclude(ItemGroupTagName tagName, string attr, string mustContains, string pathCsproj)
+    {
+        var items = ItemsInItemGroup(tagName, pathCsproj);
+        items = FilterByAttrAndContains(items, attr, mustContains);
+        return items;
+    }
+
+    public static List<ItemGroupElement> FilterByAttrAndContains(List<ItemGroupElement> l, string attr, string mustContains)
+    {
+        return l.Where(d => (attr == "Link" ? d.Link : (attr == "Include" ? "Include" : throw new Exception($"{nameof(attr)} is {attr}, must be Link or Include"))).ContainsNullAllow(mustContains)).ToList();
+    }
+
+    public static void RemoveAllItemsInItemGroupWhichContainsInInclude(ItemGroupTagName tagName, string attr, string mustContains, string pathCsproj)
+    {
+        var items = ItemsInItemGroup(tagName, pathCsproj);
+        items = FilterByAttrAndContains(items, attr, mustContains);
+
+        if (items.Any())
+        {
+            foreach (var item in items)
+            {
+                item.XmlNode.ParentNode.RemoveChild(item.XmlNode);
+            }
+
+            items[0].XmlNode.OwnerDocument.Save(pathCsproj);
+        }
     }
 }

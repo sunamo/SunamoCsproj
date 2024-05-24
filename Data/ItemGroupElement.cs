@@ -8,6 +8,7 @@ public class ItemGroupElement
     public string Include { get; set; }
     public string Version { get; set; }
     public string Link { get; set; }
+    public XmlNode XmlNode { get; set; }
     public ItemGroupTagName ItemGroupTagName { get; set; }
 
     public override string ToString()
@@ -48,6 +49,7 @@ public class ItemGroupElement
         ige.Include = XmlHelper.Attr(item, CsprojInstance.Include);
         ige.Version = XmlHelper.Attr(item, CsprojInstance.Version);
         ige.Link = XmlHelper.Attr(item, CsprojInstance.Link);
+        ige.XmlNode = item;
         ige.ItemGroupTagName = itemGroupTagName;
 
         return ige;

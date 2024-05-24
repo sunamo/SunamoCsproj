@@ -9,3 +9,4 @@ global using System.Xml;
 global using System.Xml.Linq;
 global using SunamoCsproj.Data;
 global using SunamoCsproj.Items;
+global using SunamoExceptions;

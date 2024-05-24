@@ -1,5 +1,5 @@
 
-using SunamoExceptions.OnlyInSE;
+
 using SunamoXml;
 
 namespace SunamoCsproj;
@@ -206,5 +206,16 @@ public class CsprojInstance : CsprojConsts
 
 
         project.AppendChild(propertyGroup);
+    }
+
+    public void RemoveItemsFromItemGroupWithAttr(ItemGroupTagName tagName, string v)
+    {
+        var t = xd.SelectNodes($"/Project/ItemGroup/{tagName}[@{v}]");
+        // nutno zkontrolovat detailně co se bude mazat. 
+        // snadná reverzní cesta neexistuje
+        foreach (XmlNode item in t)
+        {
+            item.ParentNode.RemoveChild(item);
+        }
     }
 }
