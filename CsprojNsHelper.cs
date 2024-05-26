@@ -253,7 +253,7 @@ public class CsprojNsHelper
         }
         if (path == @"E:\vs\Projects\sunamoWithoutLocalDep\SunamoArgs\ChangeContentArgs.cs")
         {
-            filesIn1League0
+            
         }
 #endif
 
