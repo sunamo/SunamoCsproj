@@ -20,4 +20,5 @@ public class ParseSharpIfToFirstCodeElementResult
     /// je to třeba k určení indexů #if, #elif atd.
     /// </summary>
     public List<string> allLinesBefore;
+    public bool IsGeneric;
 }

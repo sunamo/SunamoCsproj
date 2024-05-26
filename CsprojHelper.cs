@@ -432,7 +432,7 @@ SunamoDateTime chybí
 
     public static List<ItemGroupElement> FilterByAttrAndContains(List<ItemGroupElement> l, string attr, string mustContains)
     {
-        return l.Where(d => (attr == "Link" ? d.Link : (attr == "Include" ? "Include" : throw new Exception($"{nameof(attr)} is {attr}, must be Link or Include"))).ContainsNullAllow(mustContains)).ToList();
+        return l.Where(d => (attr == "Link" ? d.Link : (attr == "Include" ? d.Include : throw new Exception($"{nameof(attr)} is {attr}, must be Link or Include"))).ContainsNullAllow(mustContains)).ToList();
     }
 
     public static void RemoveAllItemsInItemGroupWhichContainsInInclude(ItemGroupTagName tagName, string attr, string mustContains, string pathCsproj)

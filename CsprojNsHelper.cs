@@ -253,7 +253,7 @@ public class CsprojNsHelper
         }
         if (path == @"E:\vs\Projects\sunamoWithoutLocalDep\SunamoArgs\ChangeContentArgs.cs")
         {
-
+            filesIn1League0
         }
 #endif
 
@@ -327,15 +327,14 @@ public class CsprojNsHelper
         //.Where(x => x.dt >= czas11 && x.dt <= czas22)
         //.Select(x => x.index)
         //.ToList();
-
-
     }
 
     // musí být namespace bez mezery na konci, takto se užívá v #if
     public static string[] keywordsBeforeFirstCodeElementDeclaration = new string[] { "#if", "using ", "namespace", "#elif", "#else", "#endif", ";" };
 
     /// <summary>
-    /// 
+    /// Tato metoda se může volat jen když SetAllNamespaces se dokoná
+    /// Proto ta první kontrola je v pohodě
     /// </summary>
     /// <param name="path"></param>
     /// <param name="content"></param>
@@ -343,6 +342,11 @@ public class CsprojNsHelper
     /// <returns></returns>
     public static async Task<ParseSharpIfToFirstCodeElementResult> ParseSharpIfToFirstCodeElement(string path, List<string> content, List<string> AllNamespaces)
     {
+        if (AllNamespaces.Count == 0)
+        {
+            ThrowEx.Custom("AllNamespaces is empty!");
+        }
+
 #if DEBUG
         if (path == @"E:\vs\Projects\sunamoWithoutLocalDep\SunamoData\Data\Date.cs")
         {
@@ -374,6 +378,8 @@ public class CsprojNsHelper
         }
 #endif
 
+        ParseSharpIfToFirstCodeElementResult result2 = new ParseSharpIfToFirstCodeElementResult();
+
         for (int i = 0; i < c.Count; i++)
         {
             c[i] = c[i].Trim();
@@ -386,6 +392,11 @@ public class CsprojNsHelper
 
             if (!keywordsBeforeFirstCodeElementDeclaration.Any(keyword => line.Contains(keyword)) && !AllNamespaces.Contains(line))
             {
+                if (line.Contains("<"))
+                {
+                    result2.IsGeneric = true;
+                }
+                
                 break;
             }
 
@@ -412,7 +423,10 @@ Tady je ale další problém
             ThrowEx.Custom("linesBefore not contains #endif, celý proces procházení řádků nebyl dokonán. Asi chybělo v AllNamespaces něco mezi #if a #endif");
         }
 
-        return new ParseSharpIfToFirstCodeElementResult { foundedNamespaces = result, allLinesBefore = linesBefore };
+        result2.foundedNamespaces = result;
+        result2.allLinesBefore = linesBefore;
+
+        return result2;
     }
 }
 
