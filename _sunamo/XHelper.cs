@@ -1,23 +1,53 @@
-﻿//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Text;
-//using System.Threading.Tasks;
 
-//namespace SunamoCsproj._sunamo;
-//internal class XHelper
-//{
-//    public static string FormatXmlInMemory(string xml)
-//    {
-//        try
-//        {
-//            XDocument doc = XDocument.Parse(xml);
-//            return doc.ToString();
-//        }
-//        catch (Exception)
-//        {
-//            // Handle and throw if fatal exception here; don't just ignore them
-//            return xml;
-//        }
-//    }
-//}
+namespace SunamoCsproj._sunamo;
+using System;
+using System.Collections.Generic;
+
+internal class XHelper
+{
+    public static Dictionary<string, string> XmlNamespaces(XmlNamespaceManager nsmgr, bool withPrexixedXmlnsColon)
+    {
+        Dictionary<string, string> ns = new Dictionary<string, string>();
+        foreach (string item2 in nsmgr)
+        {
+            var item = item2;
+
+            if (withPrexixedXmlnsColon)
+            {
+                if (item == string.Empty || item == Consts.xmlns)
+                {
+                    item = Consts.xmlns;
+                }
+                else
+                {
+                    item = "xmlns:" + item;
+                }
+
+            }
+
+            // Jak� je typ item, at nemus�m pou��vat slovn�k
+            var v = nsmgr.LookupNamespace(item2);
+
+            if (!ns.ContainsKey(item))
+            {
+                ns.Add(item, v);
+            }
+        }
+
+        return ns;
+    }
+
+    public static string FormatXmlInMemory(string xml)
+    {
+        try
+        {
+            XDocument doc = XDocument.Parse(xml);
+            return doc.ToString();
+        }
+        catch (Exception)
+        {
+            // Handle and throw if fatal exception here; don't just ignore them
+            return xml;
+        }
+    }
+}

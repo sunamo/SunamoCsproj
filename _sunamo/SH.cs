@@ -1,12 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace SunamoCsproj._sunamo;
 internal class SH
 {
+    internal static string RemoveAfterFirst(string input, string after)
+    {
+        int index = input.IndexOf(after);
+        if (index >= 0)
+            input = input.Substring(0, index);
+
+        return input;
+    }
+
+
+
     /// <summary>
     /// Přesunout poté do SH
     /// Tam jsem teď nemohl udělat ani unit testy

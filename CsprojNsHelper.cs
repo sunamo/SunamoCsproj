@@ -1,8 +1,4 @@
-﻿using SunamoCsproj._sunamo;
-using SunamoCsproj.Results;
 
-using SunamoExtensions;
-using SunamoFileIO;
 using System.Diagnostics;
 
 
@@ -21,6 +17,7 @@ public class CsprojNsHelper
     /// <returns></returns>
     public static async Task WriteNew(List<string> reallyOccuredInFilesOrProjectNames, string pathCsToAppendElif, List<string> contentCs, List<string> AllNamespaces)
     {
+        bool addTo_linked = true;
 #if DEBUG
         if (pathCsToAppendElif == @"E:\vs\Projects\sunamoWithoutLocalDep\SunamoData\Data\Date.cs")
         {
@@ -50,7 +47,7 @@ public class CsprojNsHelper
         }
 #endif
 
-        var result = await ParseSharpIfToFirstCodeElement(pathCsToAppendElif, contentCs, AllNamespaces);
+        var result = await ParseSharpIfToFirstCodeElement(pathCsToAppendElif, contentCs, AllNamespaces, addTo_linked);
 
         var existingNamespace = result.foundedNamespaces;
         // pokud už je #if zavedený
@@ -87,12 +84,12 @@ public class CsprojNsHelper
             var ts = sb.ToString();
             c.InsertMultilineString(dx, ts);
 
-            await ThrowWhenThereIsNamespaceOutsideOfSharpIf(pathCsToAppendElif, c, AllNamespaces);
+            await ThrowWhenThereIsNamespaceOutsideOfSharpIf(pathCsToAppendElif, c, AllNamespaces, addTo_linked);
 
             var t = SHJoin.JoinNL(c);
 
             // TODO2
-            await TF.WriteAllTextAsync(pathCsToAppendElif, t);
+            await File.WriteAllTextAsync(pathCsToAppendElif, t);
         }
         else
         {
@@ -189,7 +186,7 @@ public class CsprojNsHelper
                 c.InsertMultilineString(dx.First(), ts);
             }
 
-            await ThrowWhenThereIsNamespaceOutsideOfSharpIf(pathCsToAppendElif, c, AllNamespaces);
+            await ThrowWhenThereIsNamespaceOutsideOfSharpIf(pathCsToAppendElif, c, AllNamespaces, addTo_linked);
 
 #if DEBUG
             if (pathCsToAppendElif == @"E:\vs\Projects\sunamoWithoutLocalDep\SunamoEnums\Enums\Langs.cs")
@@ -199,10 +196,15 @@ public class CsprojNsHelper
 #endif
             var t = SHJoin.JoinNL(c);
 
-            await TF.WriteAllTextAsync(pathCsToAppendElif, t);
+            await File.WriteAllTextAsync(pathCsToAppendElif, t);
         }
     }
 
+    /// <summary>
+    /// Nechám jen písmena nebo čísla
+    /// </summary>
+    /// <param name="s"></param>
+    /// <returns></returns>
     public static string SanitizeProjectName(string s)
     {
         return string.Concat(s.Where(d => char.IsLetterOrDigit(d)));
@@ -244,23 +246,12 @@ public class CsprojNsHelper
         return remain.Replace("\\", ".");
     }
 
-    private static async Task ThrowWhenThereIsNamespaceOutsideOfSharpIf(string path, List<string> c, List<string> allNamespaces)
+    private static async Task ThrowWhenThereIsNamespaceOutsideOfSharpIf(string path, List<string> c, List<string> allNamespaces, bool addTo_linked)
     {
-#if DEBUG
-        if (path == @"E:\vs\Projects\sunamoWithoutLocalDep\SunamoData\Data\Date.cs")
-        {
-            // zjistit proč mi stále nedává namespace a ;
-        }
-        if (path == @"E:\vs\Projects\sunamoWithoutLocalDep\SunamoArgs\ChangeContentArgs.cs")
-        {
-            
-        }
-#endif
-
         // zde příště pokračovat
         // zjistím indexy #if a #elif
 
-        var parsed = await ParseSharpIfToFirstCodeElement(path, c, allNamespaces);
+        var parsed = await ParseSharpIfToFirstCodeElement(path, c, allNamespaces, addTo_linked);
         var allLinesBefore = parsed.allLinesBefore;
         var dxElif = SH.GetIndexesOfLinesStartingWith(allLinesBefore, d => d.StartsWith("#elif"));
         //var dxNs = SH.GetIndexesOfLinesStartingWith(allLinesBefore, d => d.StartsWith("namespace "));
@@ -275,8 +266,14 @@ public class CsprojNsHelper
             }
             else
             {
+                var lastLine = allLinesBefore[allLinesBefore.Count - 1];
+                var lastLineTrimmed = lastLine.Replace("#elif ", "");
+
+
+
+
+                ThrowEx.Custom($"On index {item + 1} is not namespace but should be after #elif, maybe will be enough insert {lastLineTrimmed} to virtualNamespace");
                 Debugger.Break();
-                ThrowEx.Custom($"On index {item + 1} is not namespace but should be after #elif");
             }
         }
 
@@ -336,19 +333,20 @@ public class CsprojNsHelper
     /// Tato metoda se může volat jen když SetAllNamespaces se dokoná
     /// Proto ta první kontrola je v pohodě
     /// </summary>
-    /// <param name="path"></param>
+    /// <param name="pathCs"></param>
     /// <param name="content"></param>
     /// <param name="AllNamespaces"></param>
     /// <returns></returns>
-    public static async Task<ParseSharpIfToFirstCodeElementResult> ParseSharpIfToFirstCodeElement(string path, List<string> content, List<string> AllNamespaces)
+    public static async Task<ParseSharpIfToFirstCodeElementResult> ParseSharpIfToFirstCodeElement(string pathCs, List<string> content, List<string> AllNamespaces, bool addTo_linked)
     {
-        if (AllNamespaces.Count == 0)
+
+        if (addTo_linked && AllNamespaces.Count == 0)
         {
             ThrowEx.Custom("AllNamespaces is empty!");
         }
 
 #if DEBUG
-        if (path == @"E:\vs\Projects\sunamoWithoutLocalDep\SunamoData\Data\Date.cs")
+        if (pathCs == @"E:\vs\Projects\sunamoWithoutLocalDep\SunamoData\Data\Date.cs")
         {
             // zjistit proč mi stále nedává namespace a ;
         }
@@ -359,20 +357,20 @@ public class CsprojNsHelper
         List<string> result = new List<string>();
         List<string> linesBefore = new List<string>();
 
-        var c = content ?? (await File.ReadAllLinesAsync(path)).ToList();
+        var c = content ?? (await File.ReadAllLinesAsync(pathCs)).ToList();
 
 #if DEBUG
         var containsSharpIf = c.FirstOrDefault(d => d.StartsWith("#if")) != null;
 
-        if (path == @"E:\vs\Projects\sunamoWithoutLocalDep\SunamoData\Data\Date.cs" && c.Count > 30)
+        if (pathCs == @"E:\vs\Projects\sunamoWithoutLocalDep\SunamoData\Data\Date.cs" && c.Count > 30)
         {
             // zjistit proč mi stále nedává namespace a ;
         }
-        if (path == @"E:\vs\Projects\sunamoWithoutLocalDep\SunamoData\Data\DirectoriesToDelete.cs" && c.Count > 6)
+        if (pathCs == @"E:\vs\Projects\sunamoWithoutLocalDep\SunamoData\Data\DirectoriesToDelete.cs" && c.Count > 6)
         {
 
         }
-        if (path == @"E:\vs\Projects\sunamoWithoutLocalDep\SunamoData\Data\TextFormatData.cs" && containsSharpIf)
+        if (pathCs == @"E:\vs\Projects\sunamoWithoutLocalDep\SunamoData\Data\TextFormatData.cs" && containsSharpIf)
         {
 
         }
@@ -390,13 +388,13 @@ public class CsprojNsHelper
                 continue;
             }
 
-            if (!keywordsBeforeFirstCodeElementDeclaration.Any(keyword => line.Contains(keyword)) && !AllNamespaces.Contains(line))
+            if (!keywordsBeforeFirstCodeElementDeclaration.Any(keyword => line.Contains(keyword)) && (addTo_linked ? !AllNamespaces.Contains(line) : true))
             {
-                if (line.Contains("<"))
-                {
-                    result2.IsGeneric = true;
-                }
-                
+                //if (line.Contains("<"))
+                //{
+                //    result2.IsGeneric = true;
+                //}
+
                 break;
             }
 
@@ -410,7 +408,14 @@ Tady je ale další problém
            
              */
 
-            if (AllNamespaces != null && AllNamespaces.Contains(line))
+            if (addTo_linked)
+            {
+                if (AllNamespaces != null && AllNamespaces.Contains(line))
+                {
+                    result.Add(line);
+                }
+            }
+            else
             {
                 result.Add(line);
             }

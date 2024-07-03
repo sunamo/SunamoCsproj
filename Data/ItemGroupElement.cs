@@ -1,7 +1,5 @@
-﻿
+
 namespace SunamoCsproj.Data;
-using SunamoXml;
-using SunamoXml.Generators;
 
 public class ItemGroupElement
 {

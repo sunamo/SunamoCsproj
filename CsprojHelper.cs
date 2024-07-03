@@ -1,18 +1,27 @@
 
 namespace SunamoCsproj;
 
-using SunamoCsproj._sunamo;
-using SunamoCsproj.Extensions;
-using SunamoFileIO;
-using SunamoXml;
 using System;
-
 
 /// <summary>
 /// Zde jsou ty co nepoužívají xd
 /// </summary>
 public class CsprojHelper : CsprojConsts
 {
+    public static async Task<string?> PropertyGroupItemContent(string path, string tag)
+    {
+        var c = await File.ReadAllTextAsync(path);
+        var xd = new XmlDocument();
+        xd.LoadXml(c);
+
+        var s = xd.SelectSingleNode("/Project/PropertyGroup/" + tag);
+        if (s == null)
+        {
+            return null;
+        }
+        return s.InnerText;
+    }
+
     public static string CsprojPathFromName(string slnFolder, string fnwoe)
     {
         //GetCsprojsGlobal.
@@ -31,28 +40,39 @@ public class CsprojHelper : CsprojConsts
 
     }
 
-    public static string GetCsprojFromCsPath(string path)
+    /// <summary>
+    /// Vrací cestu k csproj, nikoliv složce
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="slnFolder"></param>
+    /// <returns></returns>
+    public static string GetCsprojFromCsPath(string path, string slnFolder = null)
     {
-        string pathCopy = new string( path);
-
-        while (true)
+        if (slnFolder != null)
         {
-
-
-
-            path = Path.GetDirectoryName(path);
-
-#if DEBUG
-            if (string.IsNullOrWhiteSpace(path))
+            if (!path.StartsWith(slnFolder))
             {
-
+                ThrowEx.Custom(path + " Not starting with " + slnFolder);
             }
-#endif
 
-            var csprojs = Directory.GetFiles(path, "*.csproj");
-            if (csprojs.Any())
+            path = path.Replace(slnFolder, "");
+            var fnwoe = SH.RemoveAfterFirst(path, "\\");
+
+            return Path.Combine(slnFolder, fnwoe, fnwoe + ".csproj");
+        }
+        else
+        {
+            string pathCopy = new string(path);
+
+            while (true)
             {
-                return csprojs.First();
+                path = Path.GetDirectoryName(path);
+
+                var csprojs = Directory.GetFiles(path, "*.csproj");
+                if (csprojs.Any())
+                {
+                    return csprojs.First();
+                }
             }
         }
     }
@@ -110,7 +130,7 @@ public class CsprojHelper : CsprojConsts
         foreach (var item in l)
         {
             var xmlContent = await RemoveDuplicatedProjectAndPackageReferences(item);
-            await TF.WriteAllTextAsync(item, xmlContent);
+            await File.WriteAllTextAsync(item, xmlContent);
         }
     }
 
@@ -342,15 +362,21 @@ csprojNameToRelativePath.Add(key, v);
         }
     }
 
-    public static readonly List<string> classCodeElements = new List<string>() { "class ", "interface ", "enum ", "struct " };
+    public static readonly List<string> classCodeElements = new List<string>() { "class ", "interface ", "enum ", "struct ", "delegate " };
 
+    /// <summary>
+    /// v I1 je project name
+    /// v I2 je sanitizované celé NS
+    /// </summary>
+    /// <param name="content"></param>
+    /// <param name="path"></param>
+    /// <returns></returns>
     public static (string, string) ParseNamespaceFromCsFile(string content, string path)
     {
         /*
-Nemůže obsahovat ;
-SunamoDateTime chybí
- */
-
+    Nemůže obsahovat ;
+    SunamoDateTime chybí
+    */
         // zjistit zda tu mám SunamoPercentCalculator a pokud ne, proč?
         var l = SHGetLines.GetLines(content);
 
@@ -364,7 +390,7 @@ SunamoDateTime chybí
         for (int i = 0; i < l.Count; i++)
         {
             var item = l[i];
-            if (classCodeElements.Any(d=> item.Contains(d)))
+            if (classCodeElements.Any(d => item.Contains(d)))
             {
                 break;
             }
@@ -380,8 +406,6 @@ SunamoDateTime chybí
             {
                 var d = item.Trim().TrimEnd(';').TrimEnd('{').Trim();
                 d = d.Replace("namespace ", "");
-
-
 
                 var firstPart = d.Split('.')[0];
 

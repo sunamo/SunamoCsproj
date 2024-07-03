@@ -1,6 +1,6 @@
 
 
-using SunamoXml;
+
 
 namespace SunamoCsproj;
 
@@ -117,10 +117,25 @@ public class CsprojInstance : CsprojConsts
         return newAttr;
     }
 
-
     public string TurnOnOffAsyncConditionalCompilationSymbol(bool add)
     {
         return AddRemoveDefineConstant(add, ASYNC);
+    }
+
+    public void AddOrEditPropertyGroupItem(string tag, string content)
+    {
+        var versionEl = xd.SelectSingleNode("/Project/PropertyGroup/" + tag);
+
+        if (versionEl != null)
+        {
+            versionEl.InnerText = content;
+        }
+        else
+        {
+            var founded2 = xd.SelectSingleNode("/Project/PropertyGroup");
+            var newEl = founded2.AddElement(tag);
+            newEl.InnerText = content;
+        }
     }
 
     public string AddRemoveDefineConstant(bool add, string defineConstant)
@@ -159,12 +174,12 @@ public class CsprojInstance : CsprojConsts
         // First must be debug due to unit tests
         if (!isDebug)
         {
-            AddPropertyGroupToProject(xd, Debug, add, defineConstant);
+            AddPropertyGroupItemToProject(xd, Debug, add, defineConstant);
         }
 
         if (!isRelease)
         {
-            AddPropertyGroupToProject(xd, Release, add, defineConstant);
+            AddPropertyGroupItemToProject(xd, Release, add, defineConstant);
         }
 
         return XHelper.FormatXmlInMemory(xd.OuterXml);
@@ -189,7 +204,16 @@ public class CsprojInstance : CsprojConsts
         return string.Join(';', parts);
     }
 
-    private static void AddPropertyGroupToProject(XmlDocument xd, string innerAttrValue, bool add, string defineConstantValue)
+    /// <summary>
+    /// Přidává pouze PropertyGroup s attr
+    /// '$(Configuration)|$(Platform)'=='Debug|AnyCPU'
+    /// 
+    /// </summary>
+    /// <param name="xd"></param>
+    /// <param name="innerAttrValue"></param>
+    /// <param name="add"></param>
+    /// <param name="defineConstantValue"></param>
+    private static void AddPropertyGroupItemToProject(XmlDocument xd, string innerAttrValue, bool add, string defineConstantValue)
     {
         var project = xd.SelectSingleNode("/Project");
 

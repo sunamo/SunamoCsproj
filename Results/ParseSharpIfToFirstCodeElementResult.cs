@@ -1,9 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace SunamoCsproj.Results;
 public class ParseSharpIfToFirstCodeElementResult
 {
@@ -20,5 +14,5 @@ public class ParseSharpIfToFirstCodeElementResult
     /// je to třeba k určení indexů #if, #elif atd.
     /// </summary>
     public List<string> allLinesBefore;
-    public bool IsGeneric;
+    //public bool IsGeneric;
 }
