@@ -1,7 +1,7 @@
 namespace SunamoCsproj._sunamo;
-public static class XmlNodeExtensions
+internal static class XmlNodeExtensions
 {
-    public static XmlElement AddElement(this XmlNode element, string name)
+    internal static XmlElement AddElement(this XmlNode element, string name)
     {
         XmlElement xmlElement = element.OwnerDocument!.CreateElement(name);
         element.AppendChild(xmlElement);

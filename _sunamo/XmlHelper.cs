@@ -6,9 +6,9 @@ using System.Linq;
 
 internal class XmlHelper
 {
-    public static XmlAttribute foundedNode = null;
+    internal static XmlAttribute foundedNode = null;
 
-    public static string GetAttributeWithNameValue(XmlNode item, string p)
+    internal static string GetAttributeWithNameValue(XmlNode item, string p)
     {
         foreach (XmlAttribute item2 in item.Attributes)
         {
@@ -27,7 +27,7 @@ internal class XmlHelper
     /// XmlNodeList dědí jen z IEnumerable, IDisposable
     /// </summary>
     /// <returns></returns>
-    public static List<XmlNode> ChildNodes(XmlNode xml)
+    internal static List<XmlNode> ChildNodes(XmlNode xml)
     {
         // TODO: až přilinkuji SunamoExtensions tak .COunt
         List<XmlNode> result = new List<XmlNode>();
@@ -40,7 +40,7 @@ internal class XmlHelper
         return result;
     }
 
-    public static string GetAttrValueOrInnerElement(XmlNode item, string v)
+    internal static string GetAttrValueOrInnerElement(XmlNode item, string v)
     {
         var attr = item.Attributes[v];
 
@@ -59,7 +59,7 @@ internal class XmlHelper
         return null;
     }
 
-    public static string Attr(XmlNode d, string v)
+    internal static string Attr(XmlNode d, string v)
     {
         var a = GetAttributeWithName(d, v);
         if (a != null)
@@ -69,7 +69,7 @@ internal class XmlHelper
         return null;
     }
 
-    public static XmlNode GetAttributeWithName(XmlNode item, string p)
+    internal static XmlNode GetAttributeWithName(XmlNode item, string p)
     {
         foreach (XmlAttribute item2 in item.Attributes)
         {

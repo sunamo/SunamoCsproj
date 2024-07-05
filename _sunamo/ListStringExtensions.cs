@@ -1,7 +1,7 @@
 namespace SunamoCsproj._sunamo;
-public static class ListStringExtensions
+internal static class ListStringExtensions
 {
-    public static void InsertMultilineString(this List<string> l, int dx, string toInsert)
+    internal static void InsertMultilineString(this List<string> l, int dx, string toInsert)
     {
         var lines = SHGetLines.GetLines(toInsert);
 

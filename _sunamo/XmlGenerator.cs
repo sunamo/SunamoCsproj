@@ -7,36 +7,36 @@ using System.Xml;
 /// Element - prvek kterému se zapisují ihned i innerObsah. Může být i prázdný.
 /// Tag - prvek kterému to mohu zapsat později nebo vůbec.
 /// </summary>
-public class XmlGenerator //: IXmlGenerator
+internal class XmlGenerator //: IXmlGenerator
 {
     static Type type = typeof(XmlGenerator);
-    public StringBuilder sb = new StringBuilder();
+    internal StringBuilder sb = new StringBuilder();
     private bool _useStack = false;
     private Stack<string> _stack = null;
-    public int Length()
+    internal int Length()
     {
         return sb.Length;
     }
-    public void WriteNonPairTagWith2Attrs(string p1, string p2, string p3, string p4, string p5)
+    internal void WriteNonPairTagWith2Attrs(string p1, string p2, string p3, string p4, string p5)
     {
         sb.AppendFormat("<{0} {1}=\"{2}\" {3}=\"{4}\" />", p1, p2, p3, p4, p5);
     }
-    public void WriteNonPairTagWithAttr(string p1, string p2, string p3)
+    internal void WriteNonPairTagWithAttr(string p1, string p2, string p3)
     {
         sb.AppendFormat("<{0} {1}=\"{2}\" />", p1, p2, p3);
     }
-    public void Insert(int index, string text)
+    internal void Insert(int index, string text)
     {
         sb.Insert(index, text);
     }
-    public void AppendLine()
+    internal void AppendLine()
     {
         sb.AppendLine();
     }
-    public XmlGenerator() : this(false)
+    internal XmlGenerator() : this(false)
     {
     }
-    public XmlGenerator(bool useStack)
+    internal XmlGenerator(bool useStack)
     {
         _useStack = useStack;
         if (useStack)
@@ -44,19 +44,19 @@ public class XmlGenerator //: IXmlGenerator
             _stack = new Stack<string>();
         }
     }
-    public void StartComment()
+    internal void StartComment()
     {
         sb.Append("<!--");
     }
-    public void EndComment()
+    internal void EndComment()
     {
         sb.Append("-->");
     }
-    public void WriteNonPairTagWithAttrs(string tag, List<string> args)
+    internal void WriteNonPairTagWithAttrs(string tag, List<string> args)
     {
         WriteNonPairTagWithAttrs(tag, args.ToArray());
     }
-    public void WriteNonPairTagWithAttrs(string tag, params string[] args)
+    internal void WriteNonPairTagWithAttrs(string tag, params string[] args)
     {
         sb.AppendFormat("<{0} ", tag);
         for (int i = 0; i < args.Length; i++)
@@ -67,11 +67,11 @@ public class XmlGenerator //: IXmlGenerator
         }
         sb.Append(" />");
     }
-    public void WriteCData(string innerCData)
+    internal void WriteCData(string innerCData)
     {
         WriteRaw(/*string.Format("<![CDATA[{0}]]>", innerCData)*/ string.Format("<![CDATA[{0}]]>", innerCData));
     }
-    public void WriteTagWithAttr(string tag, string atribut, string hodnota, bool skipEmptyOrNull = false)
+    internal void WriteTagWithAttr(string tag, string atribut, string hodnota, bool skipEmptyOrNull = false)
     {
         if (skipEmptyOrNull)
         {
@@ -87,15 +87,15 @@ public class XmlGenerator //: IXmlGenerator
         }
         sb.Append(r);
     }
-    public void WriteRaw(string p)
+    internal void WriteRaw(string p)
     {
         sb.Append(p);
     }
-    public void TerminateTag(string p)
+    internal void TerminateTag(string p)
     {
         sb.AppendFormat("</{0}>", p);
     }
-    public void WriteTag(string p)
+    internal void WriteTag(string p)
     {
         string r = $"<{p}>";
         if (_useStack)
@@ -108,7 +108,7 @@ public class XmlGenerator //: IXmlGenerator
     {
         return sb.ToString();
     }
-    public void WriteTagWithAttrs(string p, List<string> p_2)
+    internal void WriteTagWithAttrs(string p, List<string> p_2)
     {
         WriteTagWithAttrs(p, p_2.ToArray());
     }
@@ -117,7 +117,7 @@ public class XmlGenerator //: IXmlGenerator
     /// </summary>
     /// <param name="p"></param>
     /// <param name="p_2"></param>
-    public void WriteTagWithAttrs(string p, params string[] p_2)
+    internal void WriteTagWithAttrs(string p, params string[] p_2)
     {
         WriteTagWithAttrs(true, p, p_2);
     }
@@ -135,11 +135,11 @@ public class XmlGenerator //: IXmlGenerator
     /// </summary>
     /// <param name="p"></param>
     /// <param name="p_2"></param>
-    public void WriteTagWithAttrsCheckNull(string p, params string[] p_2)
+    internal void WriteTagWithAttrsCheckNull(string p, params string[] p_2)
     {
         WriteTagWithAttrs(false, p, p_2);
     }
-    public void WriteTagNamespaceManager(object rss, XmlNamespaceManager nsmgr, string v1, string v2)
+    internal void WriteTagNamespaceManager(object rss, XmlNamespaceManager nsmgr, string v1, string v2)
     {
         ThrowEx.NotImplementedMethod();
     }
@@ -151,7 +151,7 @@ public class XmlGenerator //: IXmlGenerator
         }
         return false;
     }
-    public void WriteTagNamespaceManager(string nameTag, XmlNamespaceManager nsmgr, params string[] args)
+    internal void WriteTagNamespaceManager(string nameTag, XmlNamespaceManager nsmgr, params string[] args)
     {
         //List<string> p = new List<string>(args);
         var p = XHelper.XmlNamespaces(nsmgr, true);
@@ -161,7 +161,7 @@ public class XmlGenerator //: IXmlGenerator
         }
         WriteTagWithAttrs(nameTag, p);
     }
-    public void WriteNonPairTagWithAttrs(bool appendNull, string p, params string[] p_2)
+    internal void WriteNonPairTagWithAttrs(bool appendNull, string p, params string[] p_2)
     {
         StringBuilder sb = new StringBuilder();
         sb.AppendFormat("<{0} ", p);
@@ -215,15 +215,15 @@ public class XmlGenerator //: IXmlGenerator
         }
         this.sb.Append(r);
     }
-    public void WriteElement(string nazev, string inner)
+    internal void WriteElement(string nazev, string inner)
     {
         sb.AppendFormat("<{0}>{1}</{0}>", nazev, inner);
     }
-    public void WriteXmlDeclaration()
+    internal void WriteXmlDeclaration()
     {
         sb.Append(XmlTemplates.xml);
     }
-    public void WriteTagWith2Attrs(string p, string p_2, string p_3, string p_4, string p_5)
+    internal void WriteTagWith2Attrs(string p, string p_2, string p_3, string p_4, string p_5)
     {
         string r = /*string.Format*/ string.Format("<{0} {1}=\"{2}\" {3}=\"{4}\">", p, p_2, p_3, p_4, p_5);
         if (_useStack)
@@ -232,7 +232,7 @@ public class XmlGenerator //: IXmlGenerator
         }
         sb.Append(r);
     }
-    public void WriteNonPairTag(string p)
+    internal void WriteNonPairTag(string p)
     {
         sb.AppendFormat("<{0} />", p);
     }

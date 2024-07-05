@@ -19,7 +19,7 @@ internal class SH
     /// <param name="list"></param>
     /// <param name="predicate"></param>
     /// <returns></returns>
-    public static List<int> GetIndexesOfLinesStartingWith(List<string> list, Func<string, bool> predicate)
+    internal static List<int> GetIndexesOfLinesStartingWith(List<string> list, Func<string, bool> predicate)
     {
         List<int> allIndices = list.Select((s, i) => new { Str = s, Index = i })
             .Where(x => predicate(x.Str))
@@ -27,7 +27,7 @@ internal class SH
         return allIndices;
     }
 
-    public static List<int> GetIndexesOfLinesWhichContainsAnyOfStrings(List<string> list, List<string> whichMustContains)
+    internal static List<int> GetIndexesOfLinesWhichContainsAnyOfStrings(List<string> list, List<string> whichMustContains)
     {
         List<int> result = new List<int>();
         for (int i = 0; i < list.Count; i++)

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 internal class XHelper
 {
-    public static Dictionary<string, string> XmlNamespaces(XmlNamespaceManager nsmgr, bool withPrexixedXmlnsColon)
+    internal static Dictionary<string, string> XmlNamespaces(XmlNamespaceManager nsmgr, bool withPrexixedXmlnsColon)
     {
         Dictionary<string, string> ns = new Dictionary<string, string>();
         foreach (string item2 in nsmgr)
@@ -37,7 +37,7 @@ internal class XHelper
         return ns;
     }
 
-    public static string FormatXmlInMemory(string xml)
+    internal static string FormatXmlInMemory(string xml)
     {
         try
         {
