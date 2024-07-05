@@ -1,7 +1,5 @@
-
 namespace SunamoCsproj;
 
-using System;
 
 /// <summary>
 /// Zde jsou ty co nepoužívají xd

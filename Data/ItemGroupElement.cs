@@ -1,4 +1,3 @@
-
 namespace SunamoCsproj.Data;
 
 public class ItemGroupElement

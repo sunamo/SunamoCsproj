@@ -12,3 +12,5 @@ global using SunamoCsproj.Extensions;
 global using SunamoCsproj.Items;
 global using SunamoCsproj.Results;
 global using SunamoCsproj._sunamo;
+global using System.Diagnostics;
+global using System.Text.RegularExpressions;

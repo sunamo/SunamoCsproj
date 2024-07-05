@@ -1,6 +1,4 @@
-
 namespace SunamoCsproj._sunamo;
-using System;
 
 
 internal class ThrowEx
@@ -15,4 +13,3 @@ internal class ThrowEx
         Custom("Method not implemented: " + Environment.NewLine + Environment.StackTrace);
     }
 }
-

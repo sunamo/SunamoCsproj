@@ -1,7 +1,3 @@
-
-using System.Diagnostics;
-
-
 namespace SunamoCsproj;
 public class CsprojNsHelper
 {
@@ -434,5 +430,3 @@ Tady je ale další problém
         return result2;
     }
 }
-
-

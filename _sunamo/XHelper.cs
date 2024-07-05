@@ -1,7 +1,4 @@
-
 namespace SunamoCsproj._sunamo;
-using System;
-using System.Collections.Generic;
 
 internal class XHelper
 {

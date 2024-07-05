@@ -1,6 +1,4 @@
-
 namespace SunamoCsproj;
-using System.Collections.Generic;
 
 
 internal class DictionaryHelper
@@ -18,4 +16,3 @@ internal class DictionaryHelper
         return vr;
     }
 }
-
