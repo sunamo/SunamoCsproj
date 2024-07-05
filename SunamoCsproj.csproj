@@ -3,9 +3,9 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>24.7.5.2</Version>
+    <Version>24.7.5.3</Version>
     <Description>Working with csprojs at one package</Description>
-    <PackageReleaseNotes>.</PackageReleaseNotes>
+    <PackageReleaseNotes>Added override of RemoveComments</PackageReleaseNotes>
     <Authors>www.sunamo.cz</Authors>
     <Copyright>www.sunamo.cz</Copyright>
   </PropertyGroup>
