@@ -1,4 +1,4 @@
-namespace SunamoCsproj;
+namespace SunamoCsproj._sunamo;
 
 
 internal class DictionaryHelper

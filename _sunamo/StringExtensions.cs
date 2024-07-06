@@ -1,4 +1,4 @@
-namespace SunamoCsproj.Extensions;
+namespace SunamoCsproj._sunamo;
 internal static class StringExtensions
 {
     public static bool ContainsNullAllow(this string d, string contains)
