@@ -4,5 +4,6 @@ public enum ItemGroupTagName
 {
     ProjectReference,
     PackageReference,
-    Compile
+    Compile,
+    None
 }
