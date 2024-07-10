@@ -15,12 +15,12 @@ public class CsprojNsHelper
     {
         bool addTo_linked = true;
 #if DEBUG
-        if (pathCsToAppendElif == @"E:\vs\Projects\sunamoWithoutLocalDep\SunamoData\Data\Date.cs")
+        if (pathCsToAppendElif == @"E:\vs\Projects\PlatformIndependentNuGetPackages\SunamoData\Data\Date.cs")
         {
             // zjistit proč mi stále nedává namespace a ;
         }
 
-        if (pathCsToAppendElif == @"E:\vs\Projects\sunamoWithoutLocalDep\SunamoCollectionsGeneric\CAG.cs")
+        if (pathCsToAppendElif == @"E:\vs\Projects\PlatformIndependentNuGetPackages\SunamoCollectionsGeneric\CAG.cs")
         {
 
         }
@@ -32,12 +32,12 @@ public class CsprojNsHelper
         var c = contentCs ?? (await File.ReadAllLinesAsync(pathCsToAppendElif)).ToList();
 
 #if DEBUG
-        if (pathCsToAppendElif == @"E:\vs\Projects\sunamoWithoutLocalDep\SunamoExceptions\OnlyInSE\Types.cs")
+        if (pathCsToAppendElif == @"E:\vs\Projects\PlatformIndependentNuGetPackages\SunamoExceptions\OnlyInSE\Types.cs")
         {
 
         }
 
-        if (pathCsToAppendElif == @"E:\vs\Projects\sunamoWithoutLocalDep\SunamoArgs\MSSloupecDBArgs.cs")
+        if (pathCsToAppendElif == @"E:\vs\Projects\PlatformIndependentNuGetPackages\SunamoArgs\MSSloupecDBArgs.cs")
         {
 
         }
@@ -120,12 +120,12 @@ public class CsprojNsHelper
             }
 
 #if DEBUG
-            if (pathCsToAppendElif == @"E:\vs\Projects\sunamoWithoutLocalDep\SunamoData\Data\AzureBuildUriArgs.cs")
+            if (pathCsToAppendElif == @"E:\vs\Projects\PlatformIndependentNuGetPackages\SunamoData\Data\AzureBuildUriArgs.cs")
             {
 
             }
 
-            if (pathCsToAppendElif == @"E:\vs\Projects\sunamoWithoutLocalDep\SunamoExceptions\ai\AIWinPi.cs")
+            if (pathCsToAppendElif == @"E:\vs\Projects\PlatformIndependentNuGetPackages\SunamoExceptions\ai\AIWinPi.cs")
             {
                 // mám namespace a na dalším řádku #else
             }
@@ -185,7 +185,7 @@ public class CsprojNsHelper
             await ThrowWhenThereIsNamespaceOutsideOfSharpIf(pathCsToAppendElif, c, AllNamespaces, addTo_linked);
 
 #if DEBUG
-            if (pathCsToAppendElif == @"E:\vs\Projects\sunamoWithoutLocalDep\SunamoEnums\Enums\Langs.cs")
+            if (pathCsToAppendElif == @"E:\vs\Projects\PlatformIndependentNuGetPackages\SunamoEnums\Enums\Langs.cs")
             {
 
             }
@@ -342,7 +342,7 @@ public class CsprojNsHelper
         }
 
 #if DEBUG
-        if (pathCs == @"E:\vs\Projects\sunamoWithoutLocalDep\SunamoData\Data\Date.cs")
+        if (pathCs == @"E:\vs\Projects\PlatformIndependentNuGetPackages\SunamoData\Data\Date.cs")
         {
             // zjistit proč mi stále nedává namespace a ;
         }
@@ -358,15 +358,15 @@ public class CsprojNsHelper
 #if DEBUG
         var containsSharpIf = c.FirstOrDefault(d => d.StartsWith("#if")) != null;
 
-        if (pathCs == @"E:\vs\Projects\sunamoWithoutLocalDep\SunamoData\Data\Date.cs" && c.Count > 30)
+        if (pathCs == @"E:\vs\Projects\PlatformIndependentNuGetPackages\SunamoData\Data\Date.cs" && c.Count > 30)
         {
             // zjistit proč mi stále nedává namespace a ;
         }
-        if (pathCs == @"E:\vs\Projects\sunamoWithoutLocalDep\SunamoData\Data\DirectoriesToDelete.cs" && c.Count > 6)
+        if (pathCs == @"E:\vs\Projects\PlatformIndependentNuGetPackages\SunamoData\Data\DirectoriesToDelete.cs" && c.Count > 6)
         {
 
         }
-        if (pathCs == @"E:\vs\Projects\sunamoWithoutLocalDep\SunamoData\Data\TextFormatData.cs" && containsSharpIf)
+        if (pathCs == @"E:\vs\Projects\PlatformIndependentNuGetPackages\SunamoData\Data\TextFormatData.cs" && containsSharpIf)
         {
 
         }

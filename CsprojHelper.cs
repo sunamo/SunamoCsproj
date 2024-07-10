@@ -203,7 +203,7 @@ public class CsprojHelper : CsprojConsts
         var l = SHGetLines.GetLines(content);
 
 #if DEBUG
-        if (path == @"E:\vs\Projects\sunamoWithoutLocalDep\SunamoPercentCalculator\PercentCalculator.cs")
+        if (path == @"E:\vs\Projects\PlatformIndependentNuGetPackages\SunamoPercentCalculator\PercentCalculator.cs")
         {
 
         }
