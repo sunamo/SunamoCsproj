@@ -7,6 +7,28 @@ namespace SunamoCsproj;
 [Obsolete("everything from here will be converted to CsprojInstance. Don't add a single method here!")]
 public class CsprojHelper : CsprojConsts
 {
+    /// <summary>
+    /// Musí být zde, pracuje s více csproj najednou
+    /// </summary>
+    /// <param name="csprojs"></param>
+    /// <returns></returns>
+    public static async Task<string> DetectDuplicatedProjectAndPackageReferences(List<string> csprojs)
+    {
+        StringBuilder sb = new StringBuilder();
+
+        foreach (var item in csprojs)
+        {
+            var csi = new CsprojInstance(item);
+            var dup = await csi.DetectDuplicatedProjectAndPackageReferences();
+            if (dup.HasDuplicates())
+            {
+                dup.AppendToSb(sb, item);
+            }
+        }
+
+        return sb.ToString();
+    }
+
 
     [Obsolete("everything from here will be converted to CsprojInstance. Don't add a single method here!")]
     public static string CsprojPathFromName(string slnFolder, string fnwoe)

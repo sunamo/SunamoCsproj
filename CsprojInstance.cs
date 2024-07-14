@@ -402,22 +402,7 @@ public class CsprojInstance : CsprojConsts
         return r;
     }
 
-    [Obsolete("everything from here will be converted to CsprojInstance. Don't add a single method here!")]
-    public async Task<string> DetectDuplicatedProjectAndPackageReferences(List<string> csprojs)
-    {
-        StringBuilder sb = new StringBuilder();
 
-        foreach (var item in csprojs)
-        {
-            var dup = await DetectDuplicatedProjectAndPackageReferences();
-            if (dup.HasDuplicates())
-            {
-                dup.AppendToSb(sb, item);
-            }
-        }
-
-        return sb.ToString();
-    }
 
     [Obsolete("everything from here will be converted to CsprojInstance. Don't add a single method here!")]
     public async Task<string> RemoveDuplicatedProjectAndPackageReferences(DuplicatesInItemGroup d)
