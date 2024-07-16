@@ -1,4 +1,5 @@
 namespace SunamoCsproj._sunamo;
+
 internal class SH
 {
     internal static string RemoveAfterFirst(string input, string after)

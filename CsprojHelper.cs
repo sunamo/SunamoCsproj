@@ -1,10 +1,5 @@
 namespace SunamoCsproj;
 
-
-/// <summary>
-/// Zde jsou ty co nepoužívají xd
-/// </summary>
-[Obsolete("everything from here will be converted to CsprojInstance. Don't add a single method here!")]
 public class CsprojHelper : CsprojConsts
 {
     /// <summary>

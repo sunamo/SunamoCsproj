@@ -1,4 +1,5 @@
 namespace SunamoCsproj.Data;
+
 public class ItemGroupElements
 {
     /// <summary>

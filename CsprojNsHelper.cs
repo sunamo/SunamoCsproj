@@ -1,4 +1,5 @@
 namespace SunamoCsproj;
+
 public class CsprojNsHelper
 {
     /// <summary>
