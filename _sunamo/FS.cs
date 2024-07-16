@@ -1,4 +1,4 @@
-//namespace SunamoCsproj._sunamo;
+namespace SunamoCsproj._sunamo;
 
 internal class FS
 {
