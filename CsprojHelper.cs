@@ -2,23 +2,23 @@ namespace SunamoCsproj;
 
 public class CsprojHelper : CsprojConsts
 {
+    public static readonly List<string> classCodeElements = new()
+        { "class ", "interface ", "enum ", "struct ", "delegate " };
+
     /// <summary>
-    /// Musí být zde, pracuje s více csproj najednou
+    ///     Musí být zde, pracuje s více csproj najednou
     /// </summary>
     /// <param name="csprojs"></param>
     /// <returns></returns>
     public static async Task<string> DetectDuplicatedProjectAndPackageReferences(List<string> csprojs)
     {
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
 
         foreach (var item in csprojs)
         {
             var csi = new CsprojInstance(item);
             var dup = await csi.DetectDuplicatedProjectAndPackageReferences();
-            if (dup.HasDuplicates())
-            {
-                dup.AppendToSb(sb, item);
-            }
+            if (dup.HasDuplicates()) dup.AppendToSb(sb, item);
         }
 
         return sb.ToString();
@@ -31,10 +31,7 @@ public class CsprojHelper : CsprojConsts
         //GetCsprojsGlobal.
         var path = Path.Combine(slnFolder, fnwoe, fnwoe + ".csproj");
 
-        if (!File.Exists(path))
-        {
-            ThrowEx.Custom(path + " does not exists!");
-        }
+        if (!File.Exists(path)) ThrowEx.Custom(path + " does not exists!");
 
         return path;
     }
@@ -42,11 +39,10 @@ public class CsprojHelper : CsprojConsts
     [Obsolete("everything from here will be converted to CsprojInstance. Don't add a single method here!")]
     public static async Task AddLinkToCsproj(string target, string source, string csprojPath)
     {
-
     }
 
     /// <summary>
-    /// Vrací cestu k csproj, nikoliv složce
+    ///     Vrací cestu k csproj, nikoliv složce
     /// </summary>
     /// <param name="path"></param>
     /// <param name="slnFolder"></param>
@@ -56,58 +52,40 @@ public class CsprojHelper : CsprojConsts
     {
         if (slnFolder != null)
         {
-            if (!path.StartsWith(slnFolder))
-            {
-                ThrowEx.Custom(path + " Not starting with " + slnFolder);
-            }
+            if (!path.StartsWith(slnFolder)) ThrowEx.Custom(path + " Not starting with " + slnFolder);
 
             path = path.Replace(slnFolder, "");
             var fnwoe = SH.RemoveAfterFirst(path, "\\");
 
             return Path.Combine(slnFolder, fnwoe, fnwoe + ".csproj");
         }
-        else
+
+        var pathCopy = new string(path);
+
+        while (true)
         {
-            string pathCopy = new string(path);
+            path = Path.GetDirectoryName(path);
 
-            while (true)
-            {
-                path = Path.GetDirectoryName(path);
-
-                var csprojs = Directory.GetFiles(path, "*.csproj");
-                if (csprojs.Any())
-                {
-                    return csprojs.First();
-                }
-            }
+            var csprojs = Directory.GetFiles(path, "*.csproj");
+            if (csprojs.Any()) return csprojs.First();
         }
     }
-
-
 
 
     public static async Task RemoveDuplicatedProjectAndPackageReferences(List<string> l)
     {
         foreach (var item in l)
         {
-            CsprojInstance csi = new CsprojInstance(item);
+            var csi = new CsprojInstance(item);
             var xmlContent = await csi.RemoveDuplicatedProjectAndPackageReferences();
             await File.WriteAllTextAsync(item, xmlContent);
         }
     }
 
 
-
-
-
-
-
-
-
-
-
     [Obsolete("everything from here will be converted to CsprojInstance. Don't add a single method here!")]
-    public static async Task<string> ReplaceProjectReferenceForPackageReference(string pathOrContentCsproj, List<string> availableNugetPackages, bool isTests)
+    public static async Task<string> ReplaceProjectReferenceForPackageReference(string pathOrContentCsproj,
+        List<string> availableNugetPackages, bool isTests)
     {
         /*
         Takhle to má být správné
@@ -130,17 +108,13 @@ public class CsprojHelper : CsprojConsts
         akorát jsem smazal původní sunamo.Tests.sln a teď ho musím složitě zase dovytvářet :-(
         */
 
-        if (!pathOrContentCsproj.StartsWith("<") && (pathOrContentCsproj.EndsWith("Tests.csproj") || pathOrContentCsproj.Contains("TestValues")))
-        {
+        if (!pathOrContentCsproj.StartsWith("<") && (pathOrContentCsproj.EndsWith("Tests.csproj") ||
+                                                     pathOrContentCsproj.Contains("TestValues")))
             return await File.ReadAllTextAsync(pathOrContentCsproj);
-        }
-        XmlDocument xd = new XmlDocument();
+        var xd = new XmlDocument();
         if (pathOrContentCsproj.StartsWith("<"))
         {
-            if (isTests)
-            {
-                return pathOrContentCsproj;
-            }
+            if (isTests) return pathOrContentCsproj;
             xd.LoadXml(pathOrContentCsproj);
         }
         else
@@ -148,7 +122,7 @@ public class CsprojHelper : CsprojConsts
             xd.Load(pathOrContentCsproj);
         }
 
-        var versionEl = xd.SelectNodes("/Project/ItemGroup/" + ItemGroupTagName.ProjectReference.ToString());
+        var versionEl = xd.SelectNodes("/Project/ItemGroup/" + ItemGroupTagName.ProjectReference);
 
         var csi = new CsprojInstance(xd);
 
@@ -176,35 +150,28 @@ public class CsprojHelper : CsprojConsts
     }
 
     /// <summary>
-    /// Use RHSE2.SetPropertyToInnerClass
+    ///     Use RHSE2.SetPropertyToInnerClass
     /// </summary>
     /// <param name="contentOrPath"></param>
     /// <returns></returns>
     [Obsolete("everything from here will be converted to CsprojInstance. Don't add a single method here!")]
     public static async Task ParseCsproj(string contentOrPath)
     {
-        if (!contentOrPath.StartsWith("<"))
-        {
-            contentOrPath = await File.ReadAllTextAsync(contentOrPath);
-        }
+        if (!contentOrPath.StartsWith("<")) contentOrPath = await File.ReadAllTextAsync(contentOrPath);
 
-        CsprojData d = new CsprojData();
+        var d = new CsprojData();
 
-        XDocument x = XDocument.Parse(contentOrPath);
+        var x = XDocument.Parse(contentOrPath);
         foreach (var item in x.Root.Descendants())
-        {
             if (item.Name == "PropertyGroup")
             {
                 //RH.SetPropertyToInnerClass(d.PropertyGroup, item.Name, item.Value);
             }
-        }
     }
 
-    public static readonly List<string> classCodeElements = new List<string>() { "class ", "interface ", "enum ", "struct ", "delegate " };
-
     /// <summary>
-    /// v I1 je project name
-    /// v I2 je sanitizované celé NS
+    ///     v I1 je project name
+    ///     v I2 je sanitizované celé NS
     /// </summary>
     /// <param name="content"></param>
     /// <param name="path"></param>
@@ -222,17 +189,13 @@ public class CsprojHelper : CsprojConsts
 #if DEBUG
         if (path == @"E:\vs\Projects\PlatformIndependentNuGetPackages\SunamoPercentCalculator\PercentCalculator.cs")
         {
-
         }
 #endif
 
-        for (int i = 0; i < l.Count; i++)
+        for (var i = 0; i < l.Count; i++)
         {
             var item = l[i];
-            if (classCodeElements.Any(d => item.Contains(d)))
-            {
-                break;
-            }
+            if (classCodeElements.Any(d => item.Contains(d))) break;
 
             if (item.StartsWith("#else"))
             {
@@ -259,15 +222,14 @@ public class CsprojHelper : CsprojConsts
 
                 if (d == "SunamoData")
                 {
-
                 }
+
                 if (d == "SunamoData.Data")
                 {
-
                 }
+
                 if (firstPart == "SunamoText" || d == "SunamoText")
                 {
-
                 }
 #endif
 
@@ -277,8 +239,4 @@ public class CsprojHelper : CsprojConsts
 
         return (null, null);
     }
-
-
-
-
 }

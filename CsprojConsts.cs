@@ -1,4 +1,5 @@
 namespace SunamoCsproj;
+
 public class CsprojConsts
 {
     // Is replaced by ItemGroupTagNme
