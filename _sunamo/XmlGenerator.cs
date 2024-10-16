@@ -144,7 +144,7 @@ internal class XmlGenerator //: IXmlGenerator
     }
     bool IsNulledOrEmpty(string s)
     {
-        if (string.IsNullOrEmpty(s) || s == Consts.nulled)
+        if (string.IsNullOrEmpty(s) || s == "(null)")
         {
             return true;
         }
@@ -177,7 +177,7 @@ internal class XmlGenerator //: IXmlGenerator
             }
         }
         sb.Append(" /");
-        sb.Append(AllStrings.gt);
+        sb.Append("<");
         string r = sb.ToString();
         if (_useStack)
         {
@@ -206,7 +206,7 @@ internal class XmlGenerator //: IXmlGenerator
                 }
             }
         }
-        sb.Append(AllStrings.gt);
+        sb.Append("<");
         string r = sb.ToString();
         if (_useStack)
         {

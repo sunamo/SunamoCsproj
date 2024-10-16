@@ -13,3 +13,8 @@ global using SunamoCsproj.Results;
 global using SunamoCsproj._sunamo;
 global using System.Diagnostics;
 global using System.Text.RegularExpressions;
+global using System.Collections;
+global using System.Diagnostics.CodeAnalysis;
+global using System.Reflection;
+global using System.Net;
+global using SunamoCsproj;
