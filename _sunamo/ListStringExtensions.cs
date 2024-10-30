@@ -1,6 +1,6 @@
+namespace SunamoCsproj._sunamo;
 using SunamoCsproj._sunamo.SunamoStringGetLines;
 
-namespace SunamoCsproj._sunamo;
 internal static class ListStringExtensions
 {
     internal static void InsertMultilineString(this List<string> l, int dx, string toInsert)

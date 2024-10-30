@@ -18,3 +18,4 @@ global using System.Diagnostics.CodeAnalysis;
 global using System.Reflection;
 global using System.Net;
 global using SunamoCsproj;
+global using SunamoCsproj._sunamo.SunamoStringGetLines;

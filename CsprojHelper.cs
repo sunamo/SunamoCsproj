@@ -1,6 +1,5 @@
-using SunamoCsproj._sunamo.SunamoStringGetLines;
-
 namespace SunamoCsproj;
+using SunamoCsproj._sunamo.SunamoStringGetLines;
 
 public class CsprojHelper : CsprojConsts
 {
