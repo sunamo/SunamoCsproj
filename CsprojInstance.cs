@@ -51,6 +51,12 @@ public class CsprojInstance : CsprojConsts
         AddXmlElementToItemGroupOrCreate(newEl);
     }
 
+    public void RemovePropertyGroupItem(string tag)
+    {
+        var node = xd.SelectSingleNode("/Project/PropertyGroup/" + tag);
+        node?.ParentNode?.RemoveChild(node);
+    }
+
     public string AddPropertyGroupItemIfNotExists(string key, string csprojPath)
     {
         var desc = PropertyGroupItemContent(key);
@@ -362,7 +368,8 @@ public class CsprojInstance : CsprojConsts
 
         var r = new DuplicatesInItemGroup
         {
-            DuplicatedPackages = duplicatedPackages, DuplicatedProjects = duplicatedProjects,
+            DuplicatedPackages = duplicatedPackages,
+            DuplicatedProjects = duplicatedProjects,
             ExistsInPackageAndProjectReferences = both
         };
         var dd = r.HasDuplicates();
