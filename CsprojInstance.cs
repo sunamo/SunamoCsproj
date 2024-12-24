@@ -189,7 +189,7 @@ public partial class CsprojInstance : CsprojConsts
 
     public string AddRemoveDefineConstant(bool add, string defineConstant)
     {
-        return AddRemovePropertyGroupItem(add, "DefineConstant", defineConstant);
+        return AddRemovePropertyGroupItem(add, "DefineConstants", defineConstant);
     }
 
     public string AddRemovePropertyGroupItem(bool add, string tag, string partValue)
@@ -201,12 +201,17 @@ public partial class CsprojInstance : CsprojConsts
 
         foreach (XmlElement item2 in nodes)
         {
-
-
             var isRelease = false;
             var isDebug = false;
 
-            var d = XmlHelper.GetAttributeWithNameValue(item2, "Condition").Replace(" ", "");
+            var condition = XmlHelper.GetAttributeWithNameValue(item2, "Condition");
+
+            if (condition == null)
+            {
+                continue;
+            }
+
+            var d = condition.Replace(" ", "");
             if (d == Release)
                 isRelease = true;
             else if (d == Debug) isDebug = true;
