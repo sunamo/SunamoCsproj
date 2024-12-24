@@ -4,7 +4,7 @@ namespace SunamoCsproj;
 ///     Zde jsou ty co používají xd
 ///     Už tu nic nepřidávat, vše už jen do
 /// </summary>
-public class CsprojInstance : CsprojConsts
+public partial class CsprojInstance : CsprojConsts
 {
     public string PathFs;
 
@@ -74,10 +74,7 @@ public class CsprojInstance : CsprojConsts
         return desc;
     }
 
-    public void Save()
-    {
-        xd.Save(PathFs);
-    }
+
 
     public string PropertyGroupItemContent(string tag)
     {
@@ -197,26 +194,66 @@ public class CsprojInstance : CsprojConsts
 
     public string AddRemovePropertyGroupItem(bool add, string tag, string partValue)
     {
-        var nodes = xd.SelectNodes("/Project/PropertyGroup/" + tag);
+        var nodes = xd.SelectNodes("/Project/PropertyGroup");
 
-        var isRelease = false;
-        var isDebug = false;
+        var isReleaseGlobal = false;
+        var isDebugGlobal = false;
 
         foreach (XmlElement item2 in nodes)
         {
-            var d = XmlHelper.GetAttributeWithNameValue(item2.ParentNode, "Condition");
+
+
+            var isRelease = false;
+            var isDebug = false;
+
+            var d = XmlHelper.GetAttributeWithNameValue(item2, "Condition");
             if (d == Release)
                 isRelease = true;
             else if (d == Debug) isDebug = true;
 
-            item2.InnerXml = OnOff(item2.InnerXml, add, partValue);
+            if (isDebug && isDebugGlobal)
+            {
+                continue;
+            }
+
+            if (isRelease && isReleaseGlobal)
+            {
+                continue;
+            }
+
+            if (isDebug || isRelease)
+            {
+                var ch = item2.ChildNodes;
+
+                var singleNode = item2.SelectSingleNode(tag);
+
+                if (singleNode != null)
+                {
+                    singleNode.InnerXml = OnOff(singleNode.InnerXml, add, partValue);
+                }
+                else
+                {
+                    var project = xd.SelectSingleNode("/Project");
+
+                    AddPropertyGroupItemElement(xd, isRelease ? Release : Debug, add, partValue, tag, project, item2);
+                }
+
+                if (isDebug)
+                {
+                    isDebugGlobal = true;
+                }
+                else if (isRelease)
+                {
+                    isReleaseGlobal = true;
+                }
+            }
         }
 
 
         // First must be debug due to unit tests
-        if (!isDebug) AddPropertyGroupItemToProject(xd, Debug, add, partValue, tag);
+        if (!isDebugGlobal) AddPropertyGroupItemToProject(xd, Debug, add, partValue, tag);
 
-        if (!isRelease) AddPropertyGroupItemToProject(xd, Release, add, partValue, tag);
+        if (!isReleaseGlobal) AddPropertyGroupItemToProject(xd, Release, add, partValue, tag);
 
         return XHelper.FormatXmlInMemory(xd.OuterXml);
     }
@@ -234,6 +271,11 @@ public class CsprojInstance : CsprojConsts
             parts.Remove(defineConstant);
         }
 
+        if (parts.Count == 1)
+        {
+            return parts[0];
+        }
+
         return string.Join(';', parts);
     }
 
@@ -242,22 +284,27 @@ public class CsprojInstance : CsprojConsts
     ///     '$(Configuration)|$(Platform)'=='Debug|AnyCPU'
     /// </summary>
     /// <param name="xd"></param>
-    /// <param name="innerAttrValue"></param>
+    /// <param name="innerAttrValueCondition"></param>
     /// <param name="add"></param>
     /// <param name="defineConstantValue"></param>
-    private static void AddPropertyGroupItemToProject(XmlDocument xd, string innerAttrValue, bool add,
+    private static void AddPropertyGroupItemToProject(XmlDocument xd, string innerAttrValueCondition, bool add,
         string defineConstantValue, string tag)
     {
         var project = xd.SelectSingleNode("/Project");
 
         var propertyGroup = xd.CreateNode(XmlNodeType.Element, PropertyGroup, null);
+        AddPropertyGroupItemElement(xd, innerAttrValueCondition, add, defineConstantValue, tag, project, propertyGroup);
+    }
+
+    private static void AddPropertyGroupItemElement(XmlDocument xd, string innerAttrValueCondition, bool add, string defineConstantValue, string tag, XmlNode? project, XmlNode propertyGroup)
+    {
         var defineConstant = xd.CreateNode(XmlNodeType.Element, tag, null);
 
         defineConstant.InnerXml = (tag == DefineConstants ? DefineConstantsInner + ";" : "") + (add ? defineConstantValue : "");
         propertyGroup.AppendChild(defineConstant);
 
         var propertyGroupConditionAttr = xd.CreateAttribute(Condition);
-        propertyGroupConditionAttr.Value = innerAttrValue;
+        propertyGroupConditionAttr.Value = innerAttrValueCondition;
 
         propertyGroup.Attributes.Append(propertyGroupConditionAttr);
 
