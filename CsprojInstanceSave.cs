@@ -11,7 +11,30 @@ partial class CsprojInstance
     {
         JoinMultiPropertyGroupToOne();
 
+        RemoveDuplicatedInNoWarnAndDefineConstant();
+
         xd.Save(PathFs);
+    }
+
+    private void RemoveDuplicatedInNoWarnAndDefineConstant()
+    {
+        var defineConstants = xd.SelectNodes("//DefineConstants");
+        var noWarn = xd.SelectNodes("//NoWarn");
+
+        RemoveDuplicated(defineConstants);
+        RemoveDuplicated(noWarn);
+
+    }
+
+    private void RemoveDuplicated(XmlNodeList? noWarn)
+    {
+        foreach (XmlNode item in noWarn)
+        {
+            var inner = item.InnerXml;
+            var parts = inner.Split(';').Distinct().ToList();
+
+            item.InnerXml = string.Join(';', parts);
+        }
     }
 
     private void JoinMultiPropertyGroupToOne()
