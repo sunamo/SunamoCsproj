@@ -362,9 +362,6 @@ public partial class CsprojInstance : CsprojConsts
     /// <summary>
     ///     Nepotřebuji tu vracet XmlDocument, je v každém vráceném prvku.OwnerDocument
     /// </summary>
-    /// <param name="tagName"></param>
-    /// <param name="pathOrContentCsproj"></param>
-    /// <returns></returns>
     public List<ItemGroupElement> ItemsInItemGroup(ItemGroupTagName tagName)
     {
         var itemsInItemGroup = xd.SelectNodes("/Project/ItemGroup/" + tagName);

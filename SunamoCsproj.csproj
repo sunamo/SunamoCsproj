@@ -3,9 +3,9 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>24.12.24.5</Version>
+    <Version>24.12.24.6</Version>
     <Description>Working with csprojs at one package</Description>
-    <PackageReleaseNotes>Deduplicate before saving </PackageReleaseNotes>
+    <PackageReleaseNotes>Clean code</PackageReleaseNotes>
     <Authors>www.sunamo.cz</Authors>
     <Copyright>www.sunamo.cz</Copyright>
     <PackageProjectUrl>https://sunamo.cz/</PackageProjectUrl>
