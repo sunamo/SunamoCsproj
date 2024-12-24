@@ -5,8 +5,7 @@ using SunamoCsproj._sunamo.SunamoStringGetLines;
 
 public class CsprojHelper : CsprojConsts
 {
-    public static readonly List<string> classCodeElements = new()
-        { "class ", "interface ", "enum ", "struct ", "delegate " };
+    public static readonly List<string> classCodeElements = ["class ", "interface ", "enum ", "struct ", "delegate "];
 
     /// <summary>
     ///     Musí být zde, pracuje s více csproj najednou

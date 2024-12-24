@@ -5,7 +5,7 @@ public class ItemGroupElements
     /// <summary>
     /// V�echny package references
     /// </summary>
-    public List<ItemGroupElement> list = new List<ItemGroupElement>();
+    public List<ItemGroupElement> list = [];
 
     /// <summary>
     /// A1 = Seznam kter� m� m�t v�echno v 1. lize
@@ -14,7 +14,7 @@ public class ItemGroupElements
     /// <returns></returns>
     public List<string> HaveOnlyDepsFromList(List<string> deps)
     {
-        List<string> result = new List<string>();
+        List<string> result = [];
         foreach (var item in list)
         {
             if (!deps.Contains(item.Include))

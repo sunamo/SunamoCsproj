@@ -41,8 +41,8 @@ partial class CsprojInstance
     {
         var nodes = xd.SelectNodes("/Project/PropertyGroup");
 
-        List<XmlNode> debug = new();
-        List<XmlNode> release = new();
+        List<XmlNode> debug = [];
+        List<XmlNode> release = [];
 
         foreach (XmlNode item in nodes)
         {
@@ -66,7 +66,7 @@ partial class CsprojInstance
 
     private void JoinMultiPropertyGroupToOneWorker(List<XmlNode> debug)
     {
-        Dictionary<string, string> elements = new();
+        Dictionary<string, string> elements = [];
 
         foreach (var item in debug)
         {
@@ -78,10 +78,7 @@ partial class CsprojInstance
 
         foreach (var item in debug)
         {
-            if (item.ParentNode != null)
-            {
-                item.ParentNode.RemoveChild(item);
-            }
+            item.ParentNode?.RemoveChild(item);
         }
 
         foreach (var item in elements)

@@ -59,13 +59,13 @@ public partial class CsprojInstance : CsprojConsts
 
 
 
-    public string AddPropertyGroupItemIfNotExists(string key, string csprojPath)
+    public string AddPropertyGroupItemIfNotExists(string key)
     {
         var desc = PropertyGroupItemContent(key);
 
         if (desc == null)
         {
-            Console.WriteLine($"Enter new {key} for " + Path.GetFileNameWithoutExtension(csprojPath));
+            Console.WriteLine($"Enter new {key} for " + Path.GetFileNameWithoutExtension(PathFs));
             desc = Console.ReadLine();
 
             AddOrEditPropertyGroupItem(key, desc);
@@ -86,7 +86,7 @@ public partial class CsprojInstance : CsprojConsts
     public void RemoveSingleItemGroup(string attrValue, ItemGroupTagName tagName)
     {
         var t = xd.SelectSingleNode($"/Project/ItemGroup/{tagName}[@{Include} = '{attrValue}']");
-        if (t != null) t.ParentNode?.RemoveChild(t);
+        t?.ParentNode?.RemoveChild(t);
     }
 
     public void CreateElementInPropertyGroupWhichDoesNotExists()
@@ -240,7 +240,7 @@ public partial class CsprojInstance : CsprojConsts
                 {
                     var project = xd.SelectSingleNode("/Project");
 
-                    AddPropertyGroupItemElement(xd, isRelease ? Release : Debug, add, partValue, tag, project, item2);
+                    AddPropertyGroupItemElement(xd, isRelease ? Release : Debug, add, partValue, tag, project, item2, []);
                 }
 
                 if (isDebug)
@@ -256,14 +256,14 @@ public partial class CsprojInstance : CsprojConsts
 
 
         // First must be debug due to unit tests
-        if (!isDebugGlobal) AddPropertyGroupItemToProject(xd, Debug, add, partValue, tag);
+        if (!isDebugGlobal) AddPropertyGroupItemToProject(xd, Debug, add, partValue, tag, []);
 
-        if (!isReleaseGlobal) AddPropertyGroupItemToProject(xd, Release, add, partValue, tag);
+        if (!isReleaseGlobal) AddPropertyGroupItemToProject(xd, Release, add, partValue, tag, []);
 
         return XHelper.FormatXmlInMemory(xd.OuterXml);
     }
 
-    private static string OnOff(string innerXml, bool add, string defineConstant)
+    private string OnOff(string innerXml, bool add, string defineConstant)
     {
         var parts = innerXml.Split(';').ToList();
 
@@ -292,18 +292,26 @@ public partial class CsprojInstance : CsprojConsts
     /// <param name="innerAttrValueCondition"></param>
     /// <param name="add"></param>
     /// <param name="defineConstantValue"></param>
-    private static void AddPropertyGroupItemToProject(XmlDocument xd, string innerAttrValueCondition, bool add,
-        string defineConstantValue, string tag)
+    private void AddPropertyGroupItemToProject(XmlDocument xd, string innerAttrValueCondition, bool add,
+        string defineConstantValue, string tag, Dictionary<string, Dictionary<string, string>> forceValueForKey)
     {
         var project = xd.SelectSingleNode("/Project");
 
         var propertyGroup = xd.CreateNode(XmlNodeType.Element, PropertyGroup, null);
-        AddPropertyGroupItemElement(xd, innerAttrValueCondition, add, defineConstantValue, tag, project, propertyGroup);
+        AddPropertyGroupItemElement(xd, innerAttrValueCondition, add, defineConstantValue, tag, project, propertyGroup, forceValueForKey);
     }
 
-    private static void AddPropertyGroupItemElement(XmlDocument xd, string innerAttrValueCondition, bool add, string defineConstantValue, string tag, XmlNode? project, XmlNode propertyGroup)
+    private void AddPropertyGroupItemElement(XmlDocument xd, string innerAttrValueCondition, bool add, string defineConstantValue, string tag, XmlNode? project, XmlNode propertyGroup, Dictionary<string, Dictionary<string, string>> forceValueForKey)
     {
         var defineConstant = xd.CreateNode(XmlNodeType.Element, tag, null);
+
+        if (forceValueForKey.TryGetValue(Path.GetFileNameWithoutExtension(PathFs), out var forceValueForKeyDict))
+        {
+            if (forceValueForKeyDict.TryGetValue(tag, out var forceValue))
+            {
+                defineConstantValue = forceValue;
+            }
+        }
 
         defineConstant.InnerXml = (tag == DefineConstants ? DefineConstantsInner + ";" : "") + (add ? defineConstantValue : "");
         propertyGroup.AppendChild(defineConstant);
@@ -339,7 +347,7 @@ public partial class CsprojInstance : CsprojConsts
     }
 
 
-    public static List<ItemGroupElement> FilterByAttrAndContains(List<ItemGroupElement> l, string attr,
+    public List<ItemGroupElement> FilterByAttrAndContains(List<ItemGroupElement> l, string attr,
         string mustContains)
     {
         return l.Where(d =>

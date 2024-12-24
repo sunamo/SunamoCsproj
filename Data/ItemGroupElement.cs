@@ -10,7 +10,7 @@ public class ItemGroupElement
 
     public override string ToString()
     {
-        List<string> ls = new List<string>();
+        List<string> ls = [];
         if (Include != null)
         {
             ls.Add(CsprojConsts.Include);

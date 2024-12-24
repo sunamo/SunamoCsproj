@@ -30,7 +30,7 @@ internal class SH
 
     internal static List<int> GetIndexesOfLinesWhichContainsAnyOfStrings(List<string> list, List<string> whichMustContains)
     {
-        List<int> result = new List<int>();
+        List<int> result = [];
         for (int i = 0; i < list.Count; i++)
         {
             if (whichMustContains.Contains(list[i]))

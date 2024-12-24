@@ -26,6 +26,7 @@ internal class XmlHelper
     /// <returns></returns>
     internal static List<XmlNode> ChildNodes(XmlNode xml)
     {
+#pragma warning disable IDE0090
         // TODO: až přilinkuji SunamoExtensions tak .COunt
         List<XmlNode> result = new List<XmlNode>();
 
@@ -33,7 +34,7 @@ internal class XmlHelper
         {
             result.Add(item);
         }
-
+#pragma warning restore IDE0090
         return result;
     }
 

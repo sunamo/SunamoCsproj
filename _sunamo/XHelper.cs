@@ -4,7 +4,7 @@ internal class XHelper
 {
     internal static Dictionary<string, string> XmlNamespaces(XmlNamespaceManager nsmgr, bool withPrexixedXmlnsColon)
     {
-        Dictionary<string, string> ns = new Dictionary<string, string>();
+        Dictionary<string, string> ns = [];
         foreach (string item2 in nsmgr)
         {
             var item = item2;
