@@ -212,15 +212,11 @@ public class CsprojInstance : CsprojConsts
             item2.InnerXml = OnOff(item2.InnerXml, add, partValue);
         }
 
-        if (isDebug || isRelease)
-        {
-            throw new Exception("Zde to bude dojebané. AddPropertyGroupItemToProject nutno ještě přizpůsobit.");
-        }
 
         // First must be debug due to unit tests
-        if (!isDebug) AddPropertyGroupItemToProject(xd, Debug, add, partValue);
+        if (!isDebug) AddPropertyGroupItemToProject(xd, Debug, add, partValue, tag);
 
-        if (!isRelease) AddPropertyGroupItemToProject(xd, Release, add, partValue);
+        if (!isRelease) AddPropertyGroupItemToProject(xd, Release, add, partValue, tag);
 
         return XHelper.FormatXmlInMemory(xd.OuterXml);
     }
@@ -250,14 +246,14 @@ public class CsprojInstance : CsprojConsts
     /// <param name="add"></param>
     /// <param name="defineConstantValue"></param>
     private static void AddPropertyGroupItemToProject(XmlDocument xd, string innerAttrValue, bool add,
-        string defineConstantValue)
+        string defineConstantValue, string tag)
     {
         var project = xd.SelectSingleNode("/Project");
 
         var propertyGroup = xd.CreateNode(XmlNodeType.Element, PropertyGroup, null);
-        var defineConstant = xd.CreateNode(XmlNodeType.Element, DefineConstants, null);
+        var defineConstant = xd.CreateNode(XmlNodeType.Element, tag, null);
 
-        defineConstant.InnerXml = DefineConstantsInner + (add ? ";" + defineConstantValue : "");
+        defineConstant.InnerXml = (tag == DefineConstants ? DefineConstantsInner + ";" : "") + (add ? defineConstantValue : "");
         propertyGroup.AppendChild(defineConstant);
 
         var propertyGroupConditionAttr = xd.CreateAttribute(Condition);
