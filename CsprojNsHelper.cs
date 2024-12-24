@@ -260,7 +260,7 @@ public class CsprojNsHelper
         }
 
         var first = allLinesBefore.FirstOrDefault(d => d.StartsWith("#if"));
-        if (first == null) ThrowEx.Custom("#if was not found");
+        if (first == null) throw new Exception("#if was not found");
         var dxIf = allLinesBefore.IndexOf(first);
         if (dxIf != -1)
         {
@@ -271,7 +271,8 @@ public class CsprojNsHelper
         }
 
         var firstElse = allLinesBefore.FirstOrDefault(d => d.StartsWith("#else"));
-        if (firstElse == null) ThrowEx.Custom("#else was not found");
+        if (firstElse == null)
+            throw new Exception("#else was not found");
         var dxElse = allLinesBefore.IndexOf(firstElse);
         if (dxElse != -1)
         {
