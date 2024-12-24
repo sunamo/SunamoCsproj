@@ -57,6 +57,8 @@ public class CsprojInstance : CsprojConsts
         node?.ParentNode?.RemoveChild(node);
     }
 
+
+
     public string AddPropertyGroupItemIfNotExists(string key, string csprojPath)
     {
         var desc = PropertyGroupItemContent(key);
@@ -183,7 +185,17 @@ public class CsprojInstance : CsprojConsts
         }
     }
 
+    public string AddRemoveNoWarn(bool add, string warn)
+    {
+        return AddRemovePropertyGroupItem(add, "NoWarn", warn);
+    }
+
     public string AddRemoveDefineConstant(bool add, string defineConstant)
+    {
+        return AddRemovePropertyGroupItem(add, "DefineConstant", defineConstant);
+    }
+
+    public string AddRemovePropertyGroupItem(bool add, string tag, string partValue)
     {
         //XmlDocument xd = new XmlDocument();
         //try
@@ -196,7 +208,7 @@ public class CsprojInstance : CsprojConsts
         //    return null;
         //}
 
-        var nodes = xd.SelectNodes("/Project/PropertyGroup/DefineConstants");
+        var nodes = xd.SelectNodes("/Project/PropertyGroup/" + tag);
 
         var isRelease = false;
         var isDebug = false;
@@ -208,13 +220,18 @@ public class CsprojInstance : CsprojConsts
                 isRelease = true;
             else if (d == Debug) isDebug = true;
 
-            item2.InnerXml = OnOff(item2.InnerXml, add, defineConstant);
+            item2.InnerXml = OnOff(item2.InnerXml, add, partValue);
+        }
+
+        if (isDebug || isRelease)
+        {
+            throw new Exception("Zde to bude dojebané. AddPropertyGroupItemToProject nutno ještě přizpůsobit.");
         }
 
         // First must be debug due to unit tests
-        if (!isDebug) AddPropertyGroupItemToProject(xd, Debug, add, defineConstant);
+        if (!isDebug) AddPropertyGroupItemToProject(xd, Debug, add, partValue);
 
-        if (!isRelease) AddPropertyGroupItemToProject(xd, Release, add, defineConstant);
+        if (!isRelease) AddPropertyGroupItemToProject(xd, Release, add, partValue);
 
         return XHelper.FormatXmlInMemory(xd.OuterXml);
     }
