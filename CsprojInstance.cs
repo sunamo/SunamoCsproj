@@ -197,17 +197,6 @@ public class CsprojInstance : CsprojConsts
 
     public string AddRemovePropertyGroupItem(bool add, string tag, string partValue)
     {
-        //XmlDocument xd = new XmlDocument();
-        //try
-        //{
-        //    xd.LoadXml(content);
-        //}
-        //catch (Exception)
-        //{
-        //    Console.WriteLine("Error! Probably not valid xml! " + content);
-        //    return null;
-        //}
-
         var nodes = xd.SelectNodes("/Project/PropertyGroup/" + tag);
 
         var isRelease = false;
