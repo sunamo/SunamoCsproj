@@ -206,7 +206,7 @@ public partial class CsprojInstance : CsprojConsts
             var isRelease = false;
             var isDebug = false;
 
-            var d = XmlHelper.GetAttributeWithNameValue(item2, "Condition");
+            var d = XmlHelper.GetAttributeWithNameValue(item2, "Condition").Replace(" ", "");
             if (d == Release)
                 isRelease = true;
             else if (d == Debug) isDebug = true;
@@ -324,10 +324,6 @@ public partial class CsprojInstance : CsprojConsts
     /// <summary>
     ///     Protože mám často null v hodnotách kde mi čisté where selže, je tu tato metdoa
     /// </summary>
-    /// <param name="tagName"></param>
-    /// <param name="attr"></param>
-    /// <param name="mustContains"></param>
-    /// <param name="pathCsproj"></param>
     /// <returns></returns>
     public List<ItemGroupElement> GetAllItemsInItemGroupWhichContainsInInclude(ItemGroupTagName tagName, string attr,
         string mustContains)

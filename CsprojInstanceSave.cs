@@ -46,7 +46,7 @@ partial class CsprojInstance
 
         foreach (XmlNode item in nodes)
         {
-            var d = XmlHelper.GetAttributeWithNameValue(item, "Condition");
+            var d = XmlHelper.GetAttributeWithNameValue(item, "Condition").Replace(" ", "");
             if (d == Release)
                 release.Add(item);
             else if (d == Debug)
