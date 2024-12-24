@@ -1,6 +1,8 @@
 namespace SunamoCsproj;
 using SunamoCsproj._sunamo.SunamoStringGetLines;
 
+#pragma warning disable CS1998
+
 public class CsprojHelper : CsprojConsts
 {
     public static readonly List<string> classCodeElements = new()
@@ -241,3 +243,4 @@ public class CsprojHelper : CsprojConsts
         return (null, null);
     }
 }
+#pragma warning restore
