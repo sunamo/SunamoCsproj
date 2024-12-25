@@ -76,7 +76,7 @@ public partial class CsprojInstance : CsprojConsts
 
 
 
-    public string PropertyGroupItemContent(string tag)
+    public string? PropertyGroupItemContent(string tag)
     {
         var s = xd.SelectSingleNode("/Project/PropertyGroup/" + tag);
         if (s == null) return null;

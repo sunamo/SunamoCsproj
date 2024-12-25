@@ -34,7 +34,7 @@ public class ItemGroupElement
         return xd.ToString();
     }
 
-    public static ItemGroupElement Parse(XmlNode item)
+    public static ItemGroupElement? Parse(XmlNode item)
     {
         var tagName = item.Name;
         if (!Enum.TryParse<ItemGroupTagName>(tagName, false, out var itemGroupTagName))
