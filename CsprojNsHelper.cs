@@ -163,7 +163,7 @@ public class CsprojNsHelper
 
             var ts = sb.ToString();
 
-            if (!dx.Any())
+            if (dx.Count == 0)
             {
                 c.InsertMultilineString(0, ts);
             }
@@ -282,7 +282,7 @@ public class CsprojNsHelper
                 ThrowEx.Custom($"On index {dxElse + 1} is not namespace but should be after #else");
         }
 
-        if (dxNs.Any())
+        if (dxNs.Count != 0)
             ThrowEx.Custom(
                 "Byly vyřazeny všechny namespace po #if nebo #elif. Přesto stále existují NS na těchto indexech: " +
                 string.Join(',', dxNs.ConvertAll(d => d.ToString())));

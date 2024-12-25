@@ -68,7 +68,7 @@ public partial class CsprojInstance : CsprojConsts
             Console.WriteLine($"Enter new {key} for " + Path.GetFileNameWithoutExtension(PathFs));
             desc = Console.ReadLine();
 
-            AddOrEditPropertyGroupItem(key, desc);
+            AddOrEditPropertyGroupItem(key, desc, new());
         }
 
         return desc;
@@ -87,11 +87,6 @@ public partial class CsprojInstance : CsprojConsts
     {
         var t = xd.SelectSingleNode($"/Project/ItemGroup/{tagName}[@{Include} = '{attrValue}']");
         t?.ParentNode?.RemoveChild(t);
-    }
-
-    public void CreateElementInPropertyGroupWhichDoesNotExists()
-    {
-        // Používat na to MSBuild jako mám v MsBuildTarget
     }
 
     public XmlElement CreateNewPackageReference(string include, string version)
@@ -166,9 +161,11 @@ public partial class CsprojInstance : CsprojConsts
         return AddRemoveDefineConstant(add, ASYNC);
     }
 
-    public void AddOrEditPropertyGroupItem(string tag, string content)
+    public void AddOrEditPropertyGroupItem(string tag, string content, Dictionary<string, Dictionary<string, string>> forceValueForKey)
     {
         var versionEl = xd.SelectSingleNode("/Project/PropertyGroup/" + tag);
+
+        content = SetValueByDict(content, tag, forceValueForKey);
 
         if (versionEl != null)
         {
@@ -304,14 +301,7 @@ public partial class CsprojInstance : CsprojConsts
     private void AddPropertyGroupItemElement(XmlDocument xd, string innerAttrValueCondition, bool add, string defineConstantValue, string tag, XmlNode? project, XmlNode propertyGroup, Dictionary<string, Dictionary<string, string>> forceValueForKey)
     {
         var defineConstant = xd.CreateNode(XmlNodeType.Element, tag, null);
-
-        if (forceValueForKey.TryGetValue(Path.GetFileNameWithoutExtension(PathFs), out var forceValueForKeyDict))
-        {
-            if (forceValueForKeyDict.TryGetValue(tag, out var forceValue))
-            {
-                defineConstantValue = forceValue;
-            }
-        }
+        defineConstantValue = SetValueByDict(defineConstantValue, tag, forceValueForKey);
 
         defineConstant.InnerXml = (tag == DefineConstants ? DefineConstantsInner + ";" : "") + (add ? defineConstantValue : "");
         propertyGroup.AppendChild(defineConstant);
@@ -323,6 +313,19 @@ public partial class CsprojInstance : CsprojConsts
 
 
         project.AppendChild(propertyGroup);
+    }
+
+    private string SetValueByDict(string defineConstantValue, string tag, Dictionary<string, Dictionary<string, string>> forceValueForKey)
+    {
+        if (forceValueForKey.TryGetValue(Path.GetFileNameWithoutExtension(PathFs), out var forceValueForKeyDict))
+        {
+            if (forceValueForKeyDict.TryGetValue(tag, out var forceValue))
+            {
+                defineConstantValue = forceValue;
+            }
+        }
+
+        return defineConstantValue;
     }
 
     public void RemoveItemsFromItemGroupWithAttr(ItemGroupTagName tagName, string v)
@@ -363,7 +366,7 @@ public partial class CsprojInstance : CsprojConsts
         var items = ItemsInItemGroup(tagName);
         items = FilterByAttrAndContains(items, attr, mustContains);
 
-        if (items.Any())
+        if (items.Count != 0)
             foreach (var item in items)
                 item.XmlNode.ParentNode.RemoveChild(item.XmlNode);
     }
