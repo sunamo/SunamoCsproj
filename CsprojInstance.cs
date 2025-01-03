@@ -57,8 +57,6 @@ public partial class CsprojInstance : CsprojConsts
         node?.ParentNode?.RemoveChild(node);
     }
 
-
-
     public string AddPropertyGroupItemIfNotExists(string key)
     {
         var desc = PropertyGroupItemContent(key);
@@ -161,7 +159,7 @@ public partial class CsprojInstance : CsprojConsts
         return AddRemoveDefineConstant(add, ASYNC);
     }
 
-    public void AddOrEditPropertyGroupItem(string tag, string content, Dictionary<string, Dictionary<string, string>> forceValueForKey)
+    public void AddOrEditPropertyGroupItem(string tag, string content, ForceValueForKey forceValueForKey)
     {
         var versionEl = xd.SelectSingleNode("/Project/PropertyGroup/" + tag);
 
@@ -290,7 +288,7 @@ public partial class CsprojInstance : CsprojConsts
     /// <param name="add"></param>
     /// <param name="defineConstantValue"></param>
     private void AddPropertyGroupItemToProject(XmlDocument xd, string innerAttrValueCondition, bool add,
-        string defineConstantValue, string tag, Dictionary<string, Dictionary<string, string>> forceValueForKey)
+        string defineConstantValue, string tag, ForceValueForKey forceValueForKey)
     {
         var project = xd.SelectSingleNode("/Project");
 
@@ -298,7 +296,7 @@ public partial class CsprojInstance : CsprojConsts
         AddPropertyGroupItemElement(xd, innerAttrValueCondition, add, defineConstantValue, tag, project, propertyGroup, forceValueForKey);
     }
 
-    private void AddPropertyGroupItemElement(XmlDocument xd, string innerAttrValueCondition, bool add, string defineConstantValue, string tag, XmlNode? project, XmlNode propertyGroup, Dictionary<string, Dictionary<string, string>> forceValueForKey)
+    private void AddPropertyGroupItemElement(XmlDocument xd, string innerAttrValueCondition, bool add, string defineConstantValue, string tag, XmlNode? project, XmlNode propertyGroup, ForceValueForKey forceValueForKey)
     {
         var defineConstant = xd.CreateNode(XmlNodeType.Element, tag, null);
         defineConstantValue = SetValueByDict(defineConstantValue, tag, forceValueForKey);
@@ -315,7 +313,7 @@ public partial class CsprojInstance : CsprojConsts
         project.AppendChild(propertyGroup);
     }
 
-    private string SetValueByDict(string defineConstantValue, string tag, Dictionary<string, Dictionary<string, string>> forceValueForKey)
+    private string SetValueByDict(string defineConstantValue, string tag, ForceValueForKey forceValueForKey)
     {
         if (forceValueForKey.TryGetValue(Path.GetFileNameWithoutExtension(PathFs), out var forceValueForKeyDict))
         {
