@@ -3,9 +3,9 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>25.1.3.1</Version>
+    <Version>25.1.3.2</Version>
     <Description>Working with csprojs at one package</Description>
-    <PackageReleaseNotes>Added class</PackageReleaseNotes>
+    <PackageReleaseNotes>Added comment</PackageReleaseNotes>
     <Authors>www.sunamo.cz</Authors>
     <Copyright>www.sunamo.cz</Copyright>
     <PackageProjectUrl>https://sunamo.cz/</PackageProjectUrl>
