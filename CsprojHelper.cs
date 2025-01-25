@@ -188,12 +188,6 @@ public class CsprojHelper : CsprojConsts
         // zjistit zda tu mám SunamoPercentCalculator a pokud ne, proč?
         var l = SHGetLines.GetLines(content);
 
-#if DEBUG
-        if (path == @"E:\vs\Projects\PlatformIndependentNuGetPackages\SunamoPercentCalculator\PercentCalculator.cs")
-        {
-        }
-#endif
-
         for (var i = 0; i < l.Count; i++)
         {
             var item = l[i];

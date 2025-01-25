@@ -20,31 +20,13 @@ public class CsprojNsHelper
         List<string> contentCs, List<string> AllNamespaces)
     {
         var addTo_linked = true;
-#if DEBUG
-        if (pathCsToAppendElif == @"E:\vs\Projects\PlatformIndependentNuGetPackages\SunamoData\Data\Date.cs")
-        {
-            // zjistit proč mi stále nedává namespace a ;
-        }
-
-        if (pathCsToAppendElif == @"E:\vs\Projects\PlatformIndependentNuGetPackages\SunamoCollectionsGeneric\CAG.cs")
-        {
-        }
-#endif
 
         var isCsFiles = reallyOccuredInFilesOrProjectNames.First().EndsWith(".cs");
         var reallyOccuredInFiles = reallyOccuredInFilesOrProjectNames.ToList();
 
         var c = contentCs ?? (await File.ReadAllLinesAsync(pathCsToAppendElif)).ToList();
 
-#if DEBUG
-        if (pathCsToAppendElif == @"E:\vs\Projects\PlatformIndependentNuGetPackages\SunamoExceptions\OnlyInSE\Types.cs")
-        {
-        }
 
-        if (pathCsToAppendElif == @"E:\vs\Projects\PlatformIndependentNuGetPackages\SunamoArgs\MSSloupecDBArgs.cs")
-        {
-        }
-#endif
 
         var result = await ParseSharpIfToFirstCodeElement(pathCsToAppendElif, contentCs, AllNamespaces, addTo_linked);
 
@@ -118,17 +100,7 @@ public class CsprojNsHelper
                 nsToElse = SanitizeProjectName(nsToElse);
             }
 
-#if DEBUG
-            if (pathCsToAppendElif ==
-                @"E:\vs\Projects\PlatformIndependentNuGetPackages\SunamoData\Data\AzureBuildUriArgs.cs")
-            {
-            }
 
-            if (pathCsToAppendElif == @"E:\vs\Projects\PlatformIndependentNuGetPackages\SunamoExceptions\ai\AIWinPi.cs")
-            {
-                // mám namespace a na dalším řádku #else
-            }
-#endif
 
 
             var first = true;
@@ -175,11 +147,6 @@ public class CsprojNsHelper
 
             await ThrowWhenThereIsNamespaceOutsideOfSharpIf(pathCsToAppendElif, c, AllNamespaces, addTo_linked);
 
-#if DEBUG
-            if (pathCsToAppendElif == @"E:\vs\Projects\PlatformIndependentNuGetPackages\SunamoEnums\Enums\Langs.cs")
-            {
-            }
-#endif
             var t = SHJoin.JoinNL(c);
 
             await File.WriteAllTextAsync(pathCsToAppendElif, t);
@@ -308,38 +275,14 @@ public class CsprojNsHelper
     {
         if (addTo_linked && AllNamespaces.Count == 0) ThrowEx.Custom("AllNamespaces is empty!");
 
-#if DEBUG
-        if (pathCs == @"E:\vs\Projects\PlatformIndependentNuGetPackages\SunamoData\Data\Date.cs")
-        {
-            // zjistit proč mi stále nedává namespace a ;
-        }
 
-        // zde nic nedávat ale kousek níže
-#endif
 
         var result = new List<string>();
         var linesBefore = new List<string>();
 
         var c = content ?? (await File.ReadAllLinesAsync(pathCs)).ToList();
 
-#if DEBUG
-        var containsSharpIf = c.FirstOrDefault(d => d.StartsWith("#if")) != null;
 
-        if (pathCs == @"E:\vs\Projects\PlatformIndependentNuGetPackages\SunamoData\Data\Date.cs" && c.Count > 30)
-        {
-            // zjistit proč mi stále nedává namespace a ;
-        }
-
-        if (pathCs == @"E:\vs\Projects\PlatformIndependentNuGetPackages\SunamoData\Data\DirectoriesToDelete.cs" &&
-            c.Count > 6)
-        {
-        }
-
-        if (pathCs == @"E:\vs\Projects\PlatformIndependentNuGetPackages\SunamoData\Data\TextFormatData.cs" &&
-            containsSharpIf)
-        {
-        }
-#endif
 
         var result2 = new ParseSharpIfToFirstCodeElementResult();
 
