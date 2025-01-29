@@ -23,21 +23,6 @@ internal class XmlGenerator //: IXmlGenerator
             _stack = new Stack<string>();
         }
     }
-    internal void WriteNonPairTagWithAttrs(string tag, params string[] args)
-    {
-        sb.AppendFormat("<{0} ", tag);
-        for (int i = 0; i < args.Length; i++)
-        {
-            string text = args[i];
-            object hodnota = args[++i];
-            sb.AppendFormat("{0}=\"{1}\" ", text, hodnota);
-        }
-        sb.Append(" />");
-    }
-    internal void WriteRaw(string p)
-    {
-        sb.Append(p);
-    }
     public override string ToString()
     {
         return sb.ToString();
@@ -55,16 +40,7 @@ internal class XmlGenerator //: IXmlGenerator
     {
         WriteTagWithAttrs(true, p, p_2);
     }
-    /// <summary>
-    /// Add also null
-    /// </summary>
-    /// <param name="nameTag"></param>
-    /// <param name="p"></param>
-    private void WriteTagWithAttrs(string nameTag, Dictionary<string, string> p)
-    {
-        WriteTagWithAttrs(true, nameTag, DictionaryHelper.GetListStringFromDictionary(p).ToArray());
-    }
-        bool IsNulledOrEmpty(string s)
+            bool IsNulledOrEmpty(string s)
     {
         if (string.IsNullOrEmpty(s) || s == "(null)")
         {
