@@ -43,6 +43,26 @@ public partial class CsprojInstance : CsprojConsts
 
     public XmlDocument xd { get; set; }
 
+    public void CreateOrReplaceMicrosoft_Extensions_Logging_Abstractions()
+    {
+        //moveAllItemsInItemGroupWhichContainsInInclude(ItemGroupTagName.PackageReference, "Include", "readme.md");
+        var newEl = CreateNewItemGroupElement(ItemGroupTagName.PackageReference, "Microsoft.Extensions.Logging.Abstractions", "*", true, null);
+
+        var include = GetItemGroup(ItemGroupTagName.PackageReference, "Include", "Microsoft.Extensions.Logging.Abstractions");
+
+        if (include == null)
+        {
+            AddXmlElementToItemGroupOrCreate(newEl);
+        }
+    }
+
+    private XmlNode GetItemGroup(ItemGroupTagName packageReference, string attName, string attValue)
+    {
+        var node = xd.SelectSingleNode($"/Project/ItemGroup/{packageReference}[@{attName}='{attValue}']");
+
+        return node;
+    }
+
     public void CreateOrReplaceItemGroupForReadmeMd()
     {
         RemoveAllItemsInItemGroupWhichContainsInInclude(ItemGroupTagName.None, "Include", "readme.md");
