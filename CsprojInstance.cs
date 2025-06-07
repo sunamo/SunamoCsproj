@@ -409,7 +409,7 @@ public partial class CsprojInstance : CsprojConsts
     }
 
 
-    public async Task ReplacePackageReferenceForProjectReference(string pathCsproj, string pathSlnFolder)
+    public async Task ReplacePackageReferenceForProjectReference(string pathCsproj/*, string pathSlnFolder*/)
     {
         //pathSlnFolder = pathSlnFolder.TrimEnd('\\') + "\\";
 
