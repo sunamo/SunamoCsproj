@@ -3,9 +3,9 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>25.3.29.1</Version>
+    <Version>25.6.7.1</Version>
     <Description>Working with csprojs at one package</Description>
-    <PackageReleaseNotes>Updated nuget to latest versions</PackageReleaseNotes>
+    <PackageReleaseNotes>Removed unused method parameters</PackageReleaseNotes>
     <Authors>www.sunamo.cz</Authors>
     <Copyright>www.sunamo.cz</Copyright>
     <PackageProjectUrl>https://sunamo.cz/</PackageProjectUrl>
