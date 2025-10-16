@@ -512,4 +512,30 @@ csprojNameToRelativePath.Add(key, v);
 
         return xd.OuterXml;
     }
+
+    /// <summary>
+    /// Univerzální metoda pro úpravu atributu existujícího elementu v ItemGroup
+    /// </summary>
+    /// <param name="tagName">Typ elementu (např. PackageReference)</param>
+    /// <param name="includeValue">Hodnota atributu Include</param>
+    /// <param name="attributeName">Název upravovaného atributu</param>
+    /// <param name="newValue">Nová hodnota atributu</param>
+    public void UpdateItemGroupElementAttribute(ItemGroupTagName tagName, string includeValue, string attributeName, string newValue)
+    {
+        var node = xd.SelectSingleNode($"/Project/ItemGroup/{tagName}[@Include='{includeValue}']");
+        if (node is XmlElement el)
+        {
+            var attr = el.GetAttributeNode(attributeName);
+            if (attr != null)
+            {
+                attr.Value = newValue;
+            }
+            else
+            {
+                var newAttr = xd.CreateAttribute(attributeName);
+                newAttr.Value = newValue;
+                el.Attributes.Append(newAttr);
+            }
+        }
+    }
 }
