@@ -1,3 +1,6 @@
+// EN: Variable names have been checked and replaced with self-descriptive names
+// CZ: Názvy proměnných byly zkontrolovány a nahrazeny samopopisnými názvy
+
 using System.IO.Compression;
 
 namespace SunamoCsproj.Tests;
@@ -58,7 +61,7 @@ public class CsprojInstanceTests : SwdRepoNames
     {
         CsprojInstance csi = new(@"E:\vs\Projects\_WhenNeedToEditAllCorruptedSlns\CommandsToAllCsprojs.Cmd\CommandsToAllCsprojs.Cmd\CommandsToAllCsprojs.Cmd.csproj");
 
-        var d = csi.ItemsInItemGroup(ItemGroupTagName.PackageReference);
+        var data = csi.ItemsInItemGroup(ItemGroupTagName.PackageReference);
         var d2 = csi.ItemsInItemGroup(ItemGroupTagName.ProjectReference);
 
     }
@@ -78,7 +81,7 @@ public class CsprojInstanceTests : SwdRepoNames
     {
         CsprojInstance csi = new(@"E:\vs\Projects\PlatformIndependentNuGetPackages\SunamoCsproj\SunamoCsproj.csproj");
 
-        //var d = await CsprojHelper.PropertyGroupItemContent(@"E:\vs\Projects\_ut2\PlatformIndependentNuGetPackages.Tests\SunamoCsproj.Tests\SunamoCsproj.Tests.csproj", "Description");
+        //var data = await CsprojHelper.PropertyGroupItemContent(@"E:\vs\Projects\_ut2\PlatformIndependentNuGetPackages.Tests\SunamoCsproj.Tests\SunamoCsproj.Tests.csproj", "Description");
         var d2 = csi.PropertyGroupItemContent("Description");
     }
 

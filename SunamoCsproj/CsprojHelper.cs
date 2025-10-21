@@ -1,3 +1,6 @@
+// EN: Variable names have been checked and replaced with self-descriptive names
+// CZ: Názvy proměnných byly zkontrolovány a nahrazeny samopopisnými názvy
+
 namespace SunamoCsproj;
 
 public class CsprojHelper : CsprojConsts
@@ -10,14 +13,14 @@ public class CsprojHelper : CsprojConsts
     /// <returns></returns>
     public static async Task<string> DetectDuplicatedProjectAndPackageReferences(List<string> csprojs)
     {
-        var sb = new StringBuilder();
+        var stringBuilder = new StringBuilder();
         foreach (var item in csprojs)
         {
             var csi = new CsprojInstance(item);
             var dup = await csi.DetectDuplicatedProjectAndPackageReferences();
-            if (dup.HasDuplicates()) dup.AppendToSb(sb, item);
+            if (dup.HasDuplicates()) dup.AppendToSb(stringBuilder, item);
         }
-        return sb.ToString();
+        return stringBuilder.ToString();
     }
     [Obsolete("everything from here will be converted to CsprojInstance. Don't add a single method here!")]
     public static string CsprojPathFromName(string slnFolder, string fnwoe)
@@ -55,9 +58,9 @@ public class CsprojHelper : CsprojConsts
             if (csprojs.Any()) return csprojs.First();
         }
     }
-    public static async Task RemoveDuplicatedProjectAndPackageReferences(List<string> l)
+    public static async Task RemoveDuplicatedProjectAndPackageReferences(List<string> list)
     {
-        foreach (var item in l)
+        foreach (var item in list)
         {
             var csi = new CsprojInstance(item);
             var xmlContent = await csi.RemoveDuplicatedProjectAndPackageReferences();
@@ -124,12 +127,12 @@ public class CsprojHelper : CsprojConsts
     public static async Task ParseCsproj(string contentOrPath)
     {
         if (!contentOrPath.StartsWith("<")) contentOrPath = await File.ReadAllTextAsync(contentOrPath);
-        var d = new CsprojData();
-        var x = XDocument.Parse(contentOrPath);
-        foreach (var item in x.Root.Descendants())
+        var data = new CsprojData();
+        var xValue = XDocument.Parse(contentOrPath);
+        foreach (var item in xValue.Root.Descendants())
             if (item.Name == "PropertyGroup")
             {
-                //RH.SetPropertyToInnerClass(d.PropertyGroup, item.Name, item.Value);
+                //RH.SetPropertyToInnerClass(data.PropertyGroup, item.Name, item.Value);
             }
     }
     /// <summary>
@@ -147,41 +150,41 @@ public class CsprojHelper : CsprojConsts
     SunamoDateTime chybí
     */
         // zjistit zda tu mám SunamoPercentCalculator a pokud ne, proč?
-        var l = SHGetLines.GetLines(content);
-        for (var i = 0; i < l.Count; i++)
+        var list = SHGetLines.GetLines(content);
+        for (var i = 0; i < list.Count; i++)
         {
-            var item = l[i];
-            if (classCodeElements.Any(d => item.Contains(d))) break;
+            var item = list[i];
+            if (classCodeElements.Any(data => item.Contains(data))) break;
             if (item.StartsWith("#else"))
             {
-                var line = l[i + 1].Trim();
+                var line = list[i + 1].Trim();
                 var firstPart = line.Split('.')[0];
                 return (firstPart, line);
             }
             if (item.StartsWith("namespace "))
             {
-                var d = item.Trim().TrimEnd(';').TrimEnd('{').Trim();
-                d = d.Replace("namespace ", "");
-                var firstPart = d.Split('.')[0];
+                var data = item.Trim().TrimEnd(';').TrimEnd('{').Trim();
+                data = data.Replace("namespace ", "");
+                var firstPart = data.Split('.')[0];
 #if DEBUG
-                //if (d.Contains(";"))
+                //if (data.Contains(";"))
                 //{
                 //    ThrowEx.Custom("NS can't contains ;");
                 //}
-                //if (d == "SunamoDateTime")
+                //if (data == "SunamoDateTime")
                 //{
                 //}
-                if (d == "SunamoData")
+                if (data == "SunamoData")
                 {
                 }
-                if (d == "SunamoData.Data")
+                if (data == "SunamoData.Data")
                 {
                 }
-                if (firstPart == "SunamoText" || d == "SunamoText")
+                if (firstPart == "SunamoText" || data == "SunamoText")
                 {
                 }
 #endif
-                return (firstPart, CsprojNsHelper.SanitizeProjectName(d));
+                return (firstPart, CsprojNsHelper.SanitizeProjectName(data));
             }
         }
         return (null, null);

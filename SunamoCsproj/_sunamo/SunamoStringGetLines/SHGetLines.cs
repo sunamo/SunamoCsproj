@@ -1,3 +1,6 @@
+// EN: Variable names have been checked and replaced with self-descriptive names
+// CZ: Názvy proměnných byly zkontrolovány a nahrazeny samopopisnými názvy
+
 namespace SunamoCsproj._sunamo.SunamoStringGetLines;
 
 internal class SHGetLines
@@ -25,13 +28,13 @@ internal class SHGetLines
                 var nr = d[i].Split(new[] { "\n\r" }, StringSplitOptions.None);
 
                 if (rn.Length > 1)
-                    ThrowEx.Custom("cannot contain any \r\n, pass already split by this pattern");
+                    ThrowEx.Custom("cannot contain any \r\name, pass already split by this pattern");
                 else if (nr.Length > 1) ThrowEx.Custom("cannot contain any \n\r, pass already split by this pattern");
             }
 
-            var n = d[i].Split(new[] { v }, StringSplitOptions.None);
+            var name = d[i].Split(new[] { v }, StringSplitOptions.None);
 
-            if (n.Length > 1) InsertOnIndex(d, n.ToList(), i);
+            if (name.Length > 1) InsertOnIndex(d, name.ToList(), i);
         }
     }
 

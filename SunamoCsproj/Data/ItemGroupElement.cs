@@ -1,3 +1,6 @@
+// EN: Variable names have been checked and replaced with self-descriptive names
+// CZ: Názvy proměnných byly zkontrolovány a nahrazeny samopopisnými názvy
+
 namespace SunamoCsproj.Data;
 
 public class ItemGroupElement
@@ -10,27 +13,27 @@ public class ItemGroupElement
 
     public override string ToString()
     {
-        List<string> ls = [];
+        List<string> lines = [];
         if (Include != null)
         {
-            ls.Add(CsprojConsts.Include);
-            ls.Add(Include);
+            lines.Add(CsprojConsts.Include);
+            lines.Add(Include);
         }
 
         if (Version != null)
         {
-            ls.Add(CsprojConsts.Version);
-            ls.Add(Version);
+            lines.Add(CsprojConsts.Version);
+            lines.Add(Version);
         }
 
         if (Link != null)
         {
-            ls.Add(CsprojConsts.Link);
-            ls.Add(Link);
+            lines.Add(CsprojConsts.Link);
+            lines.Add(Link);
         }
 
         XmlGenerator xd = new XmlGenerator();
-        xd.WriteTagWithAttrs(ItemGroupTagName.ToString(), ls);
+        xd.WriteTagWithAttrs(ItemGroupTagName.ToString(), lines);
         return xd.ToString();
     }
 
@@ -59,29 +62,29 @@ public class ItemGroupElement
     public void AddToItemGroup(XmlElement itemGroup)
     {
         var xd = itemGroup.OwnerDocument;
-        var d = xd.CreateElement(ItemGroupTagName.ToString());
+        var data = xd.CreateElement(ItemGroupTagName.ToString());
 
         if (Include != null)
         {
             var includeAttr = xd.CreateAttribute(CsprojConsts.Include);
             includeAttr.Value = Include;
-            d.Attributes.Append(includeAttr);
+            data.Attributes.Append(includeAttr);
         }
 
         if (Version != null)
         {
             var versionAttr = xd.CreateAttribute(CsprojConsts.Version);
             versionAttr.Value = Version;
-            d.Attributes.Append(versionAttr);
+            data.Attributes.Append(versionAttr);
         }
 
         if (Link != null)
         {
             var linkAttr = xd.CreateAttribute(CsprojConsts.Link);
             linkAttr.Value = Link;
-            d.Attributes.Append(linkAttr);
+            data.Attributes.Append(linkAttr);
         }
 
-        itemGroup.AppendChild(d);
+        itemGroup.AppendChild(data);
     }
 }

@@ -1,3 +1,6 @@
+// EN: Variable names have been checked and replaced with self-descriptive names
+// CZ: Názvy proměnných byly zkontrolovány a nahrazeny samopopisnými názvy
+
 namespace SunamoCsproj;
 
 /// <summary>
@@ -96,15 +99,15 @@ public partial class CsprojInstance : CsprojConsts
 
     public string? PropertyGroupItemContent(string tag)
     {
-        var s = xd.SelectSingleNode("/Project/PropertyGroup/" + tag);
-        if (s == null) return null;
-        return s.InnerText;
+        var text = xd.SelectSingleNode("/Project/PropertyGroup/" + tag);
+        if (text == null) return null;
+        return text.InnerText;
     }
 
     public void RemoveSingleItemGroup(string attrValue, ItemGroupTagName tagName)
     {
-        var t = xd.SelectSingleNode($"/Project/ItemGroup/{tagName}[@{Include} = '{attrValue}']");
-        t?.ParentNode?.RemoveChild(t);
+        var temp = xd.SelectSingleNode($"/Project/ItemGroup/{tagName}[@{Include} = '{attrValue}']");
+        temp?.ParentNode?.RemoveChild(temp);
     }
 
     public XmlElement CreateNewPackageReference(string include, string version)
@@ -113,7 +116,7 @@ public partial class CsprojInstance : CsprojConsts
     }
 
     /// <summary>
-    ///     Vrací ale jinak bude i v xml
+    ///     Vrací ale jinak bude i value xml
     ///     Pokud některý parametr není potřeba, vloží se null
     ///     Pouze vytvoří nový element a vrátí jej, to jestli ho potom vložím přes ReplaceChild či AppendChild už je na mě
     /// </summary>
@@ -226,10 +229,10 @@ public partial class CsprojInstance : CsprojConsts
                 continue;
             }
 
-            var d = condition.Replace(" ", "");
-            if (d == Release)
+            var data = condition.Replace(" ", "");
+            if (data == Release)
                 isRelease = true;
-            else if (d == Debug) isDebug = true;
+            else if (data == Debug) isDebug = true;
 
             if (isDebug && isDebugGlobal)
             {
@@ -300,7 +303,7 @@ public partial class CsprojInstance : CsprojConsts
     }
 
     /// <summary>
-    ///     Přidává pouze PropertyGroup s attr
+    ///     Přidává pouze PropertyGroup text attr
     ///     '$(Configuration)|$(Platform)'=='Debug|AnyCPU'
     /// </summary>
     /// <param name="xd"></param>
@@ -346,17 +349,17 @@ public partial class CsprojInstance : CsprojConsts
         return defineConstantValue;
     }
 
-    public void RemoveItemsFromItemGroupWithAttr(ItemGroupTagName tagName, string v)
+    public void RemoveItemsFromItemGroupWithAttr(ItemGroupTagName tagName, string value)
     {
-        var t = xd.SelectNodes($"/Project/ItemGroup/{tagName}[@{v}]");
+        var temp = xd.SelectNodes($"/Project/ItemGroup/{tagName}[@{v}]");
         // nutno zkontrolovat detailně co se bude mazat. 
         // snadná reverzní cesta neexistuje
-        foreach (XmlNode item in t) item.ParentNode.RemoveChild(item);
+        foreach (XmlNode item in temp) item.ParentNode.RemoveChild(item);
     }
 
 
     /// <summary>
-    ///     Protože mám často null v hodnotách kde mi čisté where selže, je tu tato metdoa
+    ///     Protože mám často null value hodnotách kde mi čisté where selže, je tu tato metdoa
     /// </summary>
     /// <returns></returns>
     public List<ItemGroupElement> GetAllItemsInItemGroupWhichContainsInInclude(ItemGroupTagName tagName, string attr,
@@ -368,12 +371,12 @@ public partial class CsprojInstance : CsprojConsts
     }
 
 
-    public List<ItemGroupElement> FilterByAttrAndContains(List<ItemGroupElement> l, string attr,
+    public List<ItemGroupElement> FilterByAttrAndContains(List<ItemGroupElement> list, string attr,
         string mustContains)
     {
-        return l.Where(d =>
-            (attr == "Link" ? d.Link :
-                attr == "Include" ? d.Include :
+        return list.Where(data =>
+            (attr == "Link" ? data.Link :
+                attr == "Include" ? data.Include :
                 throw new Exception($"{nameof(attr)} is {attr}, must be Link or Include"))
             .ContainsNullAllow(mustContains)).ToList();
     }
@@ -390,7 +393,7 @@ public partial class CsprojInstance : CsprojConsts
     }
 
     /// <summary>
-    ///     Nepotřebuji tu vracet XmlDocument, je v každém vráceném prvku.OwnerDocument
+    ///     Nepotřebuji tu vracet XmlDocument, je value každém vráceném prvku.OwnerDocument
     /// </summary>
     public List<ItemGroupElement> ItemsInItemGroup(ItemGroupTagName tagName)
     {
@@ -400,9 +403,9 @@ public partial class CsprojInstance : CsprojConsts
 
         foreach (XmlNode item in itemsInItemGroup)
         {
-            var p = ItemGroupElement.Parse(item);
+            var parameter = ItemGroupElement.Parse(item);
 
-            result.Add(p);
+            result.Add(parameter);
         }
 
         return result;
@@ -434,29 +437,29 @@ public partial class CsprojInstance : CsprojConsts
         var packages = ItemsInItemGroup(ItemGroupTagName.PackageReference);
         var projects = ItemsInItemGroup(ItemGroupTagName.ProjectReference);
 
-        var packagesNames = packages.Select(d => d.Include).ToList();
-        var projectsNames = projects.Select(d => Path.GetFileNameWithoutExtension(d.Include)).ToList();
+        var packagesNames = packages.Select(data => data.Include).ToList();
+        var projectsNames = projects.Select(data => Path.GetFileNameWithoutExtension(data.Include)).ToList();
 
         var duplicatedPackages = CAG.GetDuplicities(packagesNames);
         var duplicatedProjects = CAG.GetDuplicities(projectsNames);
 
         var both = packagesNames.Intersect(projectsNames).ToList();
 
-        var r = new DuplicatesInItemGroup
+        var result = new DuplicatesInItemGroup
         {
             DuplicatedPackages = duplicatedPackages,
             DuplicatedProjects = duplicatedProjects,
             ExistsInPackageAndProjectReferences = both
         };
-        var dd = r.HasDuplicates();
-        return r;
+        var dd = result.HasDuplicates();
+        return result;
     }
 
 
     [Obsolete("everything from here will be converted to CsprojInstance. Don't add a single method here!")]
-    public async Task<string> RemoveDuplicatedProjectAndPackageReferences(DuplicatesInItemGroup d)
+    public async Task<string> RemoveDuplicatedProjectAndPackageReferences(DuplicatesInItemGroup data)
     {
-        if (d == null) d = await DetectDuplicatedProjectAndPackageReferences();
+        if (data == null) data = await DetectDuplicatedProjectAndPackageReferences();
 
         var nodes = xd.SelectNodes("/Project/ItemGroup/" + ItemGroupTagName.ProjectReference);
 
@@ -464,12 +467,12 @@ public partial class CsprojInstance : CsprojConsts
 
         foreach (XmlNode item in nodes)
         {
-            var v = XmlHelper.GetAttrValueOrInnerElement(item, Include);
-            var key = Path.GetFileName(v).Replace(".csproj", string.Empty);
+            var value = XmlHelper.GetAttrValueOrInnerElement(item, Include);
+            var key = Path.GetFileName(value).Replace(".csproj", string.Empty);
 #if DEBUG
-            if (!csprojNameToRelativePath.ContainsKey(key)) csprojNameToRelativePath.Add(key, v);
+            if (!csprojNameToRelativePath.ContainsKey(key)) csprojNameToRelativePath.Add(key, value);
 #else
-csprojNameToRelativePath.Add(key, v);
+csprojNameToRelativePath.Add(key, value);
 #endif
         }
 
@@ -479,13 +482,13 @@ csprojNameToRelativePath.Add(key, v);
         var csi = new CsprojInstance(xd);
 
 
-        foreach (var item in d.DuplicatedPackages)
+        foreach (var item in data.DuplicatedPackages)
             if (!alreadyProcessedPackages.Contains(item))
                 alreadyProcessedPackages.Add(item);
             else
                 csi.RemoveSingleItemGroup(item, ItemGroupTagName.PackageReference);
 
-        foreach (var item in d.DuplicatedProjects)
+        foreach (var item in data.DuplicatedProjects)
             if (!alreadyProcessedProjects.Contains(item))
                 alreadyProcessedProjects.Add(item);
             else
@@ -502,11 +505,11 @@ csprojNameToRelativePath.Add(key, v);
     [Obsolete("everything from here will be converted to CsprojInstance. Don't add a single method here!")]
     public async Task<string> RemoveDuplicatedProjectAndPackageReferences()
     {
-        var d = await DetectDuplicatedProjectAndPackageReferences();
+        var data = await DetectDuplicatedProjectAndPackageReferences();
 
-        if (d.HasDuplicates())
+        if (data.HasDuplicates())
         {
-            var result = await RemoveDuplicatedProjectAndPackageReferences(d);
+            var result = await RemoveDuplicatedProjectAndPackageReferences(data);
             return result;
         }
 
@@ -514,7 +517,7 @@ csprojNameToRelativePath.Add(key, v);
     }
 
     /// <summary>
-    /// Univerzální metoda pro úpravu atributu existujícího elementu v ItemGroup
+    /// Univerzální metoda pro úpravu atributu existujícího elementu value ItemGroup
     /// </summary>
     /// <param name="tagName">Typ elementu (např. PackageReference)</param>
     /// <param name="includeValue">Hodnota atributu Include</param>

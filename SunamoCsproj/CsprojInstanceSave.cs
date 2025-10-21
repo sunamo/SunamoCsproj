@@ -1,3 +1,6 @@
+// EN: Variable names have been checked and replaced with self-descriptive names
+// CZ: Názvy proměnných byly zkontrolovány a nahrazeny samopopisnými názvy
+
 namespace SunamoCsproj;
 
 partial class CsprojInstance
@@ -36,10 +39,10 @@ partial class CsprojInstance
             {
                 continue;
             }
-            var d = condition.Replace(" ", "");
-            if (d == Release)
+            var data = condition.Replace(" ", "");
+            if (data == Release)
                 release.Add(item);
-            else if (d == Debug)
+            else if (data == Debug)
                 debug.Add(item);
         }
         JoinMultiPropertyGroupToOneWorker(debug);

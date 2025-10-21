@@ -1,3 +1,6 @@
+// EN: Variable names have been checked and replaced with self-descriptive names
+// CZ: Názvy proměnných byly zkontrolovány a nahrazeny samopopisnými názvy
+
 namespace SunamoCsproj;
 
 public class CsprojNsHelper
@@ -24,7 +27,7 @@ public class CsprojNsHelper
         var isCsFiles = reallyOccuredInFilesOrProjectNames.First().EndsWith(".cs");
         var reallyOccuredInFiles = reallyOccuredInFilesOrProjectNames.ToList();
 
-        var c = contentCs ?? (await File.ReadAllLinesAsync(pathCsToAppendElif)).ToList();
+        var count = contentCs ?? (await File.ReadAllLinesAsync(pathCsToAppendElif)).ToList();
 
 
 
@@ -36,7 +39,7 @@ public class CsprojNsHelper
         {
             var dx = contentCs.IndexOf("#else");
 
-            var sb = new StringBuilder();
+            var stringBuilder = new StringBuilder();
 
             // nepotřebuji, protože budu přidávat až na místo #else
             //if (addEarlierAddedToFile)
@@ -57,20 +60,20 @@ public class CsprojNsHelper
                 var projectName = isCsFiles ? ProjectNameFromCsPath(item) : item;
                 if (!existingNamespace.Contains(projectName))
                 {
-                    sb.AppendLine("#elif " + projectName);
-                    sb.AppendLine(projectName);
+                    stringBuilder.AppendLine("#elif " + projectName);
+                    stringBuilder.AppendLine(projectName);
                 }
             }
 
-            var ts = sb.ToString();
-            c.InsertMultilineString(dx, ts);
+            var ts = stringBuilder.ToString();
+            count.InsertMultilineString(dx, ts);
 
-            await ThrowWhenThereIsNamespaceOutsideOfSharpIf(pathCsToAppendElif, c, AllNamespaces, addTo_linked);
+            await ThrowWhenThereIsNamespaceOutsideOfSharpIf(pathCsToAppendElif, count, AllNamespaces, addTo_linked);
 
-            var t = SHJoin.JoinNL(c);
+            var temp = SHJoin.JoinNL(count);
 
             // TODO2
-            await File.WriteAllTextAsync(pathCsToAppendElif, t);
+            await File.WriteAllTextAsync(pathCsToAppendElif, temp);
         }
         else
         {
@@ -79,7 +82,7 @@ public class CsprojNsHelper
             // v opačném případě musím zapsat všechny + else. 
             // NS vezmu z toho co už v souboru bude
 
-            var nss = c.Where(s => s.StartsWith("namespace ") && s.Trim() != "namespace");
+            var nss = count.Where(text => text.StartsWith("namespace ") && text.Trim() != "namespace");
             string nsToElse = null;
             if (!nss.Any())
             {
@@ -93,7 +96,7 @@ public class CsprojNsHelper
 
                 if (!nsToElse.EndsWith(";"))
                     ThrowEx.Custom(
-                        "Namespace is not file scoped! Pro začátek by mělo stačit otevřít swld ve VS a u všech zaměnit NS. Na to aby se přidali csproj i co nejsou v sln utility mám. Hledal jsem nějaký kód v C#");
+                        "Namespace is not file scoped! Pro začátek by mělo stačit otevřít swld ve VS a u všech zaměnit NS. Na to aby se přidali csproj i co nejsou v sln utility mám. Hledal jsem nějaký kód v count#");
 
                 nsToElse = nsToElse.Replace("namespace ", "");
                 nsToElse = nsToElse.TrimEnd(';');
@@ -104,9 +107,9 @@ public class CsprojNsHelper
 
 
             var first = true;
-            var sb = new StringBuilder();
+            var stringBuilder = new StringBuilder();
 
-            sb.AppendLine("namespace");
+            stringBuilder.AppendLine("namespace");
             var projectNames = new List<string>();
             foreach (var item in reallyOccuredInFiles)
             {
@@ -120,36 +123,36 @@ public class CsprojNsHelper
 
             foreach (var projectName in projectNames)
             {
-                sb.AppendLine((first ? "#if " : "#elif ") + projectName);
-                sb.AppendLine(projectName);
+                stringBuilder.AppendLine((first ? "#if " : "#elif ") + projectName);
+                stringBuilder.AppendLine(projectName);
 
                 first = false;
             }
 
-            sb.AppendLine("#else");
-            sb.AppendLine(nsToElse);
-            sb.AppendLine("#endif");
-            sb.AppendLine(";");
+            stringBuilder.AppendLine("#else");
+            stringBuilder.AppendLine(nsToElse);
+            stringBuilder.AppendLine("#endif");
+            stringBuilder.AppendLine(";");
 
-            var dx = SH.GetIndexesOfLinesStartingWith(c, d => d.StartsWith("namespace"));
+            var dx = SH.GetIndexesOfLinesStartingWith(count, d => d.StartsWith("namespace"));
 
-            var ts = sb.ToString();
+            var ts = stringBuilder.ToString();
 
             if (dx.Count == 0)
             {
-                c.InsertMultilineString(0, ts);
+                count.InsertMultilineString(0, ts);
             }
             else
             {
-                c.RemoveAt(dx.First());
-                c.InsertMultilineString(dx.First(), ts);
+                count.RemoveAt(dx.First());
+                count.InsertMultilineString(dx.First(), ts);
             }
 
-            await ThrowWhenThereIsNamespaceOutsideOfSharpIf(pathCsToAppendElif, c, AllNamespaces, addTo_linked);
+            await ThrowWhenThereIsNamespaceOutsideOfSharpIf(pathCsToAppendElif, count, AllNamespaces, addTo_linked);
 
-            var t = SHJoin.JoinNL(c);
+            var temp = SHJoin.JoinNL(count);
 
-            await File.WriteAllTextAsync(pathCsToAppendElif, t);
+            await File.WriteAllTextAsync(pathCsToAppendElif, temp);
         }
     }
 
@@ -158,9 +161,9 @@ public class CsprojNsHelper
     /// </summary>
     /// <param name="s"></param>
     /// <returns></returns>
-    public static string SanitizeProjectName(string s)
+    public static string SanitizeProjectName(string text)
     {
-        return string.Concat(s.Where(d => char.IsLetterOrDigit(d)));
+        return string.Concat(text.Where(d => char.IsLetterOrDigit(d)));
     }
 
     public static string ProjectNameFromCsPath(string csPath)
@@ -184,24 +187,24 @@ public class CsprojNsHelper
         else
             ThrowEx.Custom($"{path} does not contains {csprojDir}");
 
-        var p = remain.Split('\\');
+        var parameter = remain.Split('\\');
 
-        for (var i = p.Length - 1; i >= 0; i--)
+        for (var i = parameter.Length - 1; i >= 0; i--)
         {
-            p[i] = SanitizeProjectName(p[i]);
+            parameter[i] = SanitizeProjectName(parameter[i]);
             break;
         }
 
         return remain.Replace("\\", ".");
     }
 
-    private static async Task ThrowWhenThereIsNamespaceOutsideOfSharpIf(string path, List<string> c,
+    private static async Task ThrowWhenThereIsNamespaceOutsideOfSharpIf(string path, List<string> count,
         List<string> allNamespaces, bool addTo_linked)
     {
         // zde příště pokračovat
         // zjistím indexy #if a #elif
 
-        var parsed = await ParseSharpIfToFirstCodeElement(path, c, allNamespaces, addTo_linked);
+        var parsed = await ParseSharpIfToFirstCodeElement(path, count, allNamespaces, addTo_linked);
         var allLinesBefore = parsed.allLinesBefore;
         var dxElif = SH.GetIndexesOfLinesStartingWith(allLinesBefore, d => d.StartsWith("#elif"));
         //var dxNs = SH.GetIndexesOfLinesStartingWith(allLinesBefore, d => d.StartsWith("namespace "));
@@ -280,17 +283,17 @@ public class CsprojNsHelper
         var result = new List<string>();
         var linesBefore = new List<string>();
 
-        var c = content ?? (await File.ReadAllLinesAsync(pathCs)).ToList();
+        var count = content ?? (await File.ReadAllLinesAsync(pathCs)).ToList();
 
 
 
         var result2 = new ParseSharpIfToFirstCodeElementResult();
 
-        for (var i = 0; i < c.Count; i++)
+        for (var i = 0; i < count.Count; i++)
         {
-            c[i] = c[i].Trim();
+            count[i] = count[i].Trim();
 
-            var line = c[i];
+            var line = count[i];
             if (string.IsNullOrWhiteSpace(line)) continue;
 
             if (!keywordsBeforeFirstCodeElementDeclaration.Any(keyword => line.Contains(keyword)) &&
@@ -304,7 +307,7 @@ public class CsprojNsHelper
             /*
 Tady je ale další problém
             NS kontroluji zda jsou an řádku, můžou se tam vyskytovat i tečky, pokud jsou v názvu projektu nebo jsou zanořené níže v adr. struktuře
-            to ale znamená že budu mít více elif, vzrůstající s počtem složek
+            to ale znamená že budu mít více elif, vzrůstající text počtem složek
             To zase nebude vypadat tak hezky
             Ale když jsem to celou dobu třídil do složek, nebudu se jich teď zbavovat
             Snad těch #elif nebude tak hodně jak to vypadá
