@@ -1,5 +1,3 @@
-// EN: Variable names have been checked and replaced with self-descriptive names
-// CZ: Názvy proměnných byly zkontrolovány a nahrazeny samopopisnými názvy
 namespace SunamoCsproj.Data;
 
 public class DuplicatesInItemGroup
@@ -13,31 +11,31 @@ public class DuplicatesInItemGroup
         return !(new int?[] { DuplicatedPackages?.Count, DuplicatedProjects?.Count, ExistsInPackageAndProjectReferences?.Count }.All(d => d == 0));
     }
 
-    public void AppendToSb(StringBuilder sb, string path)
+    public void AppendToSb(StringBuilder stringBuilder, string path)
     {
         if (!HasDuplicates())
         {
             return;
         }
 
-        sb.AppendLine(path + ":");
+        stringBuilder.AppendLine(path + ":");
 
-        AddProperty(sb, nameof(DuplicatedPackages), DuplicatedPackages);
-        AddProperty(sb, nameof(DuplicatedProjects), DuplicatedProjects);
-        AddProperty(sb, nameof(ExistsInPackageAndProjectReferences), ExistsInPackageAndProjectReferences);
+        AddProperty(stringBuilder, nameof(DuplicatedPackages), DuplicatedPackages);
+        AddProperty(stringBuilder, nameof(DuplicatedProjects), DuplicatedProjects);
+        AddProperty(stringBuilder, nameof(ExistsInPackageAndProjectReferences), ExistsInPackageAndProjectReferences);
 
-        sb.AppendLine();
-        sb.AppendLine();
+        stringBuilder.AppendLine();
+        stringBuilder.AppendLine();
     }
 
-    private void AddProperty(StringBuilder sb, string v, List<string> duplicatedPackages)
+    private void AddProperty(StringBuilder stringBuilder, string v, List<string> duplicatedPackages)
     {
         if (duplicatedPackages.Count > 0)
         {
-            sb.AppendLine(v + ":");
+            stringBuilder.AppendLine(v + ":");
             foreach (var item in duplicatedPackages)
             {
-                sb.AppendLine(item);
+                stringBuilder.AppendLine(item);
             }
         }
     }

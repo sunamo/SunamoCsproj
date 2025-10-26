@@ -1,6 +1,3 @@
-// EN: Variable names have been checked and replaced with self-descriptive names
-// CZ: Názvy proměnných byly zkontrolovány a nahrazeny samopopisnými názvy
-
 namespace SunamoCsproj;
 
 /// <summary>
@@ -351,7 +348,7 @@ public partial class CsprojInstance : CsprojConsts
 
     public void RemoveItemsFromItemGroupWithAttr(ItemGroupTagName tagName, string value)
     {
-        var temp = xd.SelectNodes($"/Project/ItemGroup/{tagName}[@{v}]");
+        var temp = xd.SelectNodes($"/Project/ItemGroup/{tagName}[@{value}]");
         // nutno zkontrolovat detailně co se bude mazat. 
         // snadná reverzní cesta neexistuje
         foreach (XmlNode item in temp) item.ParentNode.RemoveChild(item);

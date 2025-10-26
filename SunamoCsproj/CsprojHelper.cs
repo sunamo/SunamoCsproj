@@ -1,11 +1,29 @@
-// EN: Variable names have been checked and replaced with self-descriptive names
-// CZ: Názvy proměnných byly zkontrolovány a nahrazeny samopopisnými názvy
-
 namespace SunamoCsproj;
+
+using System.Xml.Linq;
 
 public class CsprojHelper : CsprojConsts
 {
     public static readonly List<string> classCodeElements = ["class ", "interface ", "enum ", "struct ", "delegate "];
+
+    /// <summary>
+    /// EN: Formats XML for better readability.
+    /// CZ: Formátuje XML pro lepší čitelnost.
+    /// </summary>
+    /// <param name="xml">EN: Unformatted XML. CZ: Neformátovaný XML.</param>
+    /// <returns>EN: Formatted XML. CZ: Formátovaný XML.</returns>
+    private static string FormatXml(string xml)
+    {
+        try
+        {
+            var doc = XDocument.Parse(xml);
+            return doc.ToString();
+        }
+        catch (Exception)
+        {
+            return xml;
+        }
+    }
     /// <summary>
     ///     Musí být zde, pracuje s více csproj najednou
     /// </summary>
@@ -118,6 +136,61 @@ public class CsprojHelper : CsprojConsts
         // TODO: z SunamoXml udělat formát
         return XHelper.FormatXmlInMemory(xd.OuterXml);
     }
+
+    /// <summary>
+    /// EN: Replaces ProjectReference with PackageReference and returns new csproj content + names of replaced projects.
+    /// CZ: Nahradí ProjectReference za PackageReference a vrátí nový obsah csproj + názvy projektů, které byly nahrazeny.
+    /// </summary>
+    /// <param name="contentCsproj">EN: Content of csproj file. CZ: Obsah csproj souboru.</param>
+    /// <param name="availableNugetPackagesS">EN: List of available NuGet packages. CZ: Seznam dostupných NuGet balíčků.</param>
+    /// <param name="isTests">EN: Whether this is a test project. CZ: Zda je to testovací projekt.</param>
+    /// <returns>EN: Tuple of (new csproj content, list of removed project names). CZ: Tuple (nový obsah csproj, seznam odstraněných názvů projektů).</returns>
+#pragma warning disable IDE0060 // Remove unused parameter
+    public static async Task<(string, List<string>)> ReplaceProjectReferenceForPackageReferenceWithRemoved(string contentCsproj, List<string> availableNugetPackagesS, bool isTests)
+#pragma warning restore IDE0060 // Remove unused parameter
+    {
+        var removedProjects = new List<string>();
+        // EN: Original replacement logic
+        // CZ: Původní logika nahrazování
+        var xmlDoc = new XmlDocument();
+        xmlDoc.LoadXml(contentCsproj);
+        var projectReferences = xmlDoc.GetElementsByTagName("ProjectReference");
+        var toRemove = new List<XmlNode>();
+        foreach (XmlNode pr in projectReferences)
+        {
+            var include = pr.Attributes?["Include"]?.Value;
+            if (include != null)
+            {
+                var projectName = Path.GetFileNameWithoutExtension(include);
+                if (availableNugetPackagesS.Contains(projectName))
+                {
+                    removedProjects.Add(projectName);
+                    toRemove.Add(pr);
+                }
+            }
+        }
+        // EN: Remove ProjectReference and optionally add PackageReference
+        // CZ: Odstraň ProjectReference a případně přidej PackageReference
+        foreach (var pr in toRemove)
+        {
+            var projectName = Path.GetFileNameWithoutExtension(pr.Attributes["Include"].Value);
+            pr.ParentNode.RemoveChild(pr);
+            // EN: Add PackageReference
+            // CZ: Přidej PackageReference
+            var itemGroup = xmlDoc.CreateElement("ItemGroup");
+            var pkgRef = xmlDoc.CreateElement("PackageReference");
+            var attr = xmlDoc.CreateAttribute("Include");
+            attr.Value = projectName;
+            pkgRef.Attributes.Append(attr);
+            itemGroup.AppendChild(pkgRef);
+            xmlDoc.DocumentElement.AppendChild(itemGroup);
+        }
+
+        // EN: Return formatted XML instead of unformatted
+        // CZ: Vrať formátovaný XML místo neformátovaného
+        return (FormatXml(xmlDoc.OuterXml), removedProjects);
+    }
+
     /// <summary>
     ///     Use RHSE2.SetPropertyToInnerClass
     /// </summary>
@@ -151,13 +224,13 @@ public class CsprojHelper : CsprojConsts
     */
         // zjistit zda tu mám SunamoPercentCalculator a pokud ne, proč?
         var list = SHGetLines.GetLines(content);
-        for (var i = 0; i < list.Count; i++)
+        for (var index = 0; index < list.Count; index++)
         {
-            var item = list[i];
+            var item = list[index];
             if (classCodeElements.Any(data => item.Contains(data))) break;
             if (item.StartsWith("#else"))
             {
-                var line = list[i + 1].Trim();
+                var line = list[index + 1].Trim();
                 var firstPart = line.Split('.')[0];
                 return (firstPart, line);
             }

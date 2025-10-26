@@ -1,6 +1,3 @@
-// EN: Variable names have been checked and replaced with self-descriptive names
-// CZ: Názvy proměnných byly zkontrolovány a nahrazeny samopopisnými názvy
-
 namespace SunamoCsproj;
 
 public class CsprojNsHelper
@@ -189,9 +186,9 @@ public class CsprojNsHelper
 
         var parameter = remain.Split('\\');
 
-        for (var i = parameter.Length - 1; i >= 0; i--)
+        for (var index = parameter.Length - 1; index >= 0; index--)
         {
-            parameter[i] = SanitizeProjectName(parameter[i]);
+            parameter[index] = SanitizeProjectName(parameter[index]);
             break;
         }
 
@@ -289,11 +286,11 @@ public class CsprojNsHelper
 
         var result2 = new ParseSharpIfToFirstCodeElementResult();
 
-        for (var i = 0; i < count.Count; i++)
+        for (var index = 0; index < count.Count; index++)
         {
-            count[i] = count[i].Trim();
+            count[index] = count[index].Trim();
 
-            var line = count[i];
+            var line = count[index];
             if (string.IsNullOrWhiteSpace(line)) continue;
 
             if (!keywordsBeforeFirstCodeElementDeclaration.Any(keyword => line.Contains(keyword)) &&

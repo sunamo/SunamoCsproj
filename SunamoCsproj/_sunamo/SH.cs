@@ -1,5 +1,3 @@
-// EN: Variable names have been checked and replaced with self-descriptive names
-// CZ: Názvy proměnných byly zkontrolovány a nahrazeny samopopisnými názvy
 namespace SunamoCsproj._sunamo;
 
 internal class SH
@@ -24,7 +22,7 @@ internal class SH
     /// <returns></returns>
     internal static List<int> GetIndexesOfLinesStartingWith(List<string> list, Func<string, bool> predicate)
     {
-        List<int> allIndices = list.Select((s, i) => new { Str = s, Index = i })
+        List<int> allIndices = list.Select((str, i) => new { Str = str, Index = i })
             .Where(x => predicate(x.Str))
             .Select(x => x.Index).ToList();
         return allIndices;

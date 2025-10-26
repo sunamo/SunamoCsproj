@@ -1,6 +1,3 @@
-// EN: Variable names have been checked and replaced with self-descriptive names
-// CZ: Názvy proměnných byly zkontrolovány a nahrazeny samopopisnými názvy
-
 namespace SunamoCsproj._sunamo.SunamoStringGetLines;
 
 internal class SHGetLines
@@ -20,21 +17,21 @@ internal class SHGetLines
 
     private static void SplitBy(List<string> d, string v)
     {
-        for (var i = d.Count - 1; i >= 0; i--)
+        for (var index = d.Count - 1; index >= 0; index--)
         {
             if (v == "\r")
             {
-                var rn = d[i].Split(new[] { "\r\n" }, StringSplitOptions.None);
-                var nr = d[i].Split(new[] { "\n\r" }, StringSplitOptions.None);
+                var rn = d[index].Split(new[] { "\r\n" }, StringSplitOptions.None);
+                var nr = d[index].Split(new[] { "\n\r" }, StringSplitOptions.None);
 
                 if (rn.Length > 1)
                     ThrowEx.Custom("cannot contain any \r\name, pass already split by this pattern");
                 else if (nr.Length > 1) ThrowEx.Custom("cannot contain any \n\r, pass already split by this pattern");
             }
 
-            var name = d[i].Split(new[] { v }, StringSplitOptions.None);
+            var name = d[index].Split(new[] { v }, StringSplitOptions.None);
 
-            if (name.Length > 1) InsertOnIndex(d, name.ToList(), i);
+            if (name.Length > 1) InsertOnIndex(d, name.ToList(), index);
         }
     }
 
