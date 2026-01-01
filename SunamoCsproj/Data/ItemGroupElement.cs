@@ -10,28 +10,29 @@ public class ItemGroupElement
 
     public override string ToString()
     {
-        List<string> lines = [];
+        List<string> attributes = [];
+
         if (Include != null)
         {
-            lines.Add(CsprojConsts.Include);
-            lines.Add(Include);
+            attributes.Add(CsprojConsts.Include);
+            attributes.Add(Include);
         }
 
         if (Version != null)
         {
-            lines.Add(CsprojConsts.Version);
-            lines.Add(Version);
+            attributes.Add(CsprojConsts.Version);
+            attributes.Add(Version);
         }
 
         if (Link != null)
         {
-            lines.Add(CsprojConsts.Link);
-            lines.Add(Link);
+            attributes.Add(CsprojConsts.Link);
+            attributes.Add(Link);
         }
 
-        XmlGenerator xd = new XmlGenerator();
-        xd.WriteTagWithAttrs(ItemGroupTagName.ToString(), lines);
-        return xd.ToString();
+        XmlGenerator xmlGenerator = new XmlGenerator();
+        xmlGenerator.WriteTagWithAttrs(ItemGroupTagName.ToString(), attributes);
+        return xmlGenerator.ToString();
     }
 
     public static ItemGroupElement? Parse(XmlNode item)
@@ -58,30 +59,30 @@ public class ItemGroupElement
     /// <param name="itemGroup"></param>
     public void AddToItemGroup(XmlElement itemGroup)
     {
-        var xd = itemGroup.OwnerDocument;
-        var data = xd.CreateElement(ItemGroupTagName.ToString());
+        var document = itemGroup.OwnerDocument;
+        var element = document.CreateElement(ItemGroupTagName.ToString());
 
         if (Include != null)
         {
-            var includeAttr = xd.CreateAttribute(CsprojConsts.Include);
+            var includeAttr = document.CreateAttribute(CsprojConsts.Include);
             includeAttr.Value = Include;
-            data.Attributes.Append(includeAttr);
+            element.Attributes.Append(includeAttr);
         }
 
         if (Version != null)
         {
-            var versionAttr = xd.CreateAttribute(CsprojConsts.Version);
+            var versionAttr = document.CreateAttribute(CsprojConsts.Version);
             versionAttr.Value = Version;
-            data.Attributes.Append(versionAttr);
+            element.Attributes.Append(versionAttr);
         }
 
         if (Link != null)
         {
-            var linkAttr = xd.CreateAttribute(CsprojConsts.Link);
+            var linkAttr = document.CreateAttribute(CsprojConsts.Link);
             linkAttr.Value = Link;
-            data.Attributes.Append(linkAttr);
+            element.Attributes.Append(linkAttr);
         }
 
-        itemGroup.AppendChild(data);
+        itemGroup.AppendChild(element);
     }
 }

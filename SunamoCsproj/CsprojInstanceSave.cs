@@ -6,62 +6,62 @@ partial class CsprojInstance
     {
         JoinMultiPropertyGroupToOne();
         RemoveDuplicatedInNoWarnAndDefineConstant();
-        xd.Save(PathFs);
+        XmlDocument.Save(PathFs);
     }
     private void RemoveDuplicatedInNoWarnAndDefineConstant()
     {
-        var defineConstants = xd.SelectNodes("//DefineConstants");
-        var noWarn = xd.SelectNodes("//NoWarn");
+        var defineConstants = XmlDocument.SelectNodes("//DefineConstants");
+        var noWarn = XmlDocument.SelectNodes("//NoWarn");
         RemoveDuplicated(defineConstants);
         RemoveDuplicated(noWarn);
     }
-    private void RemoveDuplicated(XmlNodeList? noWarn)
+    private void RemoveDuplicated(XmlNodeList? nodeList)
     {
-        foreach (XmlNode item in noWarn)
+        foreach (XmlNode node in nodeList)
         {
-            var inner = item.InnerXml;
-            var parts = inner.Split(';').Distinct().ToList();
-            item.InnerXml = string.Join(';', parts);
+            var innerXml = node.InnerXml;
+            var parts = innerXml.Split(';').Distinct().ToList();
+            node.InnerXml = string.Join(';', parts);
         }
     }
     private void JoinMultiPropertyGroupToOne()
     {
-        var nodes = xd.SelectNodes("/Project/PropertyGroup");
-        List<XmlNode> debug = [];
-        List<XmlNode> release = [];
-        foreach (XmlNode item in nodes)
+        var propertyGroupNodes = XmlDocument.SelectNodes("/Project/PropertyGroup");
+        List<XmlNode> debugNodes = [];
+        List<XmlNode> releaseNodes = [];
+        foreach (XmlNode propertyGroup in propertyGroupNodes)
         {
-            var condition = XmlHelper.GetAttributeWithNameValue(item, "Condition");
+            var condition = XmlHelper.GetAttributeWithNameValue(propertyGroup, "Condition");
             if (condition == null)
             {
                 continue;
             }
-            var data = condition.Replace(" ", "");
-            if (data == Release)
-                release.Add(item);
-            else if (data == Debug)
-                debug.Add(item);
+            var conditionValue = condition.Replace(" ", "");
+            if (conditionValue == Release)
+                releaseNodes.Add(propertyGroup);
+            else if (conditionValue == Debug)
+                debugNodes.Add(propertyGroup);
         }
-        JoinMultiPropertyGroupToOneWorker(debug);
-        JoinMultiPropertyGroupToOneWorker(release);
+        JoinMultiPropertyGroupToOneWorker(debugNodes);
+        JoinMultiPropertyGroupToOneWorker(releaseNodes);
     }
-    private void JoinMultiPropertyGroupToOneWorker(List<XmlNode> debug)
+    private void JoinMultiPropertyGroupToOneWorker(List<XmlNode> propertyGroups)
     {
         Dictionary<string, string> elements = [];
-        foreach (var item in debug)
+        foreach (var propertyGroup in propertyGroups)
         {
-            foreach (XmlNode item2 in item.ChildNodes)
+            foreach (XmlNode childNode in propertyGroup.ChildNodes)
             {
-                elements.TryAdd(item2.Name, item2.InnerXml);
+                elements.TryAdd(childNode.Name, childNode.InnerXml);
             }
         }
-        foreach (var item in debug)
+        foreach (var propertyGroup in propertyGroups)
         {
-            item.ParentNode?.RemoveChild(item);
+            propertyGroup.ParentNode?.RemoveChild(propertyGroup);
         }
-        foreach (var item in elements)
+        foreach (var element in elements)
         {
-            AddRemovePropertyGroupItem(true, item.Key, item.Value);
+            AddRemovePropertyGroupItem(true, element.Key, element.Value);
         }
     }
 }

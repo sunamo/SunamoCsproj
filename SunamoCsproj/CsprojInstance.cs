@@ -1,28 +1,28 @@
 namespace SunamoCsproj;
 
 /// <summary>
-///     Zde jsou ty co používají xd
+///     Zde jsou ty co používají XmlDocument
 ///     Už tu nic nepřidávat, vše už jen do
 /// </summary>
 public partial class CsprojInstance : CsprojConsts
 {
-    public string PathFs;
+    public string? PathFs;
 
-    public CsprojInstance(XmlDocument xd)
+    public CsprojInstance(XmlDocument xmlDocument)
     {
-        this.xd = xd;
+        this.XmlDocument = xmlDocument;
     }
 
-    public CsprojInstance(string path, string content = null)
+    public CsprojInstance(string path, string? content = null)
     {
-        xd = new XmlDocument();
+        XmlDocument = new XmlDocument();
         PathFs = path;
         try
         {
             if (content != null)
-                xd.LoadXml(path);
+                XmlDocument.LoadXml(path);
             else if (path != null)
-                xd.Load(path);
+                XmlDocument.Load(path);
             else
                 ThrowEx.Custom("Was not entered path neither content");
         }
@@ -34,14 +34,14 @@ public partial class CsprojInstance : CsprojConsts
 
     /// <summary>
     ///     Je tento ctor k nečemu?
-    ///     potřebuji path abych mohl vytvořit xd atd.
-    ///     Ano, je k nečemu, když vkládám jen xd - na to vytvořím samostatný ctor.
+    ///     potřebuji path abych mohl vytvořit XmlDocument atd.
+    ///     Ano, je k nečemu, když vkládám jen XmlDocument - na to vytvořím samostatný ctor.
     /// </summary>
     private CsprojInstance()
     {
     }
 
-    public XmlDocument xd { get; set; }
+    public XmlDocument XmlDocument { get; set; }
 
     public void CreateOrReplaceMicrosoft_Extensions_Logging_Abstractions()
     {
@@ -58,7 +58,7 @@ public partial class CsprojInstance : CsprojConsts
 
     private XmlNode GetItemGroup(ItemGroupTagName packageReference, string attName, string attValue)
     {
-        var node = xd.SelectSingleNode($"/Project/ItemGroup/{packageReference}[@{attName}='{attValue}']");
+        var node = XmlDocument.SelectSingleNode($"/Project/ItemGroup/{packageReference}[@{attName}='{attValue}']");
 
         return node;
     }
@@ -73,7 +73,7 @@ public partial class CsprojInstance : CsprojConsts
 
     public void RemovePropertyGroupItem(string tag)
     {
-        var node = xd.SelectSingleNode("/Project/PropertyGroup/" + tag);
+        var node = XmlDocument.SelectSingleNode("/Project/PropertyGroup/" + tag);
         node?.ParentNode?.RemoveChild(node);
     }
 
@@ -96,14 +96,14 @@ public partial class CsprojInstance : CsprojConsts
 
     public string? PropertyGroupItemContent(string tag)
     {
-        var text = xd.SelectSingleNode("/Project/PropertyGroup/" + tag);
+        var text = XmlDocument.SelectSingleNode("/Project/PropertyGroup/" + tag);
         if (text == null) return null;
         return text.InnerText;
     }
 
     public void RemoveSingleItemGroup(string attrValue, ItemGroupTagName tagName)
     {
-        var temp = xd.SelectSingleNode($"/Project/ItemGroup/{tagName}[@{Include} = '{attrValue}']");
+        var temp = XmlDocument.SelectSingleNode($"/Project/ItemGroup/{tagName}[@{Include} = '{attrValue}']");
         temp?.ParentNode?.RemoveChild(temp);
     }
 
@@ -124,7 +124,7 @@ public partial class CsprojInstance : CsprojConsts
     public XmlElement CreateNewItemGroupElement(ItemGroupTagName tagName, string include, string version, bool? pack,
         string packagePath)
     {
-        var newEl = xd.CreateElement(tagName.ToString());
+        var newEl = XmlDocument.CreateElement(tagName.ToString());
         if (include != null)
         {
             var attr = CreateAttr(newEl, Include, include);
@@ -154,11 +154,11 @@ public partial class CsprojInstance : CsprojConsts
 
     public void AddXmlElementToItemGroupOrCreate(XmlElement xe)
     {
-        var itemGroup = xd.SelectSingleNode("/Project/ItemGroup");
+        var itemGroup = XmlDocument.SelectSingleNode("/Project/ItemGroup");
         if (itemGroup == null)
         {
-            var project = xd.SelectSingleNode("/Project");
-            var newEl = xd.CreateElement("ItemGroup");
+            var project = XmlDocument.SelectSingleNode("/Project");
+            var newEl = XmlDocument.CreateElement("ItemGroup");
             itemGroup = project.AppendChild(newEl);
         }
 
@@ -167,7 +167,7 @@ public partial class CsprojInstance : CsprojConsts
 
     private XmlAttribute CreateAttr(XmlElement newEl, string attrName, string attrValue)
     {
-        var attr = xd.CreateAttribute(attrName);
+        var attr = XmlDocument.CreateAttribute(attrName);
         attr.Value = attrValue;
 
         var newAttr = newEl.Attributes.Append(attr);
@@ -181,7 +181,7 @@ public partial class CsprojInstance : CsprojConsts
 
     public void AddOrEditPropertyGroupItem(string tag, string content, ForceValueForKey forceValueForKey)
     {
-        var versionEl = xd.SelectSingleNode("/Project/PropertyGroup/" + tag);
+        var versionEl = XmlDocument.SelectSingleNode("/Project/PropertyGroup/" + tag);
 
         content = SetValueByDict(content, tag, forceValueForKey);
 
@@ -191,7 +191,7 @@ public partial class CsprojInstance : CsprojConsts
         }
         else
         {
-            var founded2 = xd.SelectSingleNode("/Project/PropertyGroup");
+            var founded2 = XmlDocument.SelectSingleNode("/Project/PropertyGroup");
             var newEl = founded2.AddElement(tag);
             newEl.InnerText = content;
         }
@@ -209,7 +209,7 @@ public partial class CsprojInstance : CsprojConsts
 
     public string AddRemovePropertyGroupItem(bool add, string tag, string partValue)
     {
-        var nodes = xd.SelectNodes("/Project/PropertyGroup");
+        var nodes = XmlDocument.SelectNodes("/Project/PropertyGroup");
 
         var isReleaseGlobal = false;
         var isDebugGlobal = false;
@@ -253,9 +253,9 @@ public partial class CsprojInstance : CsprojConsts
                 }
                 else
                 {
-                    var project = xd.SelectSingleNode("/Project");
+                    var project = XmlDocument.SelectSingleNode("/Project");
 
-                    AddPropertyGroupItemElement(xd, isRelease ? Release : Debug, add, partValue, tag, project, item2, []);
+                    AddPropertyGroupItemElement(XmlDocument, isRelease ? Release : Debug, add, partValue, tag, project, item2, []);
                 }
 
                 if (isDebug)
@@ -271,11 +271,11 @@ public partial class CsprojInstance : CsprojConsts
 
 
         // First must be debug due to unit tests
-        if (!isDebugGlobal) AddPropertyGroupItemToProject(xd, Debug, add, partValue, tag, []);
+        if (!isDebugGlobal) AddPropertyGroupItemToProject(XmlDocument, Debug, add, partValue, tag, []);
 
-        if (!isReleaseGlobal) AddPropertyGroupItemToProject(xd, Release, add, partValue, tag, []);
+        if (!isReleaseGlobal) AddPropertyGroupItemToProject(XmlDocument, Release, add, partValue, tag, []);
 
-        return XHelper.FormatXmlInMemory(xd.OuterXml);
+        return XHelper.FormatXmlInMemory(XmlDocument.OuterXml);
     }
 
     private string OnOff(string innerXml, bool add, string defineConstant)
@@ -303,28 +303,28 @@ public partial class CsprojInstance : CsprojConsts
     ///     Přidává pouze PropertyGroup text attr
     ///     '$(Configuration)|$(Platform)'=='Debug|AnyCPU'
     /// </summary>
-    /// <param name="xd"></param>
+    /// <param name="XmlDocument"></param>
     /// <param name="innerAttrValueCondition"></param>
     /// <param name="add"></param>
     /// <param name="defineConstantValue"></param>
-    private void AddPropertyGroupItemToProject(XmlDocument xd, string innerAttrValueCondition, bool add,
+    private void AddPropertyGroupItemToProject(XmlDocument XmlDocument, string innerAttrValueCondition, bool add,
         string defineConstantValue, string tag, ForceValueForKey forceValueForKey)
     {
-        var project = xd.SelectSingleNode("/Project");
+        var project = XmlDocument.SelectSingleNode("/Project");
 
-        var propertyGroup = xd.CreateNode(XmlNodeType.Element, PropertyGroup, null);
-        AddPropertyGroupItemElement(xd, innerAttrValueCondition, add, defineConstantValue, tag, project, propertyGroup, forceValueForKey);
+        var propertyGroup = XmlDocument.CreateNode(XmlNodeType.Element, PropertyGroup, null);
+        AddPropertyGroupItemElement(XmlDocument, innerAttrValueCondition, add, defineConstantValue, tag, project, propertyGroup, forceValueForKey);
     }
 
-    private void AddPropertyGroupItemElement(XmlDocument xd, string innerAttrValueCondition, bool add, string defineConstantValue, string tag, XmlNode? project, XmlNode propertyGroup, ForceValueForKey forceValueForKey)
+    private void AddPropertyGroupItemElement(XmlDocument XmlDocument, string innerAttrValueCondition, bool add, string defineConstantValue, string tag, XmlNode? project, XmlNode propertyGroup, ForceValueForKey forceValueForKey)
     {
-        var defineConstant = xd.CreateNode(XmlNodeType.Element, tag, null);
+        var defineConstant = XmlDocument.CreateNode(XmlNodeType.Element, tag, null);
         defineConstantValue = SetValueByDict(defineConstantValue, tag, forceValueForKey);
 
         defineConstant.InnerXml = (tag == DefineConstants ? DefineConstantsInner + ";" : "") + (add ? defineConstantValue : "");
         propertyGroup.AppendChild(defineConstant);
 
-        var propertyGroupConditionAttr = xd.CreateAttribute(Condition);
+        var propertyGroupConditionAttr = XmlDocument.CreateAttribute(Condition);
         propertyGroupConditionAttr.Value = innerAttrValueCondition;
 
         propertyGroup.Attributes.Append(propertyGroupConditionAttr);
@@ -348,7 +348,7 @@ public partial class CsprojInstance : CsprojConsts
 
     public void RemoveItemsFromItemGroupWithAttr(ItemGroupTagName tagName, string value)
     {
-        var temp = xd.SelectNodes($"/Project/ItemGroup/{tagName}[@{value}]");
+        var temp = XmlDocument.SelectNodes($"/Project/ItemGroup/{tagName}[@{value}]");
         // nutno zkontrolovat detailně co se bude mazat. 
         // snadná reverzní cesta neexistuje
         foreach (XmlNode item in temp) item.ParentNode.RemoveChild(item);
@@ -394,7 +394,7 @@ public partial class CsprojInstance : CsprojConsts
     /// </summary>
     public List<ItemGroupElement> ItemsInItemGroup(ItemGroupTagName tagName)
     {
-        var itemsInItemGroup = xd.SelectNodes("/Project/ItemGroup/" + tagName);
+        var itemsInItemGroup = XmlDocument.SelectNodes("/Project/ItemGroup/" + tagName);
 
         var result = new List<ItemGroupElement>();
 
@@ -458,7 +458,7 @@ public partial class CsprojInstance : CsprojConsts
     {
         if (data == null) data = await DetectDuplicatedProjectAndPackageReferences();
 
-        var nodes = xd.SelectNodes("/Project/ItemGroup/" + ItemGroupTagName.ProjectReference);
+        var nodes = XmlDocument.SelectNodes("/Project/ItemGroup/" + ItemGroupTagName.ProjectReference);
 
         var csprojNameToRelativePath = new Dictionary<string, string>();
 
@@ -476,7 +476,7 @@ csprojNameToRelativePath.Add(key, value);
         var alreadyProcessedPackages = new List<string>();
         var alreadyProcessedProjects = new List<string>();
 
-        var csi = new CsprojInstance(xd);
+        var csi = new CsprojInstance(XmlDocument);
 
 
         foreach (var item in data.DuplicatedPackages)
@@ -491,7 +491,7 @@ csprojNameToRelativePath.Add(key, value);
             else
                 csi.RemoveSingleItemGroup(csprojNameToRelativePath[item], ItemGroupTagName.ProjectReference);
 
-        return xd.OuterXml;
+        return XmlDocument.OuterXml;
     }
 
     /// <summary>
@@ -510,7 +510,7 @@ csprojNameToRelativePath.Add(key, value);
             return result;
         }
 
-        return xd.OuterXml;
+        return XmlDocument.OuterXml;
     }
 
     /// <summary>
@@ -522,7 +522,7 @@ csprojNameToRelativePath.Add(key, value);
     /// <param name="newValue">Nová hodnota atributu</param>
     public void UpdateItemGroupElementAttribute(ItemGroupTagName tagName, string includeValue, string attributeName, string newValue)
     {
-        var node = xd.SelectSingleNode($"/Project/ItemGroup/{tagName}[@Include='{includeValue}']");
+        var node = XmlDocument.SelectSingleNode($"/Project/ItemGroup/{tagName}[@Include='{includeValue}']");
         if (node is XmlElement el)
         {
             var attr = el.GetAttributeNode(attributeName);
@@ -532,7 +532,7 @@ csprojNameToRelativePath.Add(key, value);
             }
             else
             {
-                var newAttr = xd.CreateAttribute(attributeName);
+                var newAttr = XmlDocument.CreateAttribute(attributeName);
                 newAttr.Value = newValue;
                 el.Attributes.Append(newAttr);
             }

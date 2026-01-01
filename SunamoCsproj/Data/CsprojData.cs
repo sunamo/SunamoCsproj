@@ -2,5 +2,5 @@ namespace SunamoCsproj.Data;
 
 public class CsprojData
 {
-    public PropertyGroupData PropertyGroup { get; set; }
+    public PropertyGroupData? PropertyGroup { get; set; }
 }

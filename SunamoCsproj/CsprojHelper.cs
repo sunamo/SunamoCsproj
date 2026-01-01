@@ -59,7 +59,7 @@ public class CsprojHelper : CsprojConsts
     /// <param name="slnFolder"></param>
     /// <returns></returns>
     [Obsolete("everything from here will be converted to CsprojInstance. Don't add a single method here!")]
-    public static string GetCsprojFromCsPath(string path, string slnFolder = null)
+    public static string GetCsprojFromCsPath(string path, string? slnFolder = null)
     {
         if (slnFolder != null)
         {
@@ -108,18 +108,18 @@ public class CsprojHelper : CsprojConsts
         if (!pathOrContentCsproj.StartsWith("<") && (pathOrContentCsproj.EndsWith("Tests.csproj") ||
                                                      pathOrContentCsproj.Contains("TestValues")))
             return await File.ReadAllTextAsync(pathOrContentCsproj);
-        var xd = new XmlDocument();
+        var xmlDocument = new XmlDocument();
         if (pathOrContentCsproj.StartsWith("<"))
         {
             if (isTests) return pathOrContentCsproj;
-            xd.LoadXml(pathOrContentCsproj);
+            xmlDocument.LoadXml(pathOrContentCsproj);
         }
         else
         {
-            xd.Load(pathOrContentCsproj);
+            xmlDocument.Load(pathOrContentCsproj);
         }
-        var versionEl = xd.SelectNodes("/Project/ItemGroup/" + ItemGroupTagName.ProjectReference);
-        var csi = new CsprojInstance(xd);
+        var versionEl = xmlDocument.SelectNodes("/Project/ItemGroup/" + ItemGroupTagName.ProjectReference);
+        var csi = new CsprojInstance(xmlDocument);
         foreach (XmlNode item in versionEl)
         {
             var include = XmlHelper.GetAttrValueOrInnerElement(item, Include);
@@ -134,7 +134,7 @@ public class CsprojHelper : CsprojConsts
             //break;
         }
         // TODO: z SunamoXml udělat formát
-        return XHelper.FormatXmlInMemory(xd.OuterXml);
+        return XHelper.FormatXmlInMemory(xmlDocument.OuterXml);
     }
 
     /// <summary>
@@ -216,7 +216,7 @@ public class CsprojHelper : CsprojConsts
     /// <param name="path"></param>
     /// <returns></returns>
     [Obsolete("everything from here will be converted to CsprojInstance. Don't add a single method here!")]
-    public static (string, string) ParseNamespaceFromCsFile(string content, string path)
+    public static (string, string) ParseNamespaceFromCsFile(string content, string? path)
     {
         /*
     Nemůže obsahovat ;

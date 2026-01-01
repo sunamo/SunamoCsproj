@@ -1,17 +1,26 @@
 namespace SunamoCsproj._sunamo;
 
+/// <summary>
+/// EN: XML helper methods using XmlDocument/XmlNode.
+/// </summary>
 internal class XmlHelper
 {
-    internal static XmlAttribute foundedNode = null;
+    internal static XmlAttribute? FoundedNode = null;
 
-    internal static string GetAttributeWithNameValue(XmlNode item, string p)
+    /// <summary>
+    /// EN: Gets attribute value by name.
+    /// </summary>
+    /// <param name="node">XML node to search.</param>
+    /// <param name="attributeName">Attribute name to find.</param>
+    /// <returns>Attribute value or null.</returns>
+    internal static string? GetAttributeWithNameValue(XmlNode node, string attributeName)
     {
-        foreach (XmlAttribute item2 in item.Attributes)
+        foreach (XmlAttribute attribute in node.Attributes!)
         {
-            if (item2.Name == p)
+            if (attribute.Name == attributeName)
             {
-                foundedNode = item2;
-                return item2.InnerXml;
+                FoundedNode = attribute;
+                return attribute.InnerXml;
             }
         }
 
@@ -19,61 +28,77 @@ internal class XmlHelper
     }
 
     /// <summary>
-    /// because return type is Object and can't use item.ChildNodes.First(d => d.) etc.
-    /// XmlNodeList dědí jen z IEnumerable, IDisposable
+    /// EN: Converts XmlNodeList to List of XmlNode. XmlNodeList only inherits from IEnumerable and IDisposable.
     /// </summary>
-    /// <returns></returns>
-    internal static List<XmlNode> ChildNodes(XmlNode xml)
+    /// <param name="xmlNode">Parent XML node.</param>
+    /// <returns>List of child nodes.</returns>
+    internal static List<XmlNode> ChildNodes(XmlNode xmlNode)
     {
-#pragma warning disable IDE0090
-        // TODO: až přilinkuji SunamoExtensions tak .COunt
         List<XmlNode> result = new List<XmlNode>();
 
-        foreach (XmlNode item in xml.ChildNodes)
+        foreach (XmlNode item in xmlNode.ChildNodes)
         {
             result.Add(item);
         }
-#pragma warning restore IDE0090
+
         return result;
     }
 
-    internal static string GetAttrValueOrInnerElement(XmlNode item, string v)
+    /// <summary>
+    /// EN: Gets attribute value or inner element value by name.
+    /// </summary>
+    /// <param name="node">XML node to search.</param>
+    /// <param name="name">Attribute or element name.</param>
+    /// <returns>Value or null.</returns>
+    internal static string? GetAttrValueOrInnerElement(XmlNode node, string name)
     {
-        var attr = item.Attributes[v];
+        var attr = node.Attributes![name];
 
         if (attr != null)
         {
             return attr.Value;
         }
 
-        var childNodes = ChildNodes(item);
+        var childNodes = ChildNodes(node);
         if (childNodes.Count != 0)
         {
-            var el = childNodes.First(d => d.Name == v);
+            var el = childNodes.First(child => child.Name == name);
             return el?.Value;
         }
         System.Diagnostics.Debugger.Break();
         return null;
     }
 
-    internal static string Attr(XmlNode d, string v)
+    /// <summary>
+    /// EN: Gets attribute value by name.
+    /// </summary>
+    /// <param name="node">XML node to search.</param>
+    /// <param name="attributeName">Attribute name.</param>
+    /// <returns>Attribute value or null.</returns>
+    internal static string? Attr(XmlNode node, string attributeName)
     {
-        var argument = GetAttributeWithName(d, v);
-        if (argument != null)
+        var attribute = GetAttributeWithName(node, attributeName);
+        if (attribute != null)
         {
-            return argument.Value;
+            return attribute.Value;
         }
         return null;
     }
 
-    internal static XmlNode GetAttributeWithName(XmlNode item, string p)
+    /// <summary>
+    /// EN: Gets attribute node by name.
+    /// </summary>
+    /// <param name="node">XML node to search.</param>
+    /// <param name="attributeName">Attribute name.</param>
+    /// <returns>Attribute node or null.</returns>
+    internal static XmlNode? GetAttributeWithName(XmlNode node, string attributeName)
     {
-        foreach (XmlAttribute item2 in item.Attributes)
+        foreach (XmlAttribute attribute in node.Attributes!)
         {
-            if (item2.Name == p)
+            if (attribute.Name == attributeName)
             {
-                foundedNode = item2;
-                return item2;
+                FoundedNode = attribute;
+                return attribute;
             }
         }
 

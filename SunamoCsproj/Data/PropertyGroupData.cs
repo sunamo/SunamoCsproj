@@ -2,19 +2,19 @@ namespace SunamoCsproj.Data;
 
 public class PropertyGroupData
 {
-    public FrameworkProperties FrameworkProperties { get; set; }
-    public AssemblyAttributeProperties AssemblyAttributeProperties { get; set; }
-    public PackageProperties PackageProperties { get; set; }
-    public PublishRelatedProperties PublishRelatedProperties { get; set; }
-    public BuildRelatedProperties BuildRelatedProperties { get; set; }
-    public DefaultItemInclusionProperties DefaultItemInclusionProperties { get; set; }
-    public CodeAnalysisProperties CodeAnalysisProperties { get; set; }
-    public RuntimeConfigurationProperties RuntimeConfigurationProperties { get; set; }
-    public ReferenceRelatedProperties ReferenceRelatedProperties { get; set; }
-    public RestoreRelatedProperties RestoreRelatedProperties { get; set; }
-    public RunRelatedProperties RunRelatedProperties { get; set; }
-    public HostingRelatedProperties HostingRelatedProperties { get; set; }
-    public ItemMetadata ItemMetadata { get; set; }
+    public FrameworkProperties? FrameworkProperties { get; set; }
+    public AssemblyAttributeProperties? AssemblyAttributeProperties { get; set; }
+    public PackageProperties? PackageProperties { get; set; }
+    public PublishRelatedProperties? PublishRelatedProperties { get; set; }
+    public BuildRelatedProperties? BuildRelatedProperties { get; set; }
+    public DefaultItemInclusionProperties? DefaultItemInclusionProperties { get; set; }
+    public CodeAnalysisProperties? CodeAnalysisProperties { get; set; }
+    public RuntimeConfigurationProperties? RuntimeConfigurationProperties { get; set; }
+    public ReferenceRelatedProperties? ReferenceRelatedProperties { get; set; }
+    public RestoreRelatedProperties? RestoreRelatedProperties { get; set; }
+    public RunRelatedProperties? RunRelatedProperties { get; set; }
+    public HostingRelatedProperties? HostingRelatedProperties { get; set; }
+    public ItemMetadata? ItemMetadata { get; set; }
 
 
 }
@@ -22,17 +22,17 @@ public class PropertyGroupData
 
 public class FrameworkProperties
 {
-    public string TargetFramework
+    public string? TargetFramework
     {
         get; set;
     }
 
-    public string TargetFrameworks
+    public string? TargetFrameworks
     {
         get; set;
     }
 
-    public string NetStandardImplicitPackageVersion
+    public string? NetStandardImplicitPackageVersion
     {
         get; set;
     }
@@ -41,12 +41,12 @@ public class FrameworkProperties
 
 public class AssemblyAttributeProperties
 {
-    public string GenerateAssemblyInfo
+    public string? GenerateAssemblyInfo
     {
         get; set;
     }
 
-    public string GeneratedAssemblyInfoFile
+    public string? GeneratedAssemblyInfoFile
     {
         get; set;
     }
@@ -55,7 +55,7 @@ public class AssemblyAttributeProperties
 
 public class PackageProperties
 {
-    public string PackRelease
+    public string? PackRelease
     {
         get; set;
     }
@@ -63,122 +63,122 @@ public class PackageProperties
 
 public class PublishRelatedProperties
 {
-    public string AppendRuntimeIdentifierToOutputPath
+    public string? AppendRuntimeIdentifierToOutputPath
     {
         get; set;
     }
 
-    public string AppendTargetFrameworkToOutputPath
+    public string? AppendTargetFrameworkToOutputPath
     {
         get; set;
     }
 
-    public string CopyLocalLockFileAssemblies
+    public string? CopyLocalLockFileAssemblies
     {
         get; set;
     }
 
-    public string EnablePackageValidation
+    public string? EnablePackageValidation
     {
         get; set;
     }
 
-    public string ErrorOnDuplicatePublishOutputFiles
+    public string? ErrorOnDuplicatePublishOutputFiles
     {
         get; set;
     }
 
-    public string GenerateRuntimeConfigDevFile
+    public string? GenerateRuntimeConfigDevFile
     {
         get; set;
     }
 
-    public string GenerateRuntimeConfigurationFiles
+    public string? GenerateRuntimeConfigurationFiles
     {
         get; set;
     }
 
-    public string GenerateSatelliteAssembliesForCore
+    public string? GenerateSatelliteAssembliesForCore
     {
         get; set;
     }
 
-    public string IsPublishable
+    public string? IsPublishable
     {
         get; set;
     }
 
-    public string PreserveCompilationContext
+    public string? PreserveCompilationContext
     {
         get; set;
     }
 
-    public string PreserveCompilationReferences
+    public string? PreserveCompilationReferences
     {
         get; set;
     }
 
-    public string ProduceReferenceAssemblyInOutDir
+    public string? ProduceReferenceAssemblyInOutDir
     {
         get; set;
     }
 
-    public string PublishDocumentationFile
+    public string? PublishDocumentationFile
     {
         get; set;
     }
 
-    public string PublishDocumentationFiles
+    public string? PublishDocumentationFiles
     {
         get; set;
     }
 
-    public string PublishReferencesDocumentationFiles
+    public string? PublishReferencesDocumentationFiles
     {
         get; set;
     }
 
-    public string PublishRelease
+    public string? PublishRelease
     {
         get; set;
     }
 
-    public string PublishSelfContained
+    public string? PublishSelfContained
     {
         get; set;
     }
 
-    public string RollForward
+    public string? RollForward
     {
         get; set;
     }
 
-    public string RuntimeFrameworkVersion
+    public string? RuntimeFrameworkVersion
     {
         get; set;
     }
 
-    public string RuntimeIdentifier
+    public string? RuntimeIdentifier
     {
         get; set;
     }
 
-    public string RuntimeIdentifiers
+    public string? RuntimeIdentifiers
     {
         get; set;
     }
 
-    public string SatelliteResourceLanguages
+    public string? SatelliteResourceLanguages
     {
         get; set;
     }
 
-    public string SelfContained
+    public string? SelfContained
     {
         get; set;
     }
 
-    public string UseAppHost
+    public string? UseAppHost
     {
         get; set;
     }
@@ -187,62 +187,62 @@ public class PublishRelatedProperties
 
 public class BuildRelatedProperties
 {
-    public string ContinuousIntegrationBuild
+    public string? ContinuousIntegrationBuild
     {
         get; set;
     }
 
-    public string CopyDebugSymbolFilesFromPackages
+    public string? CopyDebugSymbolFilesFromPackages
     {
         get; set;
     }
 
-    public string CopyDocumentationFilesFromPackages
+    public string? CopyDocumentationFilesFromPackages
     {
         get; set;
     }
 
-    public string DisableImplicitFrameworkDefines
+    public string? DisableImplicitFrameworkDefines
     {
         get; set;
     }
 
-    public string DocumentationFile
+    public string? DocumentationFile
     {
         get; set;
     }
 
-    public string EmbeddedResourceUseDependentUponConvention
+    public string? EmbeddedResourceUseDependentUponConvention
     {
         get; set;
     }
 
-    public string EnablePreviewFeatures
+    public string? EnablePreviewFeatures
     {
         get; set;
     }
 
-    public string EnableWindowsTargeting
+    public string? EnableWindowsTargeting
     {
         get; set;
     }
 
-    public string GenerateDocumentationFile
+    public string? GenerateDocumentationFile
     {
         get; set;
     }
 
-    public string GenerateRequiresPreviewFeaturesAttribute
+    public string? GenerateRequiresPreviewFeaturesAttribute
     {
         get; set;
     }
 
-    public string OptimizeImplicitlyTriggeredBuild
+    public string? OptimizeImplicitlyTriggeredBuild
     {
         get; set;
     }
 
-    public string DisableRuntimeMarshalling
+    public string? DisableRuntimeMarshalling
     {
         get; set;
     }
@@ -251,32 +251,32 @@ public class BuildRelatedProperties
 
 public class DefaultItemInclusionProperties
 {
-    public string DefaultItemExcludesInProjectFolder
+    public string? DefaultItemExcludesInProjectFolder
     {
         get; set;
     }
 
-    public string DefaultItemExcludes
+    public string? DefaultItemExcludes
     {
         get; set;
     }
 
-    public string EnableDefaultCompileItems
+    public string? EnableDefaultCompileItems
     {
         get; set;
     }
 
-    public string EnableDefaultEmbeddedResourceItems
+    public string? EnableDefaultEmbeddedResourceItems
     {
         get; set;
     }
 
-    public string EnableDefaultItems
+    public string? EnableDefaultItems
     {
         get; set;
     }
 
-    public string EnableDefaultNoneItems
+    public string? EnableDefaultNoneItems
     {
         get; set;
     }
@@ -285,32 +285,32 @@ public class DefaultItemInclusionProperties
 
 public class CodeAnalysisProperties
 {
-    public string AnalysisLevel
+    public string? AnalysisLevel
     {
         get; set;
     }
 
-    public string AnalysisMode
+    public string? AnalysisMode
     {
         get; set;
     }
 
-    public string CodeAnalysisTreatWarningsAsErrors
+    public string? CodeAnalysisTreatWarningsAsErrors
     {
         get; set;
     }
 
-    public string EnableNETAnalyzers
+    public string? EnableNETAnalyzers
     {
         get; set;
     }
 
-    public string EnforceCodeStyleInBuild
+    public string? EnforceCodeStyleInBuild
     {
         get; set;
     }
 
-    public string _SkipUpgradeNetAnalyzersNuGetWarning
+    public string? _SkipUpgradeNetAnalyzersNuGetWarning
     {
         get; set;
     }
@@ -319,67 +319,67 @@ public class CodeAnalysisProperties
 
 public class RuntimeConfigurationProperties
 {
-    public string AutoreleasePoolSupport
+    public string? AutoreleasePoolSupport
     {
         get; set;
     }
 
-    public string ConcurrentGarbageCollection
+    public string? ConcurrentGarbageCollection
     {
         get; set;
     }
 
-    public string InvariantGlobalization
+    public string? InvariantGlobalization
     {
         get; set;
     }
 
-    public string PredefinedCulturesOnly
+    public string? PredefinedCulturesOnly
     {
         get; set;
     }
 
-    public string RetainVMGarbageCollection
+    public string? RetainVMGarbageCollection
     {
         get; set;
     }
 
-    public string ServerGarbageCollection
+    public string? ServerGarbageCollection
     {
         get; set;
     }
 
-    public string ThreadPoolMaxThreads
+    public string? ThreadPoolMaxThreads
     {
         get; set;
     }
 
-    public string ThreadPoolMinThreads
+    public string? ThreadPoolMinThreads
     {
         get; set;
     }
 
-    public string TieredCompilation
+    public string? TieredCompilation
     {
         get; set;
     }
 
-    public string TieredCompilationQuickJit
+    public string? TieredCompilationQuickJit
     {
         get; set;
     }
 
-    public string TieredCompilationQuickJitForLoops
+    public string? TieredCompilationQuickJitForLoops
     {
         get; set;
     }
 
-    public string TieredPGO
+    public string? TieredPGO
     {
         get; set;
     }
 
-    public string UseWindowsThreadPool
+    public string? UseWindowsThreadPool
     {
         get; set;
     }
@@ -388,27 +388,27 @@ public class RuntimeConfigurationProperties
 
 public class ReferenceRelatedProperties
 {
-    public string AssetTargetFallback
+    public string? AssetTargetFallback
     {
         get; set;
     }
 
-    public string DisableImplicitFrameworkReferences
+    public string? DisableImplicitFrameworkReferences
     {
         get; set;
     }
 
-    public string DisableTransitiveFrameworkReferenceDownloads
+    public string? DisableTransitiveFrameworkReferenceDownloads
     {
         get; set;
     }
 
-    public string DisableTransitiveProjectReferences
+    public string? DisableTransitiveProjectReferences
     {
         get; set;
     }
 
-    public string ManagePackageVersionsCentrally
+    public string? ManagePackageVersionsCentrally
     {
         get; set;
     }
@@ -417,12 +417,12 @@ public class ReferenceRelatedProperties
 
 public class RestoreRelatedProperties
 {
-    public string UseMauiEssentials
+    public string? UseMauiEssentials
     {
         get; set;
     }
 
-    public string ValidateExecutableReferencesMatchSelfContained
+    public string? ValidateExecutableReferencesMatchSelfContained
     {
         get; set;
     }
@@ -431,12 +431,12 @@ public class RestoreRelatedProperties
 
 public class RunRelatedProperties
 {
-    public string RunArguments
+    public string? RunArguments
     {
         get; set;
     }
 
-    public string RunWorkingDirectory
+    public string? RunWorkingDirectory
     {
         get; set;
     }
@@ -445,12 +445,12 @@ public class RunRelatedProperties
 
 public class HostingRelatedProperties
 {
-    public string EnableComHosting
+    public string? EnableComHosting
     {
         get; set;
     }
 
-    public string EnableDynamicLoading
+    public string? EnableDynamicLoading
     {
         get; set;
     }
@@ -459,42 +459,42 @@ public class HostingRelatedProperties
 
 public class GeneratedFileProperties
 {
-    public string DisableImplicitNamespaceImports
+    public string? DisableImplicitNamespaceImports
     {
         get; set;
     }
 
-    public string ImplicitUsings
+    public string? ImplicitUsings
     {
         get; set;
     }
 
-    public string Items
+    public string? Items
     {
         get; set;
     }
 
-    public string AssemblyMetadata
+    public string? AssemblyMetadata
     {
         get; set;
     }
 
-    public string InternalsVisibleTo
+    public string? InternalsVisibleTo
     {
         get; set;
     }
 
-    public string PackageReference
+    public string? PackageReference
     {
         get; set;
     }
 
-    public string TrimmerRootAssembly
+    public string? TrimmerRootAssembly
     {
         get; set;
     }
 
-    public string Using
+    public string? Using
     {
         get; set;
     }
@@ -503,12 +503,12 @@ public class GeneratedFileProperties
 
 public class ItemMetadata
 {
-    public string CopyToPublishDirectory
+    public string? CopyToPublishDirectory
     {
         get; set;
     }
 
-    public string LinkBase
+    public string? LinkBase
     {
         get; set;
     }

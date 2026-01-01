@@ -270,7 +270,7 @@ public class CsprojNsHelper
     /// <param name="content"></param>
     /// <param name="AllNamespaces"></param>
     /// <returns></returns>
-    public static async Task<ParseSharpIfToFirstCodeElementResult> ParseSharpIfToFirstCodeElement(string pathCs,
+    public static async Task<ParseSharpIfToFirstCodeElementResult> ParseSharpIfToFirstCodeElement(string? pathCs,
         List<string> content, List<string> AllNamespaces, bool addTo_linked)
     {
         if (addTo_linked && AllNamespaces.Count == 0) ThrowEx.Custom("AllNamespaces is empty!");
@@ -280,7 +280,7 @@ public class CsprojNsHelper
         var result = new List<string>();
         var linesBefore = new List<string>();
 
-        var count = content ?? (await File.ReadAllLinesAsync(pathCs)).ToList();
+        var count = content ?? (await File.ReadAllLinesAsync(pathCs!)).ToList();
 
 
 
