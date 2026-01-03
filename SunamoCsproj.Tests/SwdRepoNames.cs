@@ -1,6 +1,8 @@
+// variables names: ok
 namespace SunamoCsproj.Tests;
 public class SwdRepoNames
 {
+
     #region Not derived from SunamoShared:
     public const string SunamoCsproj = "SunamoCsproj";
     public const string SunamoExceptions = "SunamoExceptions";

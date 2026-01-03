@@ -1,4 +1,3 @@
-// variables names: ok
 namespace SunamoCsproj;
 
 using System.Xml.Linq;
@@ -41,17 +40,17 @@ public class CsprojHelper : CsprojConsts
         var stringBuilder = new StringBuilder();
         foreach (var item in csprojs)
         {
-            var csi = new CsprojInstance(item);
-            var dup = await csi.DetectDuplicatedProjectAndPackageReferences();
-            if (dup.HasDuplicates()) dup.AppendToSb(stringBuilder, item);
+            var csprojInstance = new CsprojInstance(item);
+            var duplicates = await csprojInstance.DetectDuplicatedProjectAndPackageReferences();
+            if (duplicates.HasDuplicates()) duplicates.AppendToSb(stringBuilder, item);
         }
         return stringBuilder.ToString();
     }
     [Obsolete("everything from here will be converted to CsprojInstance. Don't add a single method here!")]
-    public static string CsprojPathFromName(string slnFolder, string fnwoe)
+    public static string CsprojPathFromName(string slnFolder, string fileNameWithoutExtension)
     {
         //GetCsprojsGlobal.
-        var path = Path.Combine(slnFolder, fnwoe, fnwoe + ".csproj");
+        var path = Path.Combine(slnFolder, fileNameWithoutExtension, fileNameWithoutExtension + ".csproj");
         if (!File.Exists(path)) ThrowEx.Custom(path + " does not exists!");
         return path;
     }
@@ -73,8 +72,8 @@ public class CsprojHelper : CsprojConsts
         {
             if (!path.StartsWith(slnFolder)) ThrowEx.Custom(path + " Not starting with " + slnFolder);
             path = path.Replace(slnFolder, "");
-            var fnwoe = SH.RemoveAfterFirst(path, "\\");
-            return Path.Combine(slnFolder, fnwoe, fnwoe + ".csproj");
+            var projectName = SH.RemoveAfterFirst(path, "\\");
+            return Path.Combine(slnFolder, projectName, projectName + ".csproj");
         }
         var pathCopy = new string(path);
         while (true)
@@ -88,8 +87,8 @@ public class CsprojHelper : CsprojConsts
     {
         foreach (var item in list)
         {
-            var csi = new CsprojInstance(item);
-            var xmlContent = await csi.RemoveDuplicatedProjectAndPackageReferences();
+            var csprojInstance = new CsprojInstance(item);
+            var xmlContent = await csprojInstance.RemoveDuplicatedProjectAndPackageReferences();
             await File.WriteAllTextAsync(item, xmlContent);
         }
     }
@@ -112,18 +111,18 @@ public class CsprojHelper : CsprojConsts
         {
             xmlDocument.Load(pathOrContentCsproj);
         }
-        var versionEl = xmlDocument.SelectNodes("/Project/ItemGroup/" + ItemGroupTagName.ProjectReference);
-        var csi = new CsprojInstance(xmlDocument);
-        foreach (XmlNode item in versionEl)
+        var projectReferenceNodes = xmlDocument.SelectNodes("/Project/ItemGroup/" + ItemGroupTagName.ProjectReference);
+        var csprojInstance = new CsprojInstance(xmlDocument);
+        foreach (XmlNode item in projectReferenceNodes)
         {
             var include = XmlHelper.GetAttrValueOrInnerElement(item, Include);
-            var fnwoe = Path.GetFileNameWithoutExtension(include);
+            var projectName = Path.GetFileNameWithoutExtension(include);
             // EN: If I already have it as nuget
             // CZ: Pokud už jej mám na nugetu
-            if (availableNugetPackages.Contains(fnwoe))
+            if (availableNugetPackages.Contains(projectName))
             {
-                var newEl = csi.CreateNewPackageReference(fnwoe, "*");
-                item.ParentNode?.ReplaceChild(newEl, item);
+                var newPackageReference = csprojInstance.CreateNewPackageReference(projectName, "*");
+                item.ParentNode?.ReplaceChild(newPackageReference, item);
             }
             // EN: Can't break here when I want to replace in whole file - would replace only first one
             // CZ: Tady break nemůže být když chci nahradit v celém souboru - nahradil by se mi pouze první
@@ -149,43 +148,43 @@ public class CsprojHelper : CsprojConsts
         var removedProjects = new List<string>();
         // EN: Original replacement logic
         // CZ: Původní logika nahrazování
-        var xmlDoc = new XmlDocument();
-        xmlDoc.LoadXml(contentCsproj);
-        var projectReferences = xmlDoc.GetElementsByTagName("ProjectReference");
+        var xmlDocument = new XmlDocument();
+        xmlDocument.LoadXml(contentCsproj);
+        var projectReferences = xmlDocument.GetElementsByTagName("ProjectReference");
         var toRemove = new List<XmlNode>();
-        foreach (XmlNode pr in projectReferences)
+        foreach (XmlNode projectReference in projectReferences)
         {
-            var include = pr.Attributes?["Include"]?.Value;
+            var include = projectReference.Attributes?["Include"]?.Value;
             if (include != null)
             {
                 var projectName = Path.GetFileNameWithoutExtension(include);
                 if (availableNugetPackagesS.Contains(projectName))
                 {
                     removedProjects.Add(projectName);
-                    toRemove.Add(pr);
+                    toRemove.Add(projectReference);
                 }
             }
         }
         // EN: Remove ProjectReference and optionally add PackageReference
         // CZ: Odstraň ProjectReference a případně přidej PackageReference
-        foreach (var pr in toRemove)
+        foreach (var projectReference in toRemove)
         {
-            var projectName = Path.GetFileNameWithoutExtension(pr.Attributes["Include"].Value);
-            pr.ParentNode.RemoveChild(pr);
+            var projectName = Path.GetFileNameWithoutExtension(projectReference.Attributes["Include"].Value);
+            projectReference.ParentNode.RemoveChild(projectReference);
             // EN: Add PackageReference
             // CZ: Přidej PackageReference
-            var itemGroup = xmlDoc.CreateElement("ItemGroup");
-            var pkgRef = xmlDoc.CreateElement("PackageReference");
-            var attr = xmlDoc.CreateAttribute("Include");
-            attr.Value = projectName;
-            pkgRef.Attributes.Append(attr);
-            itemGroup.AppendChild(pkgRef);
-            xmlDoc.DocumentElement.AppendChild(itemGroup);
+            var itemGroup = xmlDocument.CreateElement("ItemGroup");
+            var packageReference = xmlDocument.CreateElement("PackageReference");
+            var includeAttribute = xmlDocument.CreateAttribute("Include");
+            includeAttribute.Value = projectName;
+            packageReference.Attributes.Append(includeAttribute);
+            itemGroup.AppendChild(packageReference);
+            xmlDocument.DocumentElement.AppendChild(itemGroup);
         }
 
         // EN: Return formatted XML instead of unformatted
         // CZ: Vrať formátovaný XML místo neformátovaného
-        return (FormatXml(xmlDoc.OuterXml), removedProjects);
+        return (FormatXml(xmlDocument.OuterXml), removedProjects);
     }
 
     /// <summary>
@@ -198,8 +197,8 @@ public class CsprojHelper : CsprojConsts
     {
         if (!contentOrPath.StartsWith("<")) contentOrPath = await File.ReadAllTextAsync(contentOrPath);
         var data = new CsprojData();
-        var xValue = XDocument.Parse(contentOrPath);
-        foreach (var item in xValue.Root.Descendants())
+        var xDocument = XDocument.Parse(contentOrPath);
+        foreach (var item in xDocument.Root.Descendants())
             if (item.Name == "PropertyGroup")
             {
                 //RH.SetPropertyToInnerClass(data.PropertyGroup, item.Name, item.Value);
@@ -224,7 +223,7 @@ public class CsprojHelper : CsprojConsts
         for (var index = 0; index < list.Count; index++)
         {
             var item = list[index];
-            if (ClassCodeElements.Any(data => item.Contains(data))) break;
+            if (ClassCodeElements.Any(codeElement => item.Contains(codeElement))) break;
             if (item.StartsWith("#else"))
             {
                 var line = list[index + 1].Trim();
@@ -233,28 +232,28 @@ public class CsprojHelper : CsprojConsts
             }
             if (item.StartsWith("namespace "))
             {
-                var data = item.Trim().TrimEnd(';').TrimEnd('{').Trim();
-                data = data.Replace("namespace ", "");
-                var firstPart = data.Split('.')[0];
+                var namespaceLine = item.Trim().TrimEnd(';').TrimEnd('{').Trim();
+                namespaceLine = namespaceLine.Replace("namespace ", "");
+                var firstPart = namespaceLine.Split('.')[0];
 #if DEBUG
-                //if (data.Contains(";"))
+                //if (namespaceLine.Contains(";"))
                 //{
                 //    ThrowEx.Custom("NS can't contains ;");
                 //}
-                //if (data == "SunamoDateTime")
+                //if (namespaceLine == "SunamoDateTime")
                 //{
                 //}
-                if (data == "SunamoData")
+                if (namespaceLine == "SunamoData")
                 {
                 }
-                if (data == "SunamoData.Data")
+                if (namespaceLine == "SunamoData.Data")
                 {
                 }
-                if (firstPart == "SunamoText" || data == "SunamoText")
+                if (firstPart == "SunamoText" || namespaceLine == "SunamoText")
                 {
                 }
 #endif
-                return (firstPart, CsprojNsHelper.SanitizeProjectName(data));
+                return (firstPart, CsprojNsHelper.SanitizeProjectName(namespaceLine));
             }
         }
         return (null, null);

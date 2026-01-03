@@ -67,14 +67,13 @@ public partial class CsprojInstance : CsprojConsts
     /// </summary>
     public void CreateOrReplaceMicrosoft_Extensions_Logging_Abstractions()
     {
-        //moveAllItemsInItemGroupWhichContainsInInclude(ItemGroupTagName.PackageReference, "Include", "readme.md");
-        var newEl = CreateNewItemGroupElement(ItemGroupTagName.PackageReference, "Microsoft.Extensions.Logging.Abstractions", "*", true, null);
+        var newElement = CreateNewItemGroupElement(ItemGroupTagName.PackageReference, "Microsoft.Extensions.Logging.Abstractions", "*", true, null);
 
-        var include = GetItemGroup(ItemGroupTagName.PackageReference, "Include", "Microsoft.Extensions.Logging.Abstractions");
+        var existingNode = GetItemGroup(ItemGroupTagName.PackageReference, "Include", "Microsoft.Extensions.Logging.Abstractions");
 
-        if (include == null)
+        if (existingNode == null)
         {
-            AddXmlElementToItemGroupOrCreate(newEl);
+            AddXmlElementToItemGroupOrCreate(newElement);
         }
     }
 
@@ -100,19 +99,19 @@ public partial class CsprojInstance : CsprojConsts
     public void CreateOrReplaceItemGroupForReadmeMd()
     {
         RemoveAllItemsInItemGroupWhichContainsInInclude(ItemGroupTagName.None, "Include", "readme.md");
-        var newEl = CreateNewItemGroupElement(ItemGroupTagName.None, null, null, true, ".");
+        var newElement = CreateNewItemGroupElement(ItemGroupTagName.None, null, null, true, ".");
 
-        AddXmlElementToItemGroupOrCreate(newEl);
+        AddXmlElementToItemGroupOrCreate(newElement);
     }
 
     /// <summary>
     /// EN: Removes property group item by tag name.
     /// CZ: Odstraní položku property group podle názvu tagu.
     /// </summary>
-    /// <param name="tag">EN: Tag name to remove. CZ: Název tagu k odstranění.</param>
-    public void RemovePropertyGroupItem(string tag)
+    /// <param name="tagName">EN: Tag name to remove. CZ: Název tagu k odstranění.</param>
+    public void RemovePropertyGroupItem(string tagName)
     {
-        var node = XmlDocument.SelectSingleNode("/Project/PropertyGroup/" + tag);
+        var node = XmlDocument.SelectSingleNode("/Project/PropertyGroup/" + tagName);
         node?.ParentNode?.RemoveChild(node);
     }
 
@@ -133,16 +132,16 @@ public partial class CsprojInstance : CsprojConsts
 
 
 
-    public string? PropertyGroupItemContent(string tag)
+    public string? PropertyGroupItemContent(string tagName)
     {
-        var text = XmlDocument.SelectSingleNode("/Project/PropertyGroup/" + tag);
-        if (text == null) return null;
-        return text.InnerText;
+        var node = XmlDocument.SelectSingleNode("/Project/PropertyGroup/" + tagName);
+        if (node == null) return null;
+        return node.InnerText;
     }
 
-    public void RemoveSingleItemGroup(string attrValue, ItemGroupTagName tagName)
+    public void RemoveSingleItemGroup(string attributeValue, ItemGroupTagName tagName)
     {
-        var node = XmlDocument.SelectSingleNode($"/Project/ItemGroup/{tagName}[@{Include} = '{attrValue}']");
+        var node = XmlDocument.SelectSingleNode($"/Project/ItemGroup/{tagName}[@{Include} = '{attributeValue}']");
         node?.ParentNode?.RemoveChild(node);
     }
 
@@ -164,32 +163,32 @@ public partial class CsprojInstance : CsprojConsts
     public XmlElement CreateNewItemGroupElement(ItemGroupTagName tagName, string include, string version, bool? pack,
         string packagePath)
     {
-        var newEl = XmlDocument.CreateElement(tagName.ToString());
+        var newElement = XmlDocument.CreateElement(tagName.ToString());
         if (include != null)
         {
-            var attr = CreateAttr(newEl, Include, include);
-            newEl.Attributes.Append(attr);
+            var includeAttribute = CreateAttribute(newElement, Include, include);
+            newElement.Attributes.Append(includeAttribute);
         }
 
         if (version != null)
         {
-            var attrVersion = CreateAttr(newEl, Version, "*");
-            newEl.Attributes.Append(attrVersion);
+            var versionAttribute = CreateAttribute(newElement, Version, "*");
+            newElement.Attributes.Append(versionAttribute);
         }
 
         if (pack.HasValue)
         {
-            var packAttr = CreateAttr(newEl, "Pack", pack.Value.ToString());
-            newEl.Attributes.Append(packAttr);
+            var packAttribute = CreateAttribute(newElement, "Pack", pack.Value.ToString());
+            newElement.Attributes.Append(packAttribute);
         }
 
         if (packagePath != null)
         {
-            var packagePathAttr = CreateAttr(newEl, "PackagePath", packagePath);
-            newEl.Attributes.Append(packagePathAttr);
+            var packagePathAttribute = CreateAttribute(newElement, "PackagePath", packagePath);
+            newElement.Attributes.Append(packagePathAttribute);
         }
 
-        return newEl;
+        return newElement;
     }
 
     public void AddXmlElementToItemGroupOrCreate(XmlElement element)
@@ -198,20 +197,20 @@ public partial class CsprojInstance : CsprojConsts
         if (itemGroup == null)
         {
             var project = XmlDocument.SelectSingleNode("/Project");
-            var newEl = XmlDocument.CreateElement("ItemGroup");
-            itemGroup = project.AppendChild(newEl);
+            var newItemGroup = XmlDocument.CreateElement("ItemGroup");
+            itemGroup = project.AppendChild(newItemGroup);
         }
 
         itemGroup.AppendChild(element);
     }
 
-    private XmlAttribute CreateAttr(XmlElement element, string attrName, string attrValue)
+    private XmlAttribute CreateAttribute(XmlElement element, string attributeName, string attributeValue)
     {
-        var attr = XmlDocument.CreateAttribute(attrName);
-        attr.Value = attrValue;
+        var attribute = XmlDocument.CreateAttribute(attributeName);
+        attribute.Value = attributeValue;
 
-        var newAttr = element.Attributes.Append(attr);
-        return newAttr;
+        var appendedAttribute = element.Attributes.Append(attribute);
+        return appendedAttribute;
     }
 
     public string TurnOnOffAsyncConditionalCompilationSymbol(bool add)
@@ -219,21 +218,21 @@ public partial class CsprojInstance : CsprojConsts
         return AddRemoveDefineConstant(add, ASYNC);
     }
 
-    public void AddOrEditPropertyGroupItem(string tag, string content, ForceValueForKey forceValueForKey)
+    public void AddOrEditPropertyGroupItem(string tagName, string content, ForceValueForKey forceValueForKey)
     {
-        var versionEl = XmlDocument.SelectSingleNode("/Project/PropertyGroup/" + tag);
+        var existingElement = XmlDocument.SelectSingleNode("/Project/PropertyGroup/" + tagName);
 
-        content = SetValueByDict(content, tag, forceValueForKey);
+        content = SetValueByDict(content, tagName, forceValueForKey);
 
-        if (versionEl != null)
+        if (existingElement != null)
         {
-            versionEl.InnerText = content;
+            existingElement.InnerText = content;
         }
         else
         {
             var propertyGroupNode = XmlDocument.SelectSingleNode("/Project/PropertyGroup");
-            var newEl = propertyGroupNode.AddElement(tag);
-            newEl.InnerText = content;
+            var newElement = propertyGroupNode.AddElement(tagName);
+            newElement.InnerText = content;
         }
     }
 
@@ -247,7 +246,7 @@ public partial class CsprojInstance : CsprojConsts
         return AddRemovePropertyGroupItem(add, "DefineConstants", defineConstant);
     }
 
-    public string AddRemovePropertyGroupItem(bool add, string tag, string partValue)
+    public string AddRemovePropertyGroupItem(bool add, string tagName, string partValue)
     {
         var nodes = XmlDocument.SelectNodes("/Project/PropertyGroup");
 
@@ -266,10 +265,10 @@ public partial class CsprojInstance : CsprojConsts
                 continue;
             }
 
-            var data = condition.Replace(" ", "");
-            if (data == Release)
+            var conditionWithoutSpaces = condition.Replace(" ", "");
+            if (conditionWithoutSpaces == Release)
                 isRelease = true;
-            else if (data == Debug) isDebug = true;
+            else if (conditionWithoutSpaces == Debug) isDebug = true;
 
             if (isDebug && isDebugGlobal)
             {
@@ -283,7 +282,7 @@ public partial class CsprojInstance : CsprojConsts
 
             if (isDebug || isRelease)
             {
-                var singleNode = propertyGroup.SelectSingleNode(tag);
+                var singleNode = propertyGroup.SelectSingleNode(tagName);
 
                 if (singleNode != null)
                 {
@@ -293,7 +292,7 @@ public partial class CsprojInstance : CsprojConsts
                 {
                     var project = XmlDocument.SelectSingleNode("/Project");
 
-                    AddPropertyGroupItemElement(XmlDocument, isRelease ? Release : Debug, add, partValue, tag, project, propertyGroup, []);
+                    AddPropertyGroupItemElement(isRelease ? Release : Debug, add, partValue, tagName, project, propertyGroup, []);
                 }
 
                 if (isDebug)
@@ -309,9 +308,9 @@ public partial class CsprojInstance : CsprojConsts
 
 
         // First must be debug due to unit tests
-        if (!isDebugGlobal) AddPropertyGroupItemToProject(XmlDocument, Debug, add, partValue, tag, []);
+        if (!isDebugGlobal) AddPropertyGroupItemToProject(Debug, add, partValue, tagName, []);
 
-        if (!isReleaseGlobal) AddPropertyGroupItemToProject(XmlDocument, Release, add, partValue, tag, []);
+        if (!isReleaseGlobal) AddPropertyGroupItemToProject(Release, add, partValue, tagName, []);
 
         return XHelper.FormatXmlInMemory(XmlDocument.OuterXml);
     }
@@ -341,43 +340,42 @@ public partial class CsprojInstance : CsprojConsts
     /// EN: Adds only PropertyGroup text attr like '$(Configuration)|$(Platform)'=='Debug|AnyCPU'.
     /// CZ: Přidává pouze PropertyGroup textový atribut jako '$(Configuration)|$(Platform)'=='Debug|AnyCPU'.
     /// </summary>
-    /// <param name="xmlDocument">EN: XML document. CZ: XML dokument.</param>
     /// <param name="innerAttrValueCondition">EN: Inner attribute value condition. CZ: Vnitřní hodnota podmínky atributu.</param>
     /// <param name="add">EN: Whether to add. CZ: Zda přidat.</param>
     /// <param name="defineConstantValue">EN: Define constant value. CZ: Hodnota definované konstanty.</param>
-    /// <param name="tag">EN: Tag name. CZ: Název tagu.</param>
+    /// <param name="tagName">EN: Tag name. CZ: Název tagu.</param>
     /// <param name="forceValueForKey">EN: Force value for key. CZ: Vynucená hodnota pro klíč.</param>
-    private void AddPropertyGroupItemToProject(XmlDocument xmlDocument, string innerAttrValueCondition, bool add,
-        string defineConstantValue, string tag, ForceValueForKey forceValueForKey)
+    private void AddPropertyGroupItemToProject(string innerAttrValueCondition, bool add,
+        string defineConstantValue, string tagName, ForceValueForKey forceValueForKey)
     {
-        var project = xmlDocument.SelectSingleNode("/Project");
+        var project = XmlDocument.SelectSingleNode("/Project");
 
-        var propertyGroup = xmlDocument.CreateNode(XmlNodeType.Element, PropertyGroup, null);
-        AddPropertyGroupItemElement(xmlDocument, innerAttrValueCondition, add, defineConstantValue, tag, project, propertyGroup, forceValueForKey);
+        var propertyGroup = XmlDocument.CreateNode(XmlNodeType.Element, PropertyGroup, null);
+        AddPropertyGroupItemElement(innerAttrValueCondition, add, defineConstantValue, tagName, project, propertyGroup, forceValueForKey);
     }
 
-    private void AddPropertyGroupItemElement(XmlDocument xmlDocument, string innerAttrValueCondition, bool add, string defineConstantValue, string tag, XmlNode? project, XmlNode propertyGroup, ForceValueForKey forceValueForKey)
+    private void AddPropertyGroupItemElement(string innerAttrValueCondition, bool add, string defineConstantValue, string tagName, XmlNode? project, XmlNode propertyGroup, ForceValueForKey forceValueForKey)
     {
-        var defineConstant = xmlDocument.CreateNode(XmlNodeType.Element, tag, null);
-        defineConstantValue = SetValueByDict(defineConstantValue, tag, forceValueForKey);
+        var defineConstant = XmlDocument.CreateNode(XmlNodeType.Element, tagName, null);
+        defineConstantValue = SetValueByDict(defineConstantValue, tagName, forceValueForKey);
 
-        defineConstant.InnerXml = (tag == DefineConstants ? DefineConstantsInner + ";" : "") + (add ? defineConstantValue : "");
+        defineConstant.InnerXml = (tagName == DefineConstants ? DefineConstantsInner + ";" : "") + (add ? defineConstantValue : "");
         propertyGroup.AppendChild(defineConstant);
 
-        var propertyGroupConditionAttr = xmlDocument.CreateAttribute(Condition);
-        propertyGroupConditionAttr.Value = innerAttrValueCondition;
+        var propertyGroupConditionAttribute = XmlDocument.CreateAttribute(Condition);
+        propertyGroupConditionAttribute.Value = innerAttrValueCondition;
 
-        propertyGroup.Attributes.Append(propertyGroupConditionAttr);
+        propertyGroup.Attributes.Append(propertyGroupConditionAttribute);
 
 
         project.AppendChild(propertyGroup);
     }
 
-    private string SetValueByDict(string defineConstantValue, string tag, ForceValueForKey forceValueForKey)
+    private string SetValueByDict(string defineConstantValue, string tagName, ForceValueForKey forceValueForKey)
     {
         if (forceValueForKey.TryGetValue(Path.GetFileNameWithoutExtension(PathFs), out var forceValueForKeyDict))
         {
-            if (forceValueForKeyDict.TryGetValue(tag, out var forceValue))
+            if (forceValueForKeyDict.TryGetValue(tagName, out var forceValue))
             {
                 defineConstantValue = forceValue;
             }
@@ -462,23 +460,20 @@ public partial class CsprojInstance : CsprojConsts
     }
 
 
-    public async Task ReplacePackageReferenceForProjectReference(string pathCsproj/*, string pathSlnFolder*/)
+    public async Task ReplacePackageReferenceForProjectReference(string pathCsproj)
     {
-        //pathSlnFolder = pathSlnFolder.TrimEnd('\\') + "\\";
+        var csprojInstance = new CsprojInstance(pathCsproj);
 
-        var csp = new CsprojInstance(pathCsproj);
+        var packageReferences = ItemsInItemGroup(ItemGroupTagName.PackageReference);
 
-        var packagesRef = ItemsInItemGroup(ItemGroupTagName.PackageReference);
-
-        foreach (var item in packagesRef)
+        foreach (var item in packageReferences)
         {
-            //var fnwoe = Path.GetFileNameWithoutExtension(item.Include);
-            csp.RemoveSingleItemGroup(item.Include, ItemGroupTagName.PackageReference);
-            csp.CreateNewItemGroupElement(ItemGroupTagName.ProjectReference,
+            csprojInstance.RemoveSingleItemGroup(item.Include, ItemGroupTagName.PackageReference);
+            csprojInstance.CreateNewItemGroupElement(ItemGroupTagName.ProjectReference,
                 "..\\" + item.Include + "\\" + item.Include + ".csproj", null, null, null);
         }
 
-        csp.Save();
+        csprojInstance.Save();
     }
 
 
@@ -487,8 +482,8 @@ public partial class CsprojInstance : CsprojConsts
         var packages = ItemsInItemGroup(ItemGroupTagName.PackageReference);
         var projects = ItemsInItemGroup(ItemGroupTagName.ProjectReference);
 
-        var packagesNames = packages.Select(data => data.Include).ToList();
-        var projectsNames = projects.Select(data => Path.GetFileNameWithoutExtension(data.Include)).ToList();
+        var packagesNames = packages.Select(package => package.Include).ToList();
+        var projectsNames = projects.Select(project => Path.GetFileNameWithoutExtension(project.Include)).ToList();
 
         var duplicatedPackages = CAG.GetDuplicities(packagesNames);
         var duplicatedProjects = CAG.GetDuplicities(projectsNames);
@@ -528,20 +523,20 @@ csprojNameToRelativePath.Add(key, value);
         var alreadyProcessedPackages = new List<string>();
         var alreadyProcessedProjects = new List<string>();
 
-        var csi = new CsprojInstance(XmlDocument);
+        var csprojInstance = new CsprojInstance(XmlDocument);
 
 
         foreach (var item in data.DuplicatedPackages)
             if (!alreadyProcessedPackages.Contains(item))
                 alreadyProcessedPackages.Add(item);
             else
-                csi.RemoveSingleItemGroup(item, ItemGroupTagName.PackageReference);
+                csprojInstance.RemoveSingleItemGroup(item, ItemGroupTagName.PackageReference);
 
         foreach (var item in data.DuplicatedProjects)
             if (!alreadyProcessedProjects.Contains(item))
                 alreadyProcessedProjects.Add(item);
             else
-                csi.RemoveSingleItemGroup(csprojNameToRelativePath[item], ItemGroupTagName.ProjectReference);
+                csprojInstance.RemoveSingleItemGroup(csprojNameToRelativePath[item], ItemGroupTagName.ProjectReference);
 
         return XmlDocument.OuterXml;
     }
@@ -558,8 +553,7 @@ csprojNameToRelativePath.Add(key, value);
 
         if (data.HasDuplicates())
         {
-            var result = await RemoveDuplicatedProjectAndPackageReferences(data);
-            return result;
+            return await RemoveDuplicatedProjectAndPackageReferences(data);
         }
 
         return XmlDocument.OuterXml;
@@ -576,18 +570,18 @@ csprojNameToRelativePath.Add(key, value);
     public void UpdateItemGroupElementAttribute(ItemGroupTagName tagName, string includeValue, string attributeName, string newValue)
     {
         var node = XmlDocument.SelectSingleNode($"/Project/ItemGroup/{tagName}[@Include='{includeValue}']");
-        if (node is XmlElement el)
+        if (node is XmlElement element)
         {
-            var attr = el.GetAttributeNode(attributeName);
-            if (attr != null)
+            var attribute = element.GetAttributeNode(attributeName);
+            if (attribute != null)
             {
-                attr.Value = newValue;
+                attribute.Value = newValue;
             }
             else
             {
-                var newAttr = XmlDocument.CreateAttribute(attributeName);
-                newAttr.Value = newValue;
-                el.Attributes.Append(newAttr);
+                var newAttribute = XmlDocument.CreateAttribute(attributeName);
+                newAttribute.Value = newValue;
+                element.Attributes.Append(newAttribute);
             }
         }
     }

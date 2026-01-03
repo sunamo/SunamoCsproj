@@ -1,6 +1,4 @@
-// EN: Variable names have been checked and replaced with self-descriptive names
-// CZ: Názvy proměnných byly zkontrolovány a nahrazeny samopopisnými názvy
-
+// variables names: ok
 using System.IO.Compression;
 
 namespace SunamoCsproj.Tests;
@@ -9,9 +7,9 @@ public class CsprojInstanceTests : SwdRepoNames
     [Fact]
     public async Task RemoveSingleItemGroupTest()
     {
-        CsprojInstance csp = new CsprojInstance(await File.ReadAllTextAsync(@"E:\vs\Projects\PlatformIndependentNuGetPackages\SunamoAsync\SunamoAsync.csproj"));
+        CsprojInstance csprojInstance = new CsprojInstance(await File.ReadAllTextAsync(@"E:\vs\Projects\PlatformIndependentNuGetPackages\SunamoAsync\SunamoAsync.csproj"));
 
-        csp.RemoveSingleItemGroup("SunamoArgs", Items.ItemGroupTagName.PackageReference);
+        csprojInstance.RemoveSingleItemGroup("SunamoArgs", Items.ItemGroupTagName.PackageReference);
     }
 
     //
@@ -19,12 +17,12 @@ public class CsprojInstanceTests : SwdRepoNames
     [Fact]
     public void CreateOrReplaceMicrosoft_Extensions_Logging_AbstractionsTest()
     {
-        CsprojInstance csi = new CsprojInstance(@"E:\vs\Projects\_ut2\PlatformIndependentNuGetPackages.Tests\SunamoCsproj.Tests\SunamoCsproj.Tests.csproj");
-        csi.CreateOrReplaceMicrosoft_Extensions_Logging_Abstractions();
+        CsprojInstance csprojInstance = new CsprojInstance(@"E:\vs\Projects\_ut2\PlatformIndependentNuGetPackages.Tests\SunamoCsproj.Tests\SunamoCsproj.Tests.csproj");
+        csprojInstance.CreateOrReplaceMicrosoft_Extensions_Logging_Abstractions();
 
 
 
-        csi.Save();
+        csprojInstance.Save();
     }
 
     [Fact]
@@ -48,10 +46,10 @@ public class CsprojInstanceTests : SwdRepoNames
 
     public void AddRemoveNoWarnTestWorker(string csprojPath)
     {
-        CsprojInstance csi = new(csprojPath);
-        csi.AddRemoveNoWarn(true, "CA1822");
+        CsprojInstance csprojInstance = new(csprojPath);
+        csprojInstance.AddRemoveNoWarn(true, "CA1822");
 
-        csi.Save();
+        csprojInstance.Save();
     }
 
     //
@@ -59,19 +57,19 @@ public class CsprojInstanceTests : SwdRepoNames
     [Fact]
     public void ItemsInItemGroupTest()
     {
-        CsprojInstance csi = new(@"E:\vs\Projects\_WhenNeedToEditAllCorruptedSlns\CommandsToAllCsprojs.Cmd\CommandsToAllCsprojs.Cmd\CommandsToAllCsprojs.Cmd.csproj");
+        CsprojInstance csprojInstance = new(@"E:\vs\Projects\_WhenNeedToEditAllCorruptedSlns\CommandsToAllCsprojs.Cmd\CommandsToAllCsprojs.Cmd\CommandsToAllCsprojs.Cmd.csproj");
 
-        var data = csi.ItemsInItemGroup(ItemGroupTagName.PackageReference);
-        var d2 = csi.ItemsInItemGroup(ItemGroupTagName.ProjectReference);
+        var packageReferences = csprojInstance.ItemsInItemGroup(ItemGroupTagName.PackageReference);
+        var projectReferences = csprojInstance.ItemsInItemGroup(ItemGroupTagName.ProjectReference);
 
     }
 
     [Fact]
     public async Task RemoveDuplicatesInItemGroupTest()
     {
-        CsprojInstance csi = new(@"D:\_Test\PlatformIndependentNuGetPackages\SunamoCsproj\DetectDuplicatedNugetPackages.csproj");
+        CsprojInstance csprojInstance = new(@"D:\_Test\PlatformIndependentNuGetPackages\SunamoCsproj\DetectDuplicatedNugetPackages.csproj");
 
-        var newCsprojContent = await csi.RemoveDuplicatedProjectAndPackageReferences(null);
+        var newCsprojContent = await csprojInstance.RemoveDuplicatedProjectAndPackageReferences(null);
         await File.WriteAllTextAsync(@"E:\vs\Projects\_tests\CompareTwoFiles\CompareTwoFiles\xml\1.xml", newCsprojContent);
     }
 
@@ -79,10 +77,10 @@ public class CsprojInstanceTests : SwdRepoNames
     [Fact]
     public void PropertyGroupItemContentTest()
     {
-        CsprojInstance csi = new(@"E:\vs\Projects\PlatformIndependentNuGetPackages\SunamoCsproj\SunamoCsproj.csproj");
+        CsprojInstance csprojInstance = new(@"E:\vs\Projects\PlatformIndependentNuGetPackages\SunamoCsproj\SunamoCsproj.csproj");
 
         //var data = await CsprojHelper.PropertyGroupItemContent(@"E:\vs\Projects\_ut2\PlatformIndependentNuGetPackages.Tests\SunamoCsproj.Tests\SunamoCsproj.Tests.csproj", "Description");
-        var d2 = csi.PropertyGroupItemContent("Description");
+        var description = csprojInstance.PropertyGroupItemContent("Description");
     }
 
     [Fact]
@@ -90,26 +88,26 @@ public class CsprojInstanceTests : SwdRepoNames
     {
         // Arrange
 
-        XmlDocument xd = new XmlDocument();
-        xd.LoadXml("<Project Sdk=\"Microsoft.NET.Sdk\"></Project>");
+        XmlDocument xmlDocument = new XmlDocument();
+        xmlDocument.LoadXml("<Project Sdk=\"Microsoft.NET.Sdk\"></Project>");
 
         const string SunamoShared = "SunamoShared";
 
-        var csi = new CsprojInstance(xd);
-        csi.CreateNewPackageReference(SunamoShared, "*");
-        csi.CreateNewPackageReference(SunamoInterfaces, "*");
+        var csprojInstance = new CsprojInstance(xmlDocument);
+        csprojInstance.CreateNewPackageReference(SunamoShared, "*");
+        csprojInstance.CreateNewPackageReference(SunamoInterfaces, "*");
 
-        var xml = xd.OuterXml;
-        Console.WriteLine(xml);
+        var xmlAfterFirstPackages = xmlDocument.OuterXml;
+        Console.WriteLine(xmlAfterFirstPackages);
         Debugger.Break();
 
         foreach (var item in new string[] { SunamoArgs, SunamoInterfaces })
         {
-            csi.CreateNewPackageReference(item, "1");
+            csprojInstance.CreateNewPackageReference(item, "1");
         }
 
-        var xml2 = xd.OuterXml;
-        Console.WriteLine(xml2);
+        var xmlAfterSecondPackages = xmlDocument.OuterXml;
+        Console.WriteLine(xmlAfterSecondPackages);
         Debugger.Break();
         // Act
 
