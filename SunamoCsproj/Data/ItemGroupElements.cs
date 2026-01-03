@@ -1,23 +1,28 @@
+// variables names: ok
 namespace SunamoCsproj.Data;
 
+/// <summary>
+/// Collection of ItemGroup elements from csproj file.
+/// </summary>
 public class ItemGroupElements
 {
     /// <summary>
-    /// V�echny package references
+    /// All package or project references.
     /// </summary>
-    public List<ItemGroupElement> list = [];
+    public List<ItemGroupElement> List { get; set; } = [];
 
     /// <summary>
-    /// A1 = Seznam kter� m� m�t v�echno v 1. lize
+    /// Returns items that are NOT in the specified allowed list.
+    /// Used to find references that should not be present.
     /// </summary>
-    /// <param name="deps"></param>
-    /// <returns></returns>
-    public List<string> HaveOnlyDepsFromList(List<string> deps)
+    /// <param name="allowedDependencies">List of allowed dependency names.</param>
+    /// <returns>List of dependency names that are not in the allowed list.</returns>
+    public List<string> HaveOnlyDepsFromList(List<string> allowedDependencies)
     {
         List<string> result = [];
-        foreach (var item in list)
+        foreach (var item in List)
         {
-            if (!deps.Contains(item.Include))
+            if (!allowedDependencies.Contains(item.Include))
             {
                 result.Add(item.Include);
             }

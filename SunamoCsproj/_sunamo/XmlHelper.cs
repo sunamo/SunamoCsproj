@@ -1,3 +1,4 @@
+// variables names: ok
 namespace SunamoCsproj._sunamo;
 
 /// <summary>
@@ -30,13 +31,13 @@ internal class XmlHelper
     /// <summary>
     /// EN: Converts XmlNodeList to List of XmlNode. XmlNodeList only inherits from IEnumerable and IDisposable.
     /// </summary>
-    /// <param name="xmlNode">Parent XML node.</param>
+    /// <param name="node">Parent XML node.</param>
     /// <returns>List of child nodes.</returns>
-    internal static List<XmlNode> ChildNodes(XmlNode xmlNode)
+    internal static List<XmlNode> ChildNodes(XmlNode node)
     {
         List<XmlNode> result = new List<XmlNode>();
 
-        foreach (XmlNode item in xmlNode.ChildNodes)
+        foreach (XmlNode item in node.ChildNodes)
         {
             result.Add(item);
         }

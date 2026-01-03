@@ -18,8 +18,8 @@ public class CsprojNsHelper
 
         // nutno si povšimnout že mi to dává pryč všechny prázdné řádky
         Assert.Equal(SHGetLines.GetLines(@"using System.Threading.Tasks;
-namespace SunamoCsproj;"), actual.allLinesBefore);
-        Assert.Equal(new List<string>(), actual.foundedNamespaces);
+namespace SunamoCsproj;"), actual.AllLinesBefore);
+        Assert.Equal(new List<string>(), actual.FoundedNamespaces);
 
     }
 
@@ -61,8 +61,8 @@ SunamoCsproj
 #endif
 ;
 namespace SunamoCsproj;
-"), actual.allLinesBefore);
-        Assert.Equal(new List<string>(new string[] { "SunamoString", "SunamoCsproj" }), actual.foundedNamespaces);
+"), actual.AllLinesBefore);
+        Assert.Equal(new List<string>(new string[] { "SunamoString", "SunamoCsproj" }), actual.FoundedNamespaces);
     }
 
     [Fact]
@@ -95,8 +95,8 @@ SunamoString
 #else
 SunamoCsproj
 #endif
-;"), actual.allLinesBefore);
-        Assert.Equal(new List<string>(new string[] { "SunamoString", "SunamoCsproj" }), actual.foundedNamespaces);
+;"), actual.AllLinesBefore);
+        Assert.Equal(new List<string>(new string[] { "SunamoString", "SunamoCsproj" }), actual.FoundedNamespaces);
 
     }
 

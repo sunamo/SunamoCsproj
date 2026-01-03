@@ -1,13 +1,14 @@
+// variables names: ok
 namespace SunamoCsproj.Tests._sunamo;
 internal class CA
 {
-    public static List<string> Trim(List<string> l)
+    public static List<string> Trim(List<string> list)
     {
-        for (int i = 0; i < l.Count; i++)
+        for (int i = 0; i < list.Count; i++)
         {
-            l[i] = l[i].Trim();
+            list[i] = list[i].Trim();
         }
 
-        return l;
+        return list;
     }
 }

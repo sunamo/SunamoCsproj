@@ -1,11 +1,18 @@
+// variables names: ok
 namespace SunamoCsproj._sunamo;
 
-// EN: Variable names have been checked and replaced with self-descriptive names
-// CZ: Názvy proměnných byly zkontrolovány a nahrazeny samopopisnými názvy
+/// <summary>
+/// Helper class for joining strings.
+/// </summary>
 internal class SHJoin
 {
-    internal static string JoinNL(List<string> d)
+    /// <summary>
+    /// Joins list of strings with newline character.
+    /// </summary>
+    /// <param name="lines">The lines to join.</param>
+    /// <returns>Joined string with newline separators.</returns>
+    internal static string JoinNL(List<string> lines)
     {
-        return string.Join('\n', d);
+        return string.Join('\n', lines);
     }
 }

@@ -1,21 +1,23 @@
+// variables names: ok
 namespace SunamoCsproj;
 
 public class CsprojNsHelper
 {
-    // musí být namespace bez mezery na konci, takto se užívá v #if
-    public static string[] keywordsBeforeFirstCodeElementDeclaration =
+    /// <summary>
+    /// EN: Keywords that can appear before the first code element declaration.
+    /// CZ: Klíčová slova která mohou být před první deklarací kódového elementu.
+    /// </summary>
+    public static string[] KeywordsBeforeFirstCodeElementDeclaration =
         { "#if", "using ", "namespace", "#elif", "#else", "#endif", ";" };
 
     /// <summary>
-    ///     Zapíše mi do .cs nové #elif
-    ///     A1 je zde velmi důležité. Je třeba tam předávat fnwoe csproj než cs cesty. Tím jak přilinkovávám soubory, přidávají
-    ///     se mi elif podle projektu kde je soubor fyzicky.
+    /// EN: Writes new #elif directives to .cs file. Parameter reallyOccuredInFilesOrProjectNames is critical - must pass csproj paths, not cs paths, because linked files add elif based on physical project location.
+    /// CZ: Zapíše do .cs nové #elif direktivy. Parametr reallyOccuredInFilesOrProjectNames je kritický - musí předávat csproj cesty, ne cs cesty, protože linkované soubory přidávají elif podle fyzického umístění projektu.
     /// </summary>
-    /// <param name="reallyOccuredInFilesOrProjectNames"></param>
-    /// <param name="pathCsToAppendElif"></param>
-    /// <param name="contentCs"></param>
-    /// <param name="AllNamespaces"></param>
-    /// <returns></returns>
+    /// <param name="reallyOccuredInFilesOrProjectNames">EN: List of files or project names where code really occurs. CZ: Seznam souborů nebo názvů projektů kde se kód skutečně vyskytuje.</param>
+    /// <param name="pathCsToAppendElif">EN: Path to .cs file where to append elif directives. CZ: Cesta k .cs souboru kam připojit elif direktivy.</param>
+    /// <param name="contentCs">EN: Content of .cs file or null to read from file. CZ: Obsah .cs souboru nebo null pro načtení ze souboru.</param>
+    /// <param name="AllNamespaces">EN: All namespaces in the project. CZ: Všechny jmenné prostory v projektu.</param>
     public static async Task WriteNew(List<string> reallyOccuredInFilesOrProjectNames, string pathCsToAppendElif,
         List<string> contentCs, List<string> AllNamespaces)
     {
@@ -30,27 +32,25 @@ public class CsprojNsHelper
 
         var result = await ParseSharpIfToFirstCodeElement(pathCsToAppendElif, contentCs, AllNamespaces, addTo_linked);
 
-        var existingNamespace = result.foundedNamespaces;
-        // pokud už je #if zavedený
+        var existingNamespace = result.FoundedNamespaces;
+        // EN: If #if is already introduced
+        // CZ: Pokud už je #if zavedený
         if (existingNamespace.Count > 0)
         {
-            var dx = contentCs.IndexOf("#else");
+            var indexElse = contentCs.IndexOf("#else");
 
             var stringBuilder = new StringBuilder();
 
-            // nepotřebuji, protože budu přidávat až na místo #else
+            // EN: Not needed because we will add at #else position
+            // CZ: Nepotřebuji, protože budu přidávat až na místo #else
             //if (addEarlierAddedToFile)
             //{
             //    reallyOccuredInFiles.AddRange(existingNamespace);
             //    reallyOccuredInFiles = reallyOccuredInFiles.Distinct().ToList();
             //}
 
-            /*
-            teď je nejzásadnější jak to bude pracovat když je třída partial
-            mělo by to mít svázané tokeny se souborem
-            takže mi bude přidávat ns jen do těch souborů kde jsou potřeba
-            na první pohled vše je zalité sluncem, uvidíme jak potom
-             */
+            // EN: Critical: how will this work when class is partial - should have tokens bound to file, so ns will be added only to files where needed
+            // CZ: Nejzásadnější: jak to bude pracovat když je třída partial - mělo by to mít svázané tokeny se souborem, takže ns jen do souborů kde jsou potřeba
 
             foreach (var item in reallyOccuredInFiles)
             {
@@ -62,8 +62,8 @@ public class CsprojNsHelper
                 }
             }
 
-            var ts = stringBuilder.ToString();
-            count.InsertMultilineString(dx, ts);
+            var textToInsert = stringBuilder.ToString();
+            count.InsertMultilineString(indexElse, textToInsert);
 
             await ThrowWhenThereIsNamespaceOutsideOfSharpIf(pathCsToAppendElif, count, AllNamespaces, addTo_linked);
 
@@ -74,26 +74,27 @@ public class CsprojNsHelper
         }
         else
         {
-            // žádný #if tu ještě není
+            // EN: No #if here yet
+            // CZ: Žádný #if tu ještě není
 
-            // v opačném případě musím zapsat všechny + else. 
-            // NS vezmu z toho co už v souboru bude
+            // EN: Otherwise must write all + else. NS will be taken from what's already in file
+            // CZ: V opačném případě musím zapsat všechny + else. NS vezmu z toho co už v souboru bude
 
-            var nss = count.Where(text => text.StartsWith("namespace ") && text.Trim() != "namespace");
+            var namespaceLines = count.Where(text => text.StartsWith("namespace ") && text.Trim() != "namespace");
             string nsToElse = null;
-            if (!nss.Any())
+            if (!namespaceLines.Any())
             {
                 nsToElse = GenerateNsFromPath(pathCsToAppendElif);
             }
             else
             {
-                if (nss.Count() > 1) ThrowEx.Custom("Contains more than one NS outside of #if");
+                if (namespaceLines.Count() > 1) ThrowEx.Custom("Contains more than one NS outside of #if");
 
-                nsToElse = nss.First();
+                nsToElse = namespaceLines.First();
 
                 if (!nsToElse.EndsWith(";"))
                     ThrowEx.Custom(
-                        "Namespace is not file scoped! Pro začátek by mělo stačit otevřít swld ve VS a u všech zaměnit NS. Na to aby se přidali csproj i co nejsou v sln utility mám. Hledal jsem nějaký kód v count#");
+                        "Namespace is not file scoped! For start it should be enough to open swld in VS and replace NS everywhere. For adding csproj that are not in sln I have utility.");
 
                 nsToElse = nsToElse.Replace("namespace ", "");
                 nsToElse = nsToElse.TrimEnd(';');
@@ -131,18 +132,18 @@ public class CsprojNsHelper
             stringBuilder.AppendLine("#endif");
             stringBuilder.AppendLine(";");
 
-            var dx = SH.GetIndexesOfLinesStartingWith(count, d => d.StartsWith("namespace"));
+            var namespaceIndexes = SH.GetIndexesOfLinesStartingWith(count, line => line.StartsWith("namespace"));
 
-            var ts = stringBuilder.ToString();
+            var textToInsert = stringBuilder.ToString();
 
-            if (dx.Count == 0)
+            if (namespaceIndexes.Count == 0)
             {
-                count.InsertMultilineString(0, ts);
+                count.InsertMultilineString(0, textToInsert);
             }
             else
             {
-                count.RemoveAt(dx.First());
-                count.InsertMultilineString(dx.First(), ts);
+                count.RemoveAt(namespaceIndexes.First());
+                count.InsertMultilineString(namespaceIndexes.First(), textToInsert);
             }
 
             await ThrowWhenThereIsNamespaceOutsideOfSharpIf(pathCsToAppendElif, count, AllNamespaces, addTo_linked);
@@ -154,15 +155,22 @@ public class CsprojNsHelper
     }
 
     /// <summary>
-    ///     Nechám jen písmena nebo čísla
+    /// EN: Keeps only letters or digits from the text.
+    /// CZ: Nechá jen písmena nebo čísla z textu.
     /// </summary>
-    /// <param name="s"></param>
-    /// <returns></returns>
+    /// <param name="text">EN: Text to sanitize. CZ: Text k sanitizaci.</param>
+    /// <returns>EN: Sanitized text with only alphanumeric characters. CZ: Sanitizovaný text pouze s alfanumerickými znaky.</returns>
     public static string SanitizeProjectName(string text)
     {
-        return string.Concat(text.Where(d => char.IsLetterOrDigit(d)));
+        return string.Concat(text.Where(character => char.IsLetterOrDigit(character)));
     }
 
+    /// <summary>
+    /// EN: Gets sanitized project name from .cs file path.
+    /// CZ: Získá sanitizovaný název projektu z cesty k .cs souboru.
+    /// </summary>
+    /// <param name="csPath">EN: Path to .cs file. CZ: Cesta k .cs souboru.</param>
+    /// <returns>EN: Sanitized project name. CZ: Sanitizovaný název projektu.</returns>
     public static string ProjectNameFromCsPath(string csPath)
     {
         var csprojPath = CsprojHelper.GetCsprojFromCsPath(csPath);
@@ -170,9 +178,16 @@ public class CsprojNsHelper
         return sanitized;
     }
 
+    /// <summary>
+    /// EN: Generates namespace from file path.
+    /// CZ: Generuje jmenný prostor z cesty k souboru.
+    /// </summary>
+    /// <param name="path">EN: File path. CZ: Cesta k souboru.</param>
+    /// <returns>EN: Generated namespace. CZ: Vygenerovaný jmenný prostor.</returns>
     private static string GenerateNsFromPath(string path)
     {
-        // Už řeším v _5AddNamespaceByInputFolderName v CommandsToAllCsFiles.Cmd
+        // EN: Already handled in _5AddNamespaceByInputFolderName in CommandsToAllCsFiles.Cmd
+        // CZ: Už řeším v _5AddNamespaceByInputFolderName v CommandsToAllCsFiles.Cmd
 
         var csprojPath = CsprojHelper.GetCsprojFromCsPath(path);
         var csprojDir = FS.WithEndBs(Path.GetDirectoryName(csprojPath));
@@ -195,24 +210,32 @@ public class CsprojNsHelper
         return remain.Replace("\\", ".");
     }
 
+    /// <summary>
+    /// EN: Throws exception if namespace exists outside of #if directive.
+    /// CZ: Vyhodí výjimku pokud jmenný prostor existuje mimo #if direktivu.
+    /// </summary>
+    /// <param name="path">EN: File path. CZ: Cesta k souboru.</param>
+    /// <param name="count">EN: File lines. CZ: Řádky souboru.</param>
+    /// <param name="allNamespaces">EN: All namespaces. CZ: Všechny jmenné prostory.</param>
+    /// <param name="addTo_linked">EN: Add to linked. CZ: Přidat do linkovaných.</param>
     private static async Task ThrowWhenThereIsNamespaceOutsideOfSharpIf(string path, List<string> count,
         List<string> allNamespaces, bool addTo_linked)
     {
-        // zde příště pokračovat
-        // zjistím indexy #if a #elif
+        // EN: Continue here next time - find indexes of #if and #elif
+        // CZ: Zde příště pokračovat - zjistím indexy #if a #elif
 
         var parsed = await ParseSharpIfToFirstCodeElement(path, count, allNamespaces, addTo_linked);
-        var allLinesBefore = parsed.allLinesBefore;
-        var dxElif = SH.GetIndexesOfLinesStartingWith(allLinesBefore, d => d.StartsWith("#elif"));
-        //var dxNs = SH.GetIndexesOfLinesStartingWith(allLinesBefore, d => d.StartsWith("namespace "));
-        var dxNs = SH.GetIndexesOfLinesWhichContainsAnyOfStrings(allLinesBefore, allNamespaces);
+        var allLinesBefore = parsed.AllLinesBefore;
+        var elifIndexes = SH.GetIndexesOfLinesStartingWith(allLinesBefore, line => line.StartsWith("#elif"));
+        //var namespaceIndexes = SH.GetIndexesOfLinesStartingWith(allLinesBefore, line => line.StartsWith("namespace "));
+        var namespaceIndexes = SH.GetIndexesOfLinesWhichContainsAnyOfStrings(allLinesBefore, allNamespaces);
 
-        foreach (var item in dxElif)
+        foreach (var item in elifIndexes)
         {
-            var dx = dxNs.IndexOf(item + 1);
-            if (dx != -1)
+            var namespaceIndex = namespaceIndexes.IndexOf(item + 1);
+            if (namespaceIndex != -1)
             {
-                dxNs.RemoveAt(dx);
+                namespaceIndexes.RemoveAt(namespaceIndex);
             }
             else
             {
@@ -226,33 +249,33 @@ public class CsprojNsHelper
             }
         }
 
-        var first = allLinesBefore.FirstOrDefault(d => d.StartsWith("#if"));
+        var first = allLinesBefore.FirstOrDefault(line => line.StartsWith("#if"));
         if (first == null) throw new Exception("#if was not found");
-        var dxIf = allLinesBefore.IndexOf(first);
-        if (dxIf != -1)
+        var ifIndex = allLinesBefore.IndexOf(first);
+        if (ifIndex != -1)
         {
-            if (dxIf != -1)
-                dxNs.Remove(dxIf + 1);
+            if (ifIndex != -1)
+                namespaceIndexes.Remove(ifIndex + 1);
             else
-                ThrowEx.Custom($"On index {dxIf + 1} is not namespace but should be after #if");
+                ThrowEx.Custom($"On index {ifIndex + 1} is not namespace but should be after #if");
         }
 
-        var firstElse = allLinesBefore.FirstOrDefault(d => d.StartsWith("#else"));
+        var firstElse = allLinesBefore.FirstOrDefault(line => line.StartsWith("#else"));
         if (firstElse == null)
             throw new Exception("#else was not found");
-        var dxElse = allLinesBefore.IndexOf(firstElse);
-        if (dxElse != -1)
+        var elseIndex = allLinesBefore.IndexOf(firstElse);
+        if (elseIndex != -1)
         {
-            if (dxElse != -1)
-                dxNs.Remove(dxElse + 1);
+            if (elseIndex != -1)
+                namespaceIndexes.Remove(elseIndex + 1);
             else
-                ThrowEx.Custom($"On index {dxElse + 1} is not namespace but should be after #else");
+                ThrowEx.Custom($"On index {elseIndex + 1} is not namespace but should be after #else");
         }
 
-        if (dxNs.Count != 0)
+        if (namespaceIndexes.Count != 0)
             ThrowEx.Custom(
-                "Byly vyřazeny všechny namespace po #if nebo #elif. Přesto stále existují NS na těchto indexech: " +
-                string.Join(',', dxNs.ConvertAll(d => d.ToString())));
+                "All namespaces after #if or #elif were excluded. However, there are still NS at these indexes: " +
+                string.Join(',', namespaceIndexes.ConvertAll(index => index.ToString())));
 
         //    var dxNs = parsed.allLinesBefore.Select((middle, index) => new { middle, index })
         //.Where(x => x.middle.StartsWith("#elif "))
@@ -263,13 +286,14 @@ public class CsprojNsHelper
     }
 
     /// <summary>
-    ///     Tato metoda se může volat jen když SetAllNamespaces se dokoná
-    ///     Proto ta první kontrola je v pohodě
+    /// EN: Parses #if directives to first code element. This method can be called only when SetAllNamespaces completes, so first check is OK.
+    /// CZ: Parsuje #if direktivy po první kódový element. Tato metoda se může volat jen když SetAllNamespaces se dokoná, proto ta první kontrola je v pohodě.
     /// </summary>
-    /// <param name="pathCs"></param>
-    /// <param name="content"></param>
-    /// <param name="AllNamespaces"></param>
-    /// <returns></returns>
+    /// <param name="pathCs">EN: Path to .cs file or null. CZ: Cesta k .cs souboru nebo null.</param>
+    /// <param name="content">EN: File content or null to read from file. CZ: Obsah souboru nebo null pro načtení ze souboru.</param>
+    /// <param name="AllNamespaces">EN: All namespaces in project. CZ: Všechny jmenné prostory v projektu.</param>
+    /// <param name="addTo_linked">EN: Add to linked files. CZ: Přidat do linkovaných souborů.</param>
+    /// <returns>EN: Parse result. CZ: Výsledek parsování.</returns>
     public static async Task<ParseSharpIfToFirstCodeElementResult> ParseSharpIfToFirstCodeElement(string? pathCs,
         List<string> content, List<string> AllNamespaces, bool addTo_linked)
     {
@@ -293,7 +317,7 @@ public class CsprojNsHelper
             var line = count[index];
             if (string.IsNullOrWhiteSpace(line)) continue;
 
-            if (!keywordsBeforeFirstCodeElementDeclaration.Any(keyword => line.Contains(keyword)) &&
+            if (!KeywordsBeforeFirstCodeElementDeclaration.Any(keyword => line.Contains(keyword)) &&
                 (addTo_linked ? !AllNamespaces.Contains(line) : true))
                 //if (line.Contains("<"))
                 //{
@@ -301,15 +325,8 @@ public class CsprojNsHelper
                 //}
                 break;
 
-            /*
-Tady je ale další problém
-            NS kontroluji zda jsou an řádku, můžou se tam vyskytovat i tečky, pokud jsou v názvu projektu nebo jsou zanořené níže v adr. struktuře
-            to ale znamená že budu mít více elif, vzrůstající text počtem složek
-            To zase nebude vypadat tak hezky
-            Ale když jsem to celou dobu třídil do složek, nebudu se jich teď zbavovat
-            Snad těch #elif nebude tak hodně jak to vypadá
-
-             */
+            // EN: Another problem: NS checked if on line, can have dots if in project name or nested deeper in folder structure - means more elif, growing text by folder count. Won't look nice but won't remove folders now after organizing. Hopefully not too many #elif
+            // CZ: Další problém: NS kontroluji zda jsou na řádku, můžou se tam vyskytovat i tečky pokud jsou v názvu projektu nebo jsou zanořené níže v adresářové struktuře - to znamená více elif, vzrůstající text počtem složek. Nebude vypadat hezky ale nebudu se složek zbavovat po tom co jsem do nich třídil. Snad těch #elif nebude moc
 
             if (addTo_linked)
             {
@@ -325,10 +342,10 @@ Tady je ale další problém
 
         if (!linesBefore.Contains("#endif") && linesBefore.Contains("#if"))
             ThrowEx.Custom(
-                "linesBefore not contains #endif, celý proces procházení řádků nebyl dokonán. Asi chybělo v AllNamespaces něco mezi #if a #endif");
+                "linesBefore not contains #endif, whole line iteration process was not completed. Probably something missing in AllNamespaces between #if and #endif");
 
-        result2.foundedNamespaces = result;
-        result2.allLinesBefore = linesBefore;
+        result2.FoundedNamespaces = result;
+        result2.AllLinesBefore = linesBefore;
 
         return result2;
     }

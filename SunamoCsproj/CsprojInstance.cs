@@ -1,18 +1,33 @@
 namespace SunamoCsproj;
 
 /// <summary>
-///     Zde jsou ty co používají XmlDocument
-///     Už tu nic nepřidávat, vše už jen do
+/// EN: Class for working with csproj files using XmlDocument. Don't add anything here, add to CsprojHelper instead.
+/// CZ: Třída pro práci s csproj soubory pomocí XmlDocument. Už tu nic nepřidávat, vše do CsprojHelper.
 /// </summary>
 public partial class CsprojInstance : CsprojConsts
 {
+    /// <summary>
+    /// EN: File system path to csproj file.
+    /// CZ: Cesta k csproj souboru na disku.
+    /// </summary>
     public string? PathFs;
 
+    /// <summary>
+    /// EN: Constructor taking XmlDocument directly.
+    /// CZ: Konstruktor přijímající XmlDocument přímo.
+    /// </summary>
+    /// <param name="xmlDocument">EN: XML document. CZ: XML dokument.</param>
     public CsprojInstance(XmlDocument xmlDocument)
     {
         this.XmlDocument = xmlDocument;
     }
 
+    /// <summary>
+    /// EN: Constructor taking path or content.
+    /// CZ: Konstruktor přijímající cestu nebo obsah.
+    /// </summary>
+    /// <param name="path">EN: Path to csproj file. CZ: Cesta k csproj souboru.</param>
+    /// <param name="content">EN: Content or null to load from path. CZ: Obsah nebo null pro načtení z cesty.</param>
     public CsprojInstance(string path, string? content = null)
     {
         XmlDocument = new XmlDocument();
@@ -20,7 +35,7 @@ public partial class CsprojInstance : CsprojConsts
         try
         {
             if (content != null)
-                XmlDocument.LoadXml(path);
+                XmlDocument.LoadXml(content);
             else if (path != null)
                 XmlDocument.Load(path);
             else
@@ -33,16 +48,23 @@ public partial class CsprojInstance : CsprojConsts
     }
 
     /// <summary>
-    ///     Je tento ctor k nečemu?
-    ///     potřebuji path abych mohl vytvořit XmlDocument atd.
-    ///     Ano, je k nečemu, když vkládám jen XmlDocument - na to vytvořím samostatný ctor.
+    /// EN: Is this constructor useful? I need path to create XmlDocument etc. Yes, it is useful when inserting only XmlDocument - for that I create separate ctor.
+    /// CZ: Je tento konstruktor k něčemu? Potřebuji path abych mohl vytvořit XmlDocument atd. Ano, je k něčemu když vkládám jen XmlDocument - na to vytvořím samostatný ctor.
     /// </summary>
     private CsprojInstance()
     {
     }
 
+    /// <summary>
+    /// EN: XML document representing csproj file.
+    /// CZ: XML dokument reprezentující csproj soubor.
+    /// </summary>
     public XmlDocument XmlDocument { get; set; }
 
+    /// <summary>
+    /// EN: Creates or replaces Microsoft.Extensions.Logging.Abstractions package reference.
+    /// CZ: Vytvoří nebo nahradí referenci na balíček Microsoft.Extensions.Logging.Abstractions.
+    /// </summary>
     public void CreateOrReplaceMicrosoft_Extensions_Logging_Abstractions()
     {
         //moveAllItemsInItemGroupWhichContainsInInclude(ItemGroupTagName.PackageReference, "Include", "readme.md");
@@ -56,13 +78,25 @@ public partial class CsprojInstance : CsprojConsts
         }
     }
 
-    private XmlNode GetItemGroup(ItemGroupTagName packageReference, string attName, string attValue)
+    /// <summary>
+    /// EN: Gets item group node by tag name and attribute.
+    /// CZ: Získá uzel item group podle názvu tagu a atributu.
+    /// </summary>
+    /// <param name="tagName">EN: Item group tag name. CZ: Název tagu item group.</param>
+    /// <param name="attributeName">EN: Attribute name. CZ: Název atributu.</param>
+    /// <param name="attributeValue">EN: Attribute value. CZ: Hodnota atributu.</param>
+    /// <returns>EN: XML node or null. CZ: XML uzel nebo null.</returns>
+    private XmlNode GetItemGroup(ItemGroupTagName tagName, string attributeName, string attributeValue)
     {
-        var node = XmlDocument.SelectSingleNode($"/Project/ItemGroup/{packageReference}[@{attName}='{attValue}']");
+        var node = XmlDocument.SelectSingleNode($"/Project/ItemGroup/{tagName}[@{attributeName}='{attributeValue}']");
 
         return node;
     }
 
+    /// <summary>
+    /// EN: Creates or replaces item group for readme.md file.
+    /// CZ: Vytvoří nebo nahradí item group pro readme.md soubor.
+    /// </summary>
     public void CreateOrReplaceItemGroupForReadmeMd()
     {
         RemoveAllItemsInItemGroupWhichContainsInInclude(ItemGroupTagName.None, "Include", "readme.md");
@@ -71,6 +105,11 @@ public partial class CsprojInstance : CsprojConsts
         AddXmlElementToItemGroupOrCreate(newEl);
     }
 
+    /// <summary>
+    /// EN: Removes property group item by tag name.
+    /// CZ: Odstraní položku property group podle názvu tagu.
+    /// </summary>
+    /// <param name="tag">EN: Tag name to remove. CZ: Název tagu k odstranění.</param>
     public void RemovePropertyGroupItem(string tag)
     {
         var node = XmlDocument.SelectSingleNode("/Project/PropertyGroup/" + tag);
@@ -79,17 +118,17 @@ public partial class CsprojInstance : CsprojConsts
 
     public string AddPropertyGroupItemIfNotExists(string key)
     {
-        var desc = PropertyGroupItemContent(key);
+        var content = PropertyGroupItemContent(key);
 
-        if (desc == null)
+        if (content == null)
         {
             Console.WriteLine($"Enter new {key} for " + Path.GetFileNameWithoutExtension(PathFs));
-            desc = Console.ReadLine();
+            content = Console.ReadLine();
 
-            AddOrEditPropertyGroupItem(key, desc, new());
+            AddOrEditPropertyGroupItem(key, content, new());
         }
 
-        return desc;
+        return content;
     }
 
 
@@ -103,8 +142,8 @@ public partial class CsprojInstance : CsprojConsts
 
     public void RemoveSingleItemGroup(string attrValue, ItemGroupTagName tagName)
     {
-        var temp = XmlDocument.SelectSingleNode($"/Project/ItemGroup/{tagName}[@{Include} = '{attrValue}']");
-        temp?.ParentNode?.RemoveChild(temp);
+        var node = XmlDocument.SelectSingleNode($"/Project/ItemGroup/{tagName}[@{Include} = '{attrValue}']");
+        node?.ParentNode?.RemoveChild(node);
     }
 
     public XmlElement CreateNewPackageReference(string include, string version)
@@ -113,14 +152,15 @@ public partial class CsprojInstance : CsprojConsts
     }
 
     /// <summary>
-    ///     Vrací ale jinak bude i value xml
-    ///     Pokud některý parametr není potřeba, vloží se null
-    ///     Pouze vytvoří nový element a vrátí jej, to jestli ho potom vložím přes ReplaceChild či AppendChild už je na mě
+    /// EN: Returns value xml. If parameter not needed, insert null. Only creates new element and returns it, whether I insert it via ReplaceChild or AppendChild is up to me.
+    /// CZ: Vrací value xml. Pokud některý parametr není potřeba, vloží se null. Pouze vytvoří nový element a vrátí jej, zda ho potom vložím přes ReplaceChild či AppendChild je na mně.
     /// </summary>
-    /// <param name="tagName"></param>
-    /// <param name="include"></param>
-    /// <param name="version"></param>
-    /// <returns></returns>
+    /// <param name="tagName">EN: Tag name. CZ: Název tagu.</param>
+    /// <param name="include">EN: Include attribute value or null. CZ: Hodnota atributu Include nebo null.</param>
+    /// <param name="version">EN: Version attribute value or null. CZ: Hodnota atributu Version nebo null.</param>
+    /// <param name="pack">EN: Pack attribute value or null. CZ: Hodnota atributu Pack nebo null.</param>
+    /// <param name="packagePath">EN: PackagePath attribute value or null. CZ: Hodnota atributu PackagePath nebo null.</param>
+    /// <returns>EN: Created XML element. CZ: Vytvořený XML element.</returns>
     public XmlElement CreateNewItemGroupElement(ItemGroupTagName tagName, string include, string version, bool? pack,
         string packagePath)
     {
@@ -152,7 +192,7 @@ public partial class CsprojInstance : CsprojConsts
         return newEl;
     }
 
-    public void AddXmlElementToItemGroupOrCreate(XmlElement xe)
+    public void AddXmlElementToItemGroupOrCreate(XmlElement element)
     {
         var itemGroup = XmlDocument.SelectSingleNode("/Project/ItemGroup");
         if (itemGroup == null)
@@ -162,15 +202,15 @@ public partial class CsprojInstance : CsprojConsts
             itemGroup = project.AppendChild(newEl);
         }
 
-        itemGroup.AppendChild(xe);
+        itemGroup.AppendChild(element);
     }
 
-    private XmlAttribute CreateAttr(XmlElement newEl, string attrName, string attrValue)
+    private XmlAttribute CreateAttr(XmlElement element, string attrName, string attrValue)
     {
         var attr = XmlDocument.CreateAttribute(attrName);
         attr.Value = attrValue;
 
-        var newAttr = newEl.Attributes.Append(attr);
+        var newAttr = element.Attributes.Append(attr);
         return newAttr;
     }
 
@@ -191,8 +231,8 @@ public partial class CsprojInstance : CsprojConsts
         }
         else
         {
-            var founded2 = XmlDocument.SelectSingleNode("/Project/PropertyGroup");
-            var newEl = founded2.AddElement(tag);
+            var propertyGroupNode = XmlDocument.SelectSingleNode("/Project/PropertyGroup");
+            var newEl = propertyGroupNode.AddElement(tag);
             newEl.InnerText = content;
         }
     }
@@ -214,12 +254,12 @@ public partial class CsprojInstance : CsprojConsts
         var isReleaseGlobal = false;
         var isDebugGlobal = false;
 
-        foreach (XmlElement item2 in nodes)
+        foreach (XmlElement propertyGroup in nodes)
         {
             var isRelease = false;
             var isDebug = false;
 
-            var condition = XmlHelper.GetAttributeWithNameValue(item2, "Condition");
+            var condition = XmlHelper.GetAttributeWithNameValue(propertyGroup, "Condition");
 
             if (condition == null)
             {
@@ -243,9 +283,7 @@ public partial class CsprojInstance : CsprojConsts
 
             if (isDebug || isRelease)
             {
-                var ch = item2.ChildNodes;
-
-                var singleNode = item2.SelectSingleNode(tag);
+                var singleNode = propertyGroup.SelectSingleNode(tag);
 
                 if (singleNode != null)
                 {
@@ -255,7 +293,7 @@ public partial class CsprojInstance : CsprojConsts
                 {
                     var project = XmlDocument.SelectSingleNode("/Project");
 
-                    AddPropertyGroupItemElement(XmlDocument, isRelease ? Release : Debug, add, partValue, tag, project, item2, []);
+                    AddPropertyGroupItemElement(XmlDocument, isRelease ? Release : Debug, add, partValue, tag, project, propertyGroup, []);
                 }
 
                 if (isDebug)
@@ -300,31 +338,33 @@ public partial class CsprojInstance : CsprojConsts
     }
 
     /// <summary>
-    ///     Přidává pouze PropertyGroup text attr
-    ///     '$(Configuration)|$(Platform)'=='Debug|AnyCPU'
+    /// EN: Adds only PropertyGroup text attr like '$(Configuration)|$(Platform)'=='Debug|AnyCPU'.
+    /// CZ: Přidává pouze PropertyGroup textový atribut jako '$(Configuration)|$(Platform)'=='Debug|AnyCPU'.
     /// </summary>
-    /// <param name="XmlDocument"></param>
-    /// <param name="innerAttrValueCondition"></param>
-    /// <param name="add"></param>
-    /// <param name="defineConstantValue"></param>
-    private void AddPropertyGroupItemToProject(XmlDocument XmlDocument, string innerAttrValueCondition, bool add,
+    /// <param name="xmlDocument">EN: XML document. CZ: XML dokument.</param>
+    /// <param name="innerAttrValueCondition">EN: Inner attribute value condition. CZ: Vnitřní hodnota podmínky atributu.</param>
+    /// <param name="add">EN: Whether to add. CZ: Zda přidat.</param>
+    /// <param name="defineConstantValue">EN: Define constant value. CZ: Hodnota definované konstanty.</param>
+    /// <param name="tag">EN: Tag name. CZ: Název tagu.</param>
+    /// <param name="forceValueForKey">EN: Force value for key. CZ: Vynucená hodnota pro klíč.</param>
+    private void AddPropertyGroupItemToProject(XmlDocument xmlDocument, string innerAttrValueCondition, bool add,
         string defineConstantValue, string tag, ForceValueForKey forceValueForKey)
     {
-        var project = XmlDocument.SelectSingleNode("/Project");
+        var project = xmlDocument.SelectSingleNode("/Project");
 
-        var propertyGroup = XmlDocument.CreateNode(XmlNodeType.Element, PropertyGroup, null);
-        AddPropertyGroupItemElement(XmlDocument, innerAttrValueCondition, add, defineConstantValue, tag, project, propertyGroup, forceValueForKey);
+        var propertyGroup = xmlDocument.CreateNode(XmlNodeType.Element, PropertyGroup, null);
+        AddPropertyGroupItemElement(xmlDocument, innerAttrValueCondition, add, defineConstantValue, tag, project, propertyGroup, forceValueForKey);
     }
 
-    private void AddPropertyGroupItemElement(XmlDocument XmlDocument, string innerAttrValueCondition, bool add, string defineConstantValue, string tag, XmlNode? project, XmlNode propertyGroup, ForceValueForKey forceValueForKey)
+    private void AddPropertyGroupItemElement(XmlDocument xmlDocument, string innerAttrValueCondition, bool add, string defineConstantValue, string tag, XmlNode? project, XmlNode propertyGroup, ForceValueForKey forceValueForKey)
     {
-        var defineConstant = XmlDocument.CreateNode(XmlNodeType.Element, tag, null);
+        var defineConstant = xmlDocument.CreateNode(XmlNodeType.Element, tag, null);
         defineConstantValue = SetValueByDict(defineConstantValue, tag, forceValueForKey);
 
         defineConstant.InnerXml = (tag == DefineConstants ? DefineConstantsInner + ";" : "") + (add ? defineConstantValue : "");
         propertyGroup.AppendChild(defineConstant);
 
-        var propertyGroupConditionAttr = XmlDocument.CreateAttribute(Condition);
+        var propertyGroupConditionAttr = xmlDocument.CreateAttribute(Condition);
         propertyGroupConditionAttr.Value = innerAttrValueCondition;
 
         propertyGroup.Attributes.Append(propertyGroupConditionAttr);
@@ -346,43 +386,53 @@ public partial class CsprojInstance : CsprojConsts
         return defineConstantValue;
     }
 
-    public void RemoveItemsFromItemGroupWithAttr(ItemGroupTagName tagName, string value)
+    /// <summary>
+    /// EN: Removes items from item group with attribute. Must check in detail what will be deleted - no easy reverse path exists.
+    /// CZ: Odstraní položky z item group s atributem. Nutno zkontrolovat detailně co se bude mazat - snadná reverzní cesta neexistuje.
+    /// </summary>
+    /// <param name="tagName">EN: Tag name. CZ: Název tagu.</param>
+    /// <param name="attributeName">EN: Attribute name. CZ: Název atributu.</param>
+    public void RemoveItemsFromItemGroupWithAttr(ItemGroupTagName tagName, string attributeName)
     {
-        var temp = XmlDocument.SelectNodes($"/Project/ItemGroup/{tagName}[@{value}]");
-        // nutno zkontrolovat detailně co se bude mazat. 
-        // snadná reverzní cesta neexistuje
-        foreach (XmlNode item in temp) item.ParentNode.RemoveChild(item);
+        var nodes = XmlDocument.SelectNodes($"/Project/ItemGroup/{tagName}[@{attributeName}]");
+        // EN: Must check in detail what will be deleted - no easy reverse path exists
+        // CZ: Nutno zkontrolovat detailně co se bude mazat - snadná reverzní cesta neexistuje
+        foreach (XmlNode item in nodes) item.ParentNode.RemoveChild(item);
     }
 
 
     /// <summary>
-    ///     Protože mám často null value hodnotách kde mi čisté where selže, je tu tato metdoa
+    /// EN: Gets all items in item group which contains in Include. Because I often have null values where pure where fails, this method is here.
+    /// CZ: Získá všechny položky v item group které obsahují v Include. Protože mám často null hodnoty kde mi čisté where selže, je tu tato metoda.
     /// </summary>
-    /// <returns></returns>
-    public List<ItemGroupElement> GetAllItemsInItemGroupWhichContainsInInclude(ItemGroupTagName tagName, string attr,
-        string mustContains)
+    /// <param name="tagName">EN: Tag name. CZ: Název tagu.</param>
+    /// <param name="attributeName">EN: Attribute name. CZ: Název atributu.</param>
+    /// <param name="mustContain">EN: String that must be contained. CZ: Řetězec který musí být obsažen.</param>
+    /// <returns>EN: List of item group elements. CZ: Seznam item group elementů.</returns>
+    public List<ItemGroupElement> GetAllItemsInItemGroupWhichContainsInInclude(ItemGroupTagName tagName, string attributeName,
+        string mustContain)
     {
         var items = ItemsInItemGroup(tagName);
-        items = FilterByAttrAndContains(items, attr, mustContains);
+        items = FilterByAttrAndContains(items, attributeName, mustContain);
         return items;
     }
 
 
-    public List<ItemGroupElement> FilterByAttrAndContains(List<ItemGroupElement> list, string attr,
-        string mustContains)
+    public List<ItemGroupElement> FilterByAttrAndContains(List<ItemGroupElement> list, string attributeName,
+        string mustContain)
     {
-        return list.Where(data =>
-            (attr == "Link" ? data.Link :
-                attr == "Include" ? data.Include :
-                throw new Exception($"{nameof(attr)} is {attr}, must be Link or Include"))
-            .ContainsNullAllow(mustContains)).ToList();
+        return list.Where(element =>
+            (attributeName == "Link" ? element.Link :
+                attributeName == "Include" ? element.Include :
+                throw new Exception($"{nameof(attributeName)} is {attributeName}, must be Link or Include"))
+            .ContainsNullAllow(mustContain)).ToList();
     }
 
-    public void RemoveAllItemsInItemGroupWhichContainsInInclude(ItemGroupTagName tagName, string attr,
-        string mustContains)
+    public void RemoveAllItemsInItemGroupWhichContainsInInclude(ItemGroupTagName tagName, string attributeName,
+        string mustContain)
     {
         var items = ItemsInItemGroup(tagName);
-        items = FilterByAttrAndContains(items, attr, mustContains);
+        items = FilterByAttrAndContains(items, attributeName, mustContain);
 
         if (items.Count != 0)
             foreach (var item in items)
@@ -390,8 +440,11 @@ public partial class CsprojInstance : CsprojConsts
     }
 
     /// <summary>
-    ///     Nepotřebuji tu vracet XmlDocument, je value každém vráceném prvku.OwnerDocument
+    /// EN: Don't need to return XmlDocument, it's in each returned element.OwnerDocument.
+    /// CZ: Nepotřebuji tu vracet XmlDocument, je v každém vráceném prvku.OwnerDocument.
     /// </summary>
+    /// <param name="tagName">EN: Tag name. CZ: Název tagu.</param>
+    /// <returns>EN: List of item group elements. CZ: Seznam item group elementů.</returns>
     public List<ItemGroupElement> ItemsInItemGroup(ItemGroupTagName tagName)
     {
         var itemsInItemGroup = XmlDocument.SelectNodes("/Project/ItemGroup/" + tagName);
@@ -400,9 +453,9 @@ public partial class CsprojInstance : CsprojConsts
 
         foreach (XmlNode item in itemsInItemGroup)
         {
-            var parameter = ItemGroupElement.Parse(item);
+            var element = ItemGroupElement.Parse(item);
 
-            result.Add(parameter);
+            result.Add(element);
         }
 
         return result;
@@ -448,7 +501,6 @@ public partial class CsprojInstance : CsprojConsts
             DuplicatedProjects = duplicatedProjects,
             ExistsInPackageAndProjectReferences = both
         };
-        var dd = result.HasDuplicates();
         return result;
     }
 
@@ -514,12 +566,13 @@ csprojNameToRelativePath.Add(key, value);
     }
 
     /// <summary>
-    /// Univerzální metoda pro úpravu atributu existujícího elementu value ItemGroup
+    /// EN: Universal method for modifying attribute of existing element in ItemGroup.
+    /// CZ: Univerzální metoda pro úpravu atributu existujícího elementu v ItemGroup.
     /// </summary>
-    /// <param name="tagName">Typ elementu (např. PackageReference)</param>
-    /// <param name="includeValue">Hodnota atributu Include</param>
-    /// <param name="attributeName">Název upravovaného atributu</param>
-    /// <param name="newValue">Nová hodnota atributu</param>
+    /// <param name="tagName">EN: Element type (e.g. PackageReference). CZ: Typ elementu (např. PackageReference).</param>
+    /// <param name="includeValue">EN: Include attribute value. CZ: Hodnota atributu Include.</param>
+    /// <param name="attributeName">EN: Name of attribute to modify. CZ: Název upravovaného atributu.</param>
+    /// <param name="newValue">EN: New attribute value. CZ: Nová hodnota atributu.</param>
     public void UpdateItemGroupElementAttribute(ItemGroupTagName tagName, string includeValue, string attributeName, string newValue)
     {
         var node = XmlDocument.SelectSingleNode($"/Project/ItemGroup/{tagName}[@Include='{includeValue}']");

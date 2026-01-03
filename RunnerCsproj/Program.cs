@@ -1,3 +1,4 @@
+// variables names: ok
 namespace RunnerCsproj;
 
 using SunamoCsproj.Tests;

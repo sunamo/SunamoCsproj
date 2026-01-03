@@ -1,21 +1,20 @@
+// variables names: ok
 namespace SunamoCsproj.Results;
 
-// EN: Variable names have been checked and replaced with self-descriptive names
-// CZ: Názvy proměnných byly zkontrolovány a nahrazeny samopopisnými názvy
+/// <summary>
+/// Result of parsing preprocessor directives (#if, #elif, etc.) before first code element.
+/// </summary>
 public class ParseSharpIfToFirstCodeElementResult
 {
     /// <summary>
-    /// trimmed
-    ///
-    /// všechny řádky které obsahovali pouze text který lze najít i ve AllNamespacess
+    /// Trimmed lines that contain only text that can be found in AllNamespaces.
+    /// All lines that contained only namespace-related text.
     /// </summary>
-    public List<string>? foundedNamespaces;
+    public List<string>? FoundedNamespaces { get; set; }
+
     /// <summary>
-    /// trimmed
-    ///
-    /// opravdu všechny řádky
-    /// je to třeba k určení indexů #if, #elif atd.
+    /// Trimmed, but includes ALL lines before first code element.
+    /// Needed to determine indexes of #if, #elif, etc.
     /// </summary>
-    public List<string>? allLinesBefore;
-    //public bool IsGeneric;
+    public List<string>? AllLinesBefore { get; set; }
 }

@@ -1,8 +1,16 @@
+// variables names: ok
 namespace SunamoCsproj._sunamo;
 
+/// <summary>
+/// Helper methods for XML manipulation.
+/// </summary>
 internal class XHelper
 {
-
+    /// <summary>
+    /// Formats XML string with proper indentation. Returns original string if parsing fails.
+    /// </summary>
+    /// <param name="xml">The XML string to format.</param>
+    /// <returns>Formatted XML string, or original string if parsing failed.</returns>
     internal static string FormatXmlInMemory(string xml)
     {
         try
@@ -12,7 +20,6 @@ internal class XHelper
         }
         catch (Exception)
         {
-            // Handle and throw if fatal exception here; don't just ignore them
             return xml;
         }
     }

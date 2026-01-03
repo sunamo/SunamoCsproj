@@ -1,17 +1,23 @@
+// variables names: ok
 namespace SunamoCsproj;
 
 using System.Xml.Linq;
 
+/// <summary>
+/// Helper methods for working with csproj files.
+/// </summary>
 public class CsprojHelper : CsprojConsts
 {
-    public static readonly List<string> classCodeElements = ["class ", "interface ", "enum ", "struct ", "delegate "];
+    /// <summary>
+    /// Keywords that indicate class-level code elements.
+    /// </summary>
+    public static readonly List<string> ClassCodeElements = ["class ", "interface ", "enum ", "struct ", "delegate "];
 
     /// <summary>
-    /// EN: Formats XML for better readability.
-    /// CZ: Formátuje XML pro lepší čitelnost.
+    /// Formats XML for better readability.
     /// </summary>
-    /// <param name="xml">EN: Unformatted XML. CZ: Neformátovaný XML.</param>
-    /// <returns>EN: Formatted XML. CZ: Formátovaný XML.</returns>
+    /// <param name="xml">Unformatted XML.</param>
+    /// <returns>Formatted XML.</returns>
     private static string FormatXml(string xml)
     {
         try
@@ -25,10 +31,11 @@ public class CsprojHelper : CsprojConsts
         }
     }
     /// <summary>
-    ///     Musí být zde, pracuje s více csproj najednou
+    /// EN: Must be here, works with multiple csproj files at once.
+    /// CZ: Musí být zde, pracuje s více csproj najednou.
     /// </summary>
-    /// <param name="csprojs"></param>
-    /// <returns></returns>
+    /// <param name="csprojs">EN: List of csproj file paths. CZ: Seznam cest k csproj souborům.</param>
+    /// <returns>EN: String with duplicates report. CZ: Řetězec s reportem duplicit.</returns>
     public static async Task<string> DetectDuplicatedProjectAndPackageReferences(List<string> csprojs)
     {
         var stringBuilder = new StringBuilder();
@@ -53,11 +60,12 @@ public class CsprojHelper : CsprojConsts
     {
     }
     /// <summary>
-    ///     Vrací cestu k csproj, nikoliv složce
+    /// EN: Returns path to csproj file, not folder.
+    /// CZ: Vrací cestu k csproj souboru, nikoliv složce.
     /// </summary>
-    /// <param name="path"></param>
-    /// <param name="slnFolder"></param>
-    /// <returns></returns>
+    /// <param name="path">EN: Path to .cs file. CZ: Cesta k .cs souboru.</param>
+    /// <param name="slnFolder">EN: Solution folder or null. CZ: Složka solution nebo null.</param>
+    /// <returns>EN: Path to csproj file. CZ: Cesta k csproj souboru.</returns>
     [Obsolete("everything from here will be converted to CsprojInstance. Don't add a single method here!")]
     public static string GetCsprojFromCsPath(string path, string? slnFolder = null)
     {
@@ -89,22 +97,8 @@ public class CsprojHelper : CsprojConsts
     public static async Task<string> ReplaceProjectReferenceForPackageReference(string pathOrContentCsproj,
         List<string> availableNugetPackages, bool isTests)
     {
-        /*
-        Takhle to má být správné
-        Testy mají připojovat jen assembly kterou testují, případně projekt se testovacími daty
-        nicméně takto to nepůjde, pak mám milion chyb jako:
-        Unable to satisfy conflicting requests for 'Diacritics':
-        Diacritics (>= 3.3.18) (via project/SunamoShared 23.12.15.1),
-        Diacritics (>= 3.3.18) (via package/SunamoShared 23.12.15.1),
-        Diacritics (>= 3.3.18) (via package/SunamoShared 23.12.15.1),
-        Diacritics (>= 3.3.18) (via package/SunamoShared 23.12.15.1),
-        Diacritics (>= 3.3.18) (via package/SunamoShared 23.12.15.1) Framework: (.NETCoreApp,Version=v8.0)
-        pokud připojím nuget místo projektu chyba hned zmizí
-        zkouším zda by to fungovalo kdybych měl testy ve samostatné sln, zatím na swod vypadá že ano
-        ve testech nepřipojovat žádné nugety a už vůbec ne SunamoShared, má spoustu deps, dělalo by to neplechu
-        tímhle ty testy nebudou fungovat v pipeline ale to se dořeší později
-        akorát jsem smazal původní sunamo.Tests.sln a teď ho musím složitě zase dovytvářet :-(
-        */
+        // EN: Tests should connect only assembly they test, or project with test data. However, this won't work - then million errors like: "Unable to satisfy conflicting requests for 'Diacritics'" (via project/package mix). If I connect nuget instead of project, error disappears. Trying if it would work with tests in separate sln - so far looks yes. In tests don't connect any nugets, especially not SunamoShared (has many deps, would cause mess). This way tests won't work in pipeline but will be solved later.
+        // CZ: Testy mají připojovat jen assembly kterou testují, případně projekt s testovacími daty. Nicméně takto to nepůjde - pak milion chyb jako: "Unable to satisfy conflicting requests for 'Diacritics'" (mix via project/package). Pokud připojím nuget místo projektu, chyba zmizí. Zkouším zda by to fungovalo s testy ve samostatné sln - zatím vypadá že ano. V testech nepřipojovat žádné nugety, zejména ne SunamoShared (má spoustu deps, dělalo by to neplechu). Tímhle testy nebudou fungovat v pipeline ale to se dořeší později.
         if (!pathOrContentCsproj.StartsWith("<") && (pathOrContentCsproj.EndsWith("Tests.csproj") ||
                                                      pathOrContentCsproj.Contains("TestValues")))
             return await File.ReadAllTextAsync(pathOrContentCsproj);
@@ -124,16 +118,19 @@ public class CsprojHelper : CsprojConsts
         {
             var include = XmlHelper.GetAttrValueOrInnerElement(item, Include);
             var fnwoe = Path.GetFileNameWithoutExtension(include);
-            // Pokud už jej mám na nugetu
+            // EN: If I already have it as nuget
+            // CZ: Pokud už jej mám na nugetu
             if (availableNugetPackages.Contains(fnwoe))
             {
                 var newEl = csi.CreateNewPackageReference(fnwoe, "*");
                 item.ParentNode?.ReplaceChild(newEl, item);
             }
-            // Tady break nemůže být když chci nahradit v celém souboru - nahradil by se mi pouze první
+            // EN: Can't break here when I want to replace in whole file - would replace only first one
+            // CZ: Tady break nemůže být když chci nahradit v celém souboru - nahradil by se mi pouze první
             //break;
         }
-        // TODO: z SunamoXml udělat formát
+        // EN: TODO: make format from SunamoXml
+        // CZ: TODO: z SunamoXml udělat formát
         return XHelper.FormatXmlInMemory(xmlDocument.OuterXml);
     }
 
@@ -209,25 +206,25 @@ public class CsprojHelper : CsprojConsts
             }
     }
     /// <summary>
-    ///     v I1 je project name
-    ///     v I2 je sanitizované celé NS
+    /// EN: Parses namespace from .cs file. Item1 is project name, Item2 is sanitized full namespace.
+    /// CZ: Parsuje jmenný prostor z .cs souboru. Item1 je název projektu, Item2 je sanitizované celé NS.
     /// </summary>
-    /// <param name="content"></param>
-    /// <param name="path"></param>
-    /// <returns></returns>
+    /// <param name="content">EN: File content. CZ: Obsah souboru.</param>
+    /// <param name="path">EN: File path or null. CZ: Cesta k souboru nebo null.</param>
+    /// <returns>EN: Tuple (project name, full sanitized namespace). CZ: Tuple (název projektu, celé sanitizované NS).</returns>
     [Obsolete("everything from here will be converted to CsprojInstance. Don't add a single method here!")]
     public static (string, string) ParseNamespaceFromCsFile(string content, string? path)
     {
-        /*
-    Nemůže obsahovat ;
-    SunamoDateTime chybí
-    */
-        // zjistit zda tu mám SunamoPercentCalculator a pokud ne, proč?
+        // EN: Cannot contain ; SunamoDateTime is missing
+        // CZ: Nemůže obsahovat ; SunamoDateTime chybí
+
+        // EN: Find out if I have SunamoPercentCalculator here and if not, why?
+        // CZ: Zjistit zda tu mám SunamoPercentCalculator a pokud ne, proč?
         var list = SHGetLines.GetLines(content);
         for (var index = 0; index < list.Count; index++)
         {
             var item = list[index];
-            if (classCodeElements.Any(data => item.Contains(data))) break;
+            if (ClassCodeElements.Any(data => item.Contains(data))) break;
             if (item.StartsWith("#else"))
             {
                 var line = list[index + 1].Trim();

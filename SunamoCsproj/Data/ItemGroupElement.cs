@@ -1,13 +1,40 @@
+// variables names: ok
 namespace SunamoCsproj.Data;
 
+/// <summary>
+/// Represents a single ItemGroup element from csproj file (PackageReference, ProjectReference, Compile, etc.).
+/// </summary>
 public class ItemGroupElement
 {
+    /// <summary>
+    /// Gets or sets the Include attribute value (e.g., package name or file path).
+    /// </summary>
     public string Include { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Version attribute value (for PackageReference).
+    /// </summary>
     public string Version { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Link attribute value (for linked files).
+    /// </summary>
     public string Link { get; set; }
+
+    /// <summary>
+    /// Gets or sets the underlying XmlNode.
+    /// </summary>
     public XmlNode XmlNode { get; set; }
+
+    /// <summary>
+    /// Gets or sets the type of ItemGroup tag (PackageReference, ProjectReference, etc.).
+    /// </summary>
     public ItemGroupTagName ItemGroupTagName { get; set; }
 
+    /// <summary>
+    /// Converts this element to XML string representation.
+    /// </summary>
+    /// <returns>XML string representation.</returns>
     public override string ToString()
     {
         List<string> attributes = [];
@@ -35,6 +62,11 @@ public class ItemGroupElement
         return xmlGenerator.ToString();
     }
 
+    /// <summary>
+    /// Parses XmlNode to ItemGroupElement.
+    /// </summary>
+    /// <param name="item">The XmlNode to parse.</param>
+    /// <returns>Parsed ItemGroupElement or null if tag name is not recognized.</returns>
     public static ItemGroupElement? Parse(XmlNode item)
     {
         var tagName = item.Name;
@@ -43,20 +75,20 @@ public class ItemGroupElement
             return null;
         }
 
-        ItemGroupElement ige = new ItemGroupElement();
-        ige.Include = XmlHelper.Attr(item, CsprojInstance.Include);
-        ige.Version = XmlHelper.Attr(item, CsprojInstance.Version);
-        ige.Link = XmlHelper.Attr(item, CsprojInstance.Link);
-        ige.XmlNode = item;
-        ige.ItemGroupTagName = itemGroupTagName;
+        ItemGroupElement element = new ItemGroupElement();
+        element.Include = XmlHelper.Attr(item, CsprojInstance.Include);
+        element.Version = XmlHelper.Attr(item, CsprojInstance.Version);
+        element.Link = XmlHelper.Attr(item, CsprojInstance.Link);
+        element.XmlNode = item;
+        element.ItemGroupTagName = itemGroupTagName;
 
-        return ige;
+        return element;
     }
 
     /// <summary>
-    /// Přidám this do A1
+    /// Adds this element to specified ItemGroup XML element.
     /// </summary>
-    /// <param name="itemGroup"></param>
+    /// <param name="itemGroup">The ItemGroup element to add to.</param>
     public void AddToItemGroup(XmlElement itemGroup)
     {
         var document = itemGroup.OwnerDocument;

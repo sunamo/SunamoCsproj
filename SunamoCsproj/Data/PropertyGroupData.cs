@@ -1,5 +1,10 @@
+// variables names: ok
 namespace SunamoCsproj.Data;
 
+/// <summary>
+/// EN: Represents PropertyGroup section of csproj file with all subsections.
+/// CZ: Reprezentuje sekci PropertyGroup csproj souboru se všemi podsekcemi.
+/// </summary>
 public class PropertyGroupData
 {
     public FrameworkProperties? FrameworkProperties { get; set; }
