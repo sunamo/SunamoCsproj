@@ -88,7 +88,9 @@ public class CsprojHelper : CsprojConsts
         foreach (var item in list)
         {
             var csprojInstance = new CsprojInstance(item);
+#pragma warning disable CS0618 // EN: Type or member is obsolete - internal usage allowed / CZ: Typ nebo člen je zastaralý - interní použití povoleno
             var xmlContent = await csprojInstance.RemoveDuplicatedProjectAndPackageReferences();
+#pragma warning restore CS0618
             await File.WriteAllTextAsync(item, xmlContent);
         }
     }

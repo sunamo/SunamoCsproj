@@ -172,7 +172,9 @@ public class CsprojNsHelper
     /// <returns>EN: Sanitized project name. CZ: Sanitizovaný název projektu.</returns>
     public static string ProjectNameFromCsPath(string csPath)
     {
+#pragma warning disable CS0618 // EN: Type or member is obsolete - internal usage allowed / CZ: Typ nebo člen je zastaralý - interní použití povoleno
         var csprojPath = CsprojHelper.GetCsprojFromCsPath(csPath);
+#pragma warning restore CS0618
         var sanitized = SanitizeProjectName(Path.GetFileNameWithoutExtension(csprojPath));
         return sanitized;
     }
@@ -188,7 +190,9 @@ public class CsprojNsHelper
         // EN: Already handled in _5AddNamespaceByInputFolderName in CommandsToAllCsFiles.Cmd
         // CZ: Už řeším v _5AddNamespaceByInputFolderName v CommandsToAllCsFiles.Cmd
 
+#pragma warning disable CS0618 // EN: Type or member is obsolete - internal usage allowed / CZ: Typ nebo člen je zastaralý - interní použití povoleno
         var csprojPath = CsprojHelper.GetCsprojFromCsPath(path);
+#pragma warning restore CS0618
         var csprojDir = FS.WithEndBs(Path.GetDirectoryName(csprojPath));
 
         string remain = null;
@@ -200,10 +204,12 @@ public class CsprojNsHelper
 
         var parameter = remain.Split('\\');
 
-        for (var index = parameter.Length - 1; index >= 0; index--)
+        // EN: Sanitize only the last element instead of unreachable loop
+        // CZ: Sanitizovat pouze poslední element místo nedosažitelné smyčky
+        var lastIndex = parameter.Length - 1;
+        if (lastIndex >= 0)
         {
-            parameter[index] = SanitizeProjectName(parameter[index]);
-            break;
+            parameter[lastIndex] = SanitizeProjectName(parameter[lastIndex]);
         }
 
         return remain.Replace("\\", ".");

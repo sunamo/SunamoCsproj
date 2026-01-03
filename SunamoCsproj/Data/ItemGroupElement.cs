@@ -8,22 +8,22 @@ public class ItemGroupElement
     /// <summary>
     /// Gets or sets the Include attribute value (e.g., package name or file path).
     /// </summary>
-    public string Include { get; set; }
+    public string? Include { get; set; }
 
     /// <summary>
     /// Gets or sets the Version attribute value (for PackageReference).
     /// </summary>
-    public string Version { get; set; }
+    public string? Version { get; set; }
 
     /// <summary>
     /// Gets or sets the Link attribute value (for linked files).
     /// </summary>
-    public string Link { get; set; }
+    public string? Link { get; set; }
 
     /// <summary>
     /// Gets or sets the underlying XmlNode.
     /// </summary>
-    public XmlNode XmlNode { get; set; }
+    public XmlNode? XmlNode { get; set; }
 
     /// <summary>
     /// Gets or sets the type of ItemGroup tag (PackageReference, ProjectReference, etc.).

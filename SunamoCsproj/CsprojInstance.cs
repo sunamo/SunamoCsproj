@@ -53,6 +53,8 @@ public partial class CsprojInstance : CsprojConsts
     /// </summary>
     private CsprojInstance()
     {
+        // EN: XmlDocument will be initialized by caller / CZ: XmlDocument bude inicializován volajícím
+        XmlDocument = null!;
     }
 
     /// <summary>
@@ -542,10 +544,10 @@ csprojNameToRelativePath.Add(key, value);
     }
 
     /// <summary>
-    ///     Return always content, even if into A1 is passed path
+    /// EN: Returns always XML content of the csproj after removing duplicates.
+    /// CZ: Vrací vždy XML obsah csproj po odstranění duplikátů.
     /// </summary>
-    /// <param name="pathOrContentCsproj"></param>
-    /// <returns></returns>
+    /// <returns>EN: XML content. CZ: XML obsah.</returns>
     [Obsolete("everything from here will be converted to CsprojInstance. Don't add a single method here!")]
     public async Task<string> RemoveDuplicatedProjectAndPackageReferences()
     {

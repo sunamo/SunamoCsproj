@@ -13,7 +13,7 @@ internal class XmlGenerator
     internal StringBuilder StringBuilder { get; set; } = new StringBuilder();
 
     private bool _useStack = false;
-    private Stack<string> _stack = null;
+    private Stack<string>? _stack = null;
 
     /// <summary>
     /// Initializes a new instance of XmlGenerator without stack support.
@@ -104,7 +104,7 @@ internal class XmlGenerator
         string tagString = tagBuilder.ToString();
         if (_useStack)
         {
-            _stack.Push(tagString);
+            _stack!.Push(tagString); // EN: Safe because _stack is initialized when _useStack is true / CZ: Bezpečné protože _stack je inicializován když _useStack je true
         }
         this.StringBuilder.Append(tagString);
     }

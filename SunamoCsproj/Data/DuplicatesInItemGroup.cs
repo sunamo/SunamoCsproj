@@ -8,17 +8,17 @@ public class DuplicatesInItemGroup
     /// <summary>
     /// Gets or sets the list of duplicated package references.
     /// </summary>
-    public List<string> DuplicatedPackages { get; set; }
+    public List<string> DuplicatedPackages { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the list of duplicated project references.
     /// </summary>
-    public List<string> DuplicatedProjects { get; set; }
+    public List<string> DuplicatedProjects { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the list of references that exist in both package and project references.
     /// </summary>
-    public List<string> ExistsInPackageAndProjectReferences { get; set; }
+    public List<string> ExistsInPackageAndProjectReferences { get; set; } = new();
 
     /// <summary>
     /// Checks if any duplicates exist.
@@ -26,7 +26,7 @@ public class DuplicatesInItemGroup
     /// <returns>True if any duplicates exist, false otherwise.</returns>
     public bool HasDuplicates()
     {
-        return !(new int?[] { DuplicatedPackages?.Count, DuplicatedProjects?.Count, ExistsInPackageAndProjectReferences?.Count }.All(count => count == 0));
+        return DuplicatedPackages.Count > 0 || DuplicatedProjects.Count > 0 || ExistsInPackageAndProjectReferences.Count > 0;
     }
 
     /// <summary>

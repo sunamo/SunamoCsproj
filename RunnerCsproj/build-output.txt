@@ -1,0 +1,17 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  SunamoCsproj -> E:\vs\Projects\PlatformIndependentNuGetPackages\SunamoCsproj\SunamoCsproj\bin\Debug\net8.0\SunamoCsproj.dll
+  SunamoCsproj -> E:\vs\Projects\PlatformIndependentNuGetPackages\SunamoCsproj\SunamoCsproj\bin\Debug\net9.0\SunamoCsproj.dll
+  SunamoCsproj -> E:\vs\Projects\PlatformIndependentNuGetPackages\SunamoCsproj\SunamoCsproj\bin\Debug\net10.0\SunamoCsproj.dll
+  SunamoCsproj.Tests -> E:\vs\Projects\PlatformIndependentNuGetPackages\SunamoCsproj\SunamoCsproj.Tests\bin\Debug\net8.0\SunamoCsproj.Tests.dll
+  SunamoCsproj.Tests -> E:\vs\Projects\PlatformIndependentNuGetPackages\SunamoCsproj\SunamoCsproj.Tests\bin\Debug\net9.0\SunamoCsproj.Tests.dll
+  SunamoCsproj.Tests -> E:\vs\Projects\PlatformIndependentNuGetPackages\SunamoCsproj\SunamoCsproj.Tests\bin\Debug\net10.0\SunamoCsproj.Tests.dll
+  RunnerCsproj -> E:\vs\Projects\PlatformIndependentNuGetPackages\SunamoCsproj\RunnerCsproj\bin\Debug\net8.0\RunnerCsproj.dll
+  RunnerCsproj -> E:\vs\Projects\PlatformIndependentNuGetPackages\SunamoCsproj\RunnerCsproj\bin\Debug\net9.0\RunnerCsproj.dll
+  RunnerCsproj -> E:\vs\Projects\PlatformIndependentNuGetPackages\SunamoCsproj\RunnerCsproj\bin\Debug\net10.0\RunnerCsproj.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.87
