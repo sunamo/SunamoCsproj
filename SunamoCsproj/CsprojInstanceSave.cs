@@ -1,3 +1,4 @@
+// variables names: ok
 namespace SunamoCsproj;
 
 partial class CsprojInstance
