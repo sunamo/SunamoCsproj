@@ -1,4 +1,3 @@
-// variables names: ok
 global using SunamoCsproj._sunamo;
 global using SunamoCsproj._sunamo.SunamoStringGetLines;
 global using SunamoCsproj.Data;
