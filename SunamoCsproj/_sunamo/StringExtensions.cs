@@ -11,7 +11,7 @@ internal static class StringExtensions
     /// <param name="text">The text to check.</param>
     /// <param name="searchValue">The value to search for.</param>
     /// <returns>True if text contains searchValue, false if text is null or doesn't contain searchValue.</returns>
-    internal static bool ContainsNullAllow(this string text, string searchValue)
+    internal static bool ContainsNullAllow(this string? text, string searchValue)
     {
         if (text == null)
         {

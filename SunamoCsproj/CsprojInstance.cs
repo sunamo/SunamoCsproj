@@ -69,7 +69,7 @@ public partial class CsprojInstance : CsprojConsts
     /// </summary>
     public void CreateOrReplaceMicrosoft_Extensions_Logging_Abstractions()
     {
-        var newElement = CreateNewItemGroupElement(ItemGroupTagName.PackageReference, "Microsoft.Extensions.Logging.Abstractions", "*", true, null);
+        var newElement = CreateNewItemGroupElement(ItemGroupTagName.PackageReference, "Microsoft.Extensions.Logging.Abstractions", "*", true, null!);
 
         var existingNode = GetItemGroup(ItemGroupTagName.PackageReference, "Include", "Microsoft.Extensions.Logging.Abstractions");
 
@@ -87,7 +87,7 @@ public partial class CsprojInstance : CsprojConsts
     /// <param name="attributeName">EN: Attribute name. CZ: Název atributu.</param>
     /// <param name="attributeValue">EN: Attribute value. CZ: Hodnota atributu.</param>
     /// <returns>EN: XML node or null. CZ: XML uzel nebo null.</returns>
-    private XmlNode GetItemGroup(ItemGroupTagName tagName, string attributeName, string attributeValue)
+    private XmlNode? GetItemGroup(ItemGroupTagName tagName, string attributeName, string attributeValue)
     {
         var node = XmlDocument.SelectSingleNode($"/Project/ItemGroup/{tagName}[@{attributeName}='{attributeValue}']");
 
@@ -101,7 +101,7 @@ public partial class CsprojInstance : CsprojConsts
     public void CreateOrReplaceItemGroupForReadmeMd()
     {
         RemoveAllItemsInItemGroupWhichContainsInInclude(ItemGroupTagName.None, "Include", "readme.md");
-        var newElement = CreateNewItemGroupElement(ItemGroupTagName.None, null, null, true, ".");
+        var newElement = CreateNewItemGroupElement(ItemGroupTagName.None, null!, null!, true, ".");
 
         AddXmlElementToItemGroupOrCreate(newElement);
     }
@@ -126,10 +126,10 @@ public partial class CsprojInstance : CsprojConsts
             Console.WriteLine($"Enter new {key} for " + Path.GetFileNameWithoutExtension(PathFs));
             content = Console.ReadLine();
 
-            AddOrEditPropertyGroupItem(key, content, new());
+            AddOrEditPropertyGroupItem(key, content!, new());
         }
 
-        return content;
+        return content!;
     }
 
 
@@ -149,7 +149,7 @@ public partial class CsprojInstance : CsprojConsts
 
     public XmlElement CreateNewPackageReference(string include, string version)
     {
-        return CreateNewItemGroupElement(ItemGroupTagName.PackageReference, include, version, null, null);
+        return CreateNewItemGroupElement(ItemGroupTagName.PackageReference, include, version, null, null!);
     }
 
     /// <summary>
@@ -200,10 +200,10 @@ public partial class CsprojInstance : CsprojConsts
         {
             var project = XmlDocument.SelectSingleNode("/Project");
             var newItemGroup = XmlDocument.CreateElement("ItemGroup");
-            itemGroup = project.AppendChild(newItemGroup);
+            itemGroup = project!.AppendChild(newItemGroup);
         }
 
-        itemGroup.AppendChild(element);
+        itemGroup!.AppendChild(element);
     }
 
     private XmlAttribute CreateAttribute(XmlElement element, string attributeName, string attributeValue)
@@ -233,7 +233,7 @@ public partial class CsprojInstance : CsprojConsts
         else
         {
             var propertyGroupNode = XmlDocument.SelectSingleNode("/Project/PropertyGroup");
-            var newElement = propertyGroupNode.AddElement(tagName);
+            var newElement = propertyGroupNode!.AddElement(tagName);
             newElement.InnerText = content;
         }
     }
@@ -255,7 +255,7 @@ public partial class CsprojInstance : CsprojConsts
         var isReleaseGlobal = false;
         var isDebugGlobal = false;
 
-        foreach (XmlElement propertyGroup in nodes)
+        foreach (XmlElement propertyGroup in nodes!)
         {
             var isRelease = false;
             var isDebug = false;
@@ -367,15 +367,15 @@ public partial class CsprojInstance : CsprojConsts
         var propertyGroupConditionAttribute = XmlDocument.CreateAttribute(Condition);
         propertyGroupConditionAttribute.Value = innerAttrValueCondition;
 
-        propertyGroup.Attributes.Append(propertyGroupConditionAttribute);
+        propertyGroup.Attributes!.Append(propertyGroupConditionAttribute);
 
 
-        project.AppendChild(propertyGroup);
+        project!.AppendChild(propertyGroup);
     }
 
     private string SetValueByDict(string defineConstantValue, string tagName, ForceValueForKey forceValueForKey)
     {
-        if (forceValueForKey.TryGetValue(Path.GetFileNameWithoutExtension(PathFs), out var forceValueForKeyDict))
+        if (forceValueForKey.TryGetValue(Path.GetFileNameWithoutExtension(PathFs)!, out var forceValueForKeyDict))
         {
             if (forceValueForKeyDict.TryGetValue(tagName, out var forceValue))
             {
@@ -397,7 +397,7 @@ public partial class CsprojInstance : CsprojConsts
         var nodes = XmlDocument.SelectNodes($"/Project/ItemGroup/{tagName}[@{attributeName}]");
         // EN: Must check in detail what will be deleted - no easy reverse path exists
         // CZ: Nutno zkontrolovat detailně co se bude mazat - snadná reverzní cesta neexistuje
-        foreach (XmlNode item in nodes) item.ParentNode.RemoveChild(item);
+        foreach (XmlNode item in nodes!) item.ParentNode!.RemoveChild(item);
     }
 
 
@@ -436,7 +436,7 @@ public partial class CsprojInstance : CsprojConsts
 
         if (items.Count != 0)
             foreach (var item in items)
-                item.XmlNode.ParentNode.RemoveChild(item.XmlNode);
+                item.XmlNode!.ParentNode!.RemoveChild(item.XmlNode);
     }
 
     /// <summary>
@@ -451,11 +451,11 @@ public partial class CsprojInstance : CsprojConsts
 
         var result = new List<ItemGroupElement>();
 
-        foreach (XmlNode item in itemsInItemGroup)
+        foreach (XmlNode item in itemsInItemGroup!)
         {
             var element = ItemGroupElement.Parse(item);
 
-            result.Add(element);
+            result.Add(element!);
         }
 
         return result;
@@ -470,9 +470,9 @@ public partial class CsprojInstance : CsprojConsts
 
         foreach (var item in packageReferences)
         {
-            csprojInstance.RemoveSingleItemGroup(item.Include, ItemGroupTagName.PackageReference);
+            csprojInstance.RemoveSingleItemGroup(item.Include!, ItemGroupTagName.PackageReference);
             csprojInstance.CreateNewItemGroupElement(ItemGroupTagName.ProjectReference,
-                "..\\" + item.Include + "\\" + item.Include + ".csproj", null, null, null);
+                "..\\" + item.Include + "\\" + item.Include + ".csproj", null!, null, null!);
         }
 
         csprojInstance.Save();
@@ -484,8 +484,8 @@ public partial class CsprojInstance : CsprojConsts
         var packages = ItemsInItemGroup(ItemGroupTagName.PackageReference);
         var projects = ItemsInItemGroup(ItemGroupTagName.ProjectReference);
 
-        var packagesNames = packages.Select(package => package.Include).ToList();
-        var projectsNames = projects.Select(project => Path.GetFileNameWithoutExtension(project.Include)).ToList();
+        var packagesNames = packages.Select(package => package.Include!).ToList();
+        var projectsNames = projects.Select(project => Path.GetFileNameWithoutExtension(project.Include)!).ToList();
 
         var duplicatedPackages = CAG.GetDuplicities(packagesNames);
         var duplicatedProjects = CAG.GetDuplicities(projectsNames);
@@ -511,14 +511,14 @@ public partial class CsprojInstance : CsprojConsts
 
         var csprojNameToRelativePath = new Dictionary<string, string>();
 
-        foreach (XmlNode item in nodes)
+        foreach (XmlNode item in nodes!)
         {
             var value = XmlHelper.GetAttrValueOrInnerElement(item, Include);
-            var key = Path.GetFileName(value).Replace(".csproj", string.Empty);
+            var key = Path.GetFileName(value)!.Replace(".csproj", string.Empty);
 #if DEBUG
-            if (!csprojNameToRelativePath.ContainsKey(key)) csprojNameToRelativePath.Add(key, value);
+            if (!csprojNameToRelativePath.ContainsKey(key)) csprojNameToRelativePath.Add(key, value!);
 #else
-csprojNameToRelativePath.Add(key, value);
+csprojNameToRelativePath.Add(key, value!);
 #endif
         }
 

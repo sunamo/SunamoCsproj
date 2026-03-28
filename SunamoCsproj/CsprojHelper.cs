@@ -78,7 +78,7 @@ public class CsprojHelper : CsprojConsts
         var pathCopy = new string(path);
         while (true)
         {
-            path = Path.GetDirectoryName(path);
+            path = Path.GetDirectoryName(path)!;
             var csprojs = Directory.GetFiles(path, "*.csproj");
             if (csprojs.Any()) return csprojs.First();
         }
@@ -115,10 +115,10 @@ public class CsprojHelper : CsprojConsts
         }
         var projectReferenceNodes = xmlDocument.SelectNodes("/Project/ItemGroup/" + ItemGroupTagName.ProjectReference);
         var csprojInstance = new CsprojInstance(xmlDocument);
-        foreach (XmlNode item in projectReferenceNodes)
+        foreach (XmlNode item in projectReferenceNodes!)
         {
             var include = XmlHelper.GetAttrValueOrInnerElement(item, Include);
-            var projectName = Path.GetFileNameWithoutExtension(include);
+            var projectName = Path.GetFileNameWithoutExtension(include)!;
             // EN: If I already have it as nuget
             // CZ: Pokud už jej mám na nugetu
             if (availableNugetPackages.Contains(projectName))
@@ -171,8 +171,8 @@ public class CsprojHelper : CsprojConsts
         // CZ: Odstraň ProjectReference a případně přidej PackageReference
         foreach (var projectReference in toRemove)
         {
-            var projectName = Path.GetFileNameWithoutExtension(projectReference.Attributes["Include"].Value);
-            projectReference.ParentNode.RemoveChild(projectReference);
+            var projectName = Path.GetFileNameWithoutExtension(projectReference.Attributes!["Include"]!.Value);
+            projectReference.ParentNode!.RemoveChild(projectReference);
             // EN: Add PackageReference
             // CZ: Přidej PackageReference
             var itemGroup = xmlDocument.CreateElement("ItemGroup");
@@ -181,7 +181,7 @@ public class CsprojHelper : CsprojConsts
             includeAttribute.Value = projectName;
             packageReference.Attributes.Append(includeAttribute);
             itemGroup.AppendChild(packageReference);
-            xmlDocument.DocumentElement.AppendChild(itemGroup);
+            xmlDocument.DocumentElement!.AppendChild(itemGroup);
         }
 
         // EN: Return formatted XML instead of unformatted
@@ -200,7 +200,7 @@ public class CsprojHelper : CsprojConsts
         if (!contentOrPath.StartsWith("<")) contentOrPath = await File.ReadAllTextAsync(contentOrPath);
         var data = new CsprojData();
         var xDocument = XDocument.Parse(contentOrPath);
-        foreach (var item in xDocument.Root.Descendants())
+        foreach (var item in xDocument.Root!.Descendants())
             if (item.Name == "PropertyGroup")
             {
                 //RH.SetPropertyToInnerClass(data.PropertyGroup, item.Name, item.Value);
@@ -258,7 +258,7 @@ public class CsprojHelper : CsprojConsts
                 return (firstPart, CsprojNsHelper.SanitizeProjectName(namespaceLine));
             }
         }
-        return (null, null);
+        return (null!, null!);
     }
 }
 #pragma warning restore

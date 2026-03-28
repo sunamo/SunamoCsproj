@@ -6,7 +6,7 @@ partial class CsprojInstance
     {
         JoinMultiPropertyGroupToOne();
         RemoveDuplicatedInNoWarnAndDefineConstant();
-        XmlDocument.Save(PathFs);
+        XmlDocument.Save(PathFs!);
     }
     private void RemoveDuplicatedInNoWarnAndDefineConstant()
     {
@@ -17,7 +17,7 @@ partial class CsprojInstance
     }
     private void RemoveDuplicated(XmlNodeList? nodeList)
     {
-        foreach (XmlNode node in nodeList)
+        foreach (XmlNode node in nodeList!)
         {
             var innerXml = node.InnerXml;
             var parts = innerXml.Split(';').Distinct().ToList();
@@ -29,7 +29,7 @@ partial class CsprojInstance
         var propertyGroupNodes = XmlDocument.SelectNodes("/Project/PropertyGroup");
         List<XmlNode> debugNodes = [];
         List<XmlNode> releaseNodes = [];
-        foreach (XmlNode propertyGroup in propertyGroupNodes)
+        foreach (XmlNode propertyGroup in propertyGroupNodes!)
         {
             var condition = XmlHelper.GetAttributeWithNameValue(propertyGroup, "Condition");
             if (condition == null)

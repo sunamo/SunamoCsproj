@@ -29,14 +29,14 @@ public class CsprojNsHelper
 
 
 
-        var result = await ParseSharpIfToFirstCodeElement(pathCsToAppendElif, contentCs, AllNamespaces, addTo_linked);
+        var result = await ParseSharpIfToFirstCodeElement(pathCsToAppendElif, count, AllNamespaces, addTo_linked);
 
-        var existingNamespace = result.FoundedNamespaces;
+        var existingNamespace = result.FoundedNamespaces!;
         // EN: If #if is already introduced
         // CZ: Pokud už je #if zavedený
         if (existingNamespace.Count > 0)
         {
-            var indexElse = contentCs.IndexOf("#else");
+            var indexElse = count.IndexOf("#else");
 
             var stringBuilder = new StringBuilder();
 
@@ -80,7 +80,7 @@ public class CsprojNsHelper
             // CZ: V opačném případě musím zapsat všechny + else. NS vezmu z toho co už v souboru bude
 
             var namespaceLines = count.Where(text => text.StartsWith("namespace ") && text.Trim() != "namespace");
-            string nsToElse = null;
+            string? nsToElse = null;
             if (!namespaceLines.Any())
             {
                 nsToElse = GenerateNsFromPath(pathCsToAppendElif);
@@ -193,16 +193,16 @@ public class CsprojNsHelper
 #pragma warning disable CS0618 // EN: Type or member is obsolete - internal usage allowed / CZ: Typ nebo člen je zastaralý - interní použití povoleno
         var csprojPath = CsprojHelper.GetCsprojFromCsPath(path);
 #pragma warning restore CS0618
-        var csprojDir = FS.WithEndBs(Path.GetDirectoryName(csprojPath));
+        var csprojDir = FS.WithEndBs(Path.GetDirectoryName(csprojPath)!);
 
-        string remain = null;
+        string? remain = null;
 
         if (path.Contains(csprojDir))
             remain = path.Replace(csprojDir, "");
         else
             ThrowEx.Custom($"{path} does not contains {csprojDir}");
 
-        var parameter = remain.Split('\\');
+        var parameter = remain!.Split('\\');
 
         // EN: Sanitize only the last element instead of unreachable loop
         // CZ: Sanitizovat pouze poslední element místo nedosažitelné smyčky
@@ -230,7 +230,7 @@ public class CsprojNsHelper
         // CZ: Zde příště pokračovat - zjistím indexy #if a #elif
 
         var parsed = await ParseSharpIfToFirstCodeElement(path, count, allNamespaces, addTo_linked);
-        var allLinesBefore = parsed.AllLinesBefore;
+        var allLinesBefore = parsed.AllLinesBefore!;
         var elifIndexes = SH.GetIndexesOfLinesStartingWith(allLinesBefore, line => line.StartsWith("#elif"));
         //var namespaceIndexes = SH.GetIndexesOfLinesStartingWith(allLinesBefore, line => line.StartsWith("namespace "));
         var namespaceIndexes = SH.GetIndexesOfLinesWhichContainsAnyOfStrings(allLinesBefore, allNamespaces);
@@ -323,7 +323,7 @@ public class CsprojNsHelper
             if (string.IsNullOrWhiteSpace(line)) continue;
 
             if (!KeywordsBeforeFirstCodeElementDeclaration.Any(keyword => line.Contains(keyword)) &&
-                (addTo_linked ? !AllNamespaces.Contains(line) : true))
+                (addTo_linked ? !AllNamespaces!.Contains(line) : true))
                 //if (line.Contains("<"))
                 //{
                 //    result2.IsGeneric = true;

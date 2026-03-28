@@ -21,9 +21,9 @@ public class ItemGroupElements
         List<string> result = [];
         foreach (var item in List)
         {
-            if (!allowedDependencies.Contains(item.Include))
+            if (!allowedDependencies.Contains(item.Include!))
             {
-                result.Add(item.Include);
+                result.Add(item.Include!);
             }
         }
 
