@@ -3,12 +3,12 @@
     <TargetFrameworks>net10.0;net9.0;net8.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>26.3.28.4</Version>
+    <Version>26.5.18.5</Version>
     <Description>Working with csprojs at one package</Description>
-    <PackageReleaseNotes>feat: Improved names of variables</PackageReleaseNotes>
+    <PackageReleaseNotes>y</PackageReleaseNotes>
     <Authors>www.sunamo.cz</Authors>
     <Copyright>www.sunamo.cz</Copyright>
-    <PackageProjectUrl>https://sunamo.cz/</PackageProjectUrl>
+    <PackageProjectUrl>https://sunamo.github.io/PlatformIndependentNuGetPackages/SunamoCsproj/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/sunamo/SunamoCsproj.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
