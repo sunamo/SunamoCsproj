@@ -34,11 +34,6 @@ namespace SunamoCsproj;"), parseResult.AllLinesBefore);
         var input = @"using System.Threading.Tasks;
 
 namespace
-#if SunamoString
-SunamoString
-#else
-SunamoCsproj
-#endif
 ;
 
 namespace SunamoCsproj;
@@ -55,11 +50,6 @@ public class CsprojNsHelper
         // nutno si povšimnout že mi to dává pryč všechny prázdné řádky
         Assert.Equal(SHGetLines.GetLines(@"using System.Threading.Tasks;
 namespace
-#if SunamoString
-SunamoString
-#else
-SunamoCsproj
-#endif
 ;
 namespace SunamoCsproj;
 "), parseResult.AllLinesBefore);
@@ -72,11 +62,6 @@ namespace SunamoCsproj;
         var input = @"using System.Threading.Tasks;
 
 namespace
-#if SunamoString
-SunamoString
-#else
-SunamoCsproj
-#endif
 ;
 
 public class CsprojNsHelper
@@ -91,11 +76,6 @@ public class CsprojNsHelper
         // nutno si povšimnout že mi to dává pryč všechny prázdné řádky
         Assert.Equal(SHGetLines.GetLines(@"using System.Threading.Tasks;
 namespace
-#if SunamoString
-SunamoString
-#else
-SunamoCsproj
-#endif
 ;"), parseResult.AllLinesBefore);
         Assert.Equal(new List<string>(new string[] { "SunamoString", "SunamoCsproj" }), parseResult.FoundedNamespaces);
 
@@ -108,11 +88,6 @@ SunamoCsproj
         await CsprojNsHelper.WriteNew(new List<string>(new String[] { "S1", "S2" }), basePath + @"WriteNewTest.cs", SHGetLines.GetLines(@"using System.Threading.Tasks;
 
 namespace
-#if SunamoString
-SunamoString
-#else
-SunamoCsproj
-#endif
 ;
 
 public class CsprojNsHelper
