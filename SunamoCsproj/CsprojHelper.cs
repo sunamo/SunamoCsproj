@@ -2,10 +2,21 @@ namespace SunamoCsproj;
 
 using System.Xml.Linq;
 
+/// <summary>
+/// Helper methods for working with csproj files.
+/// </summary>
 public class CsprojHelper : CsprojConsts
 {
+    /// <summary>
+    /// Keywords that indicate class-level code elements.
+    /// </summary>
     public static readonly List<string> ClassCodeElements = ["class ", "interface ", "enum ", "struct ", "delegate "];
 
+    /// <summary>
+    /// Formats XML for better readability.
+    /// </summary>
+    /// <param name="xml">Unformatted XML.</param>
+    /// <returns>Formatted XML.</returns>
     private static string FormatXml(string xml)
     {
         try
@@ -18,9 +29,12 @@ public class CsprojHelper : CsprojConsts
             return xml;
         }
     }
-
-    // EN: Must be here, works with multiple csproj files at once.
-    // CZ: Musí být zde, pracuje s více csproj najednou.
+    /// <summary>
+    /// EN: Must be here, works with multiple csproj files at once.
+    /// CZ: Musí být zde, pracuje s více csproj najednou.
+    /// </summary>
+    /// <param name="csprojs">EN: List of csproj file paths. CZ: Seznam cest k csproj souborům.</param>
+    /// <returns>EN: String with duplicates report. CZ: Řetězec s reportem duplicit.</returns>
     public static async Task<string> DetectDuplicatedProjectAndPackageReferences(List<string> csprojs)
     {
         var stringBuilder = new StringBuilder();
@@ -44,9 +58,13 @@ public class CsprojHelper : CsprojConsts
     public static async Task AddLinkToCsproj(string target, string source, string csprojPath)
     {
     }
-
-    // EN: Returns path to csproj file, not folder.
-    // CZ: Vrací cestu k csproj souboru, nikoliv složce.
+    /// <summary>
+    /// EN: Returns path to csproj file, not folder.
+    /// CZ: Vrací cestu k csproj souboru, nikoliv složce.
+    /// </summary>
+    /// <param name="path">EN: Path to .cs file. CZ: Cesta k .cs souboru.</param>
+    /// <param name="slnFolder">EN: Solution folder or null. CZ: Složka solution nebo null.</param>
+    /// <returns>EN: Path to csproj file. CZ: Cesta k csproj souboru.</returns>
     [Obsolete("everything from here will be converted to CsprojInstance. Don't add a single method here!")]
     public static string GetCsprojFromCsPath(string path, string? slnFolder = null)
     {
@@ -117,6 +135,14 @@ public class CsprojHelper : CsprojConsts
         return XHelper.FormatXmlInMemory(xmlDocument.OuterXml);
     }
 
+    /// <summary>
+    /// EN: Replaces ProjectReference with PackageReference and returns new csproj content + names of replaced projects.
+    /// CZ: Nahradí ProjectReference za PackageReference a vrátí nový obsah csproj + názvy projektů, které byly nahrazeny.
+    /// </summary>
+    /// <param name="contentCsproj">EN: Content of csproj file. CZ: Obsah csproj souboru.</param>
+    /// <param name="availableNugetPackagesS">EN: List of available NuGet packages. CZ: Seznam dostupných NuGet balíčků.</param>
+    /// <param name="isTests">EN: Whether this is a test project. CZ: Zda je to testovací projekt.</param>
+    /// <returns>EN: Tuple of (new csproj content, list of removed project names). CZ: Tuple (nový obsah csproj, seznam odstraněných názvů projektů).</returns>
 #pragma warning disable IDE0060 // Remove unused parameter
     public static async Task<(string, List<string>)> ReplaceProjectReferenceForPackageReferenceWithRemoved(string contentCsproj, List<string> availableNugetPackagesS, bool isTests)
 #pragma warning restore IDE0060 // Remove unused parameter
@@ -163,7 +189,11 @@ public class CsprojHelper : CsprojConsts
         return (FormatXml(xmlDocument.OuterXml), removedProjects);
     }
 
-    // Use RHSE2.SetPropertyToInnerClass
+    /// <summary>
+    ///     Use RHSE2.SetPropertyToInnerClass
+    /// </summary>
+    /// <param name="contentOrPath"></param>
+    /// <returns></returns>
     [Obsolete("everything from here will be converted to CsprojInstance. Don't add a single method here!")]
     public static async Task ParseCsproj(string contentOrPath)
     {
@@ -176,9 +206,13 @@ public class CsprojHelper : CsprojConsts
                 //RH.SetPropertyToInnerClass(data.PropertyGroup, item.Name, item.Value);
             }
     }
-
-    // EN: Parses namespace from .cs file. Item1 is project name, Item2 is sanitized full namespace.
-    // CZ: Parsuje jmenný prostor z .cs souboru. Item1 je název projektu, Item2 je sanitizované celé NS.
+    /// <summary>
+    /// EN: Parses namespace from .cs file. Item1 is project name, Item2 is sanitized full namespace.
+    /// CZ: Parsuje jmenný prostor z .cs souboru. Item1 je název projektu, Item2 je sanitizované celé NS.
+    /// </summary>
+    /// <param name="content">EN: File content. CZ: Obsah souboru.</param>
+    /// <param name="path">EN: File path or null. CZ: Cesta k souboru nebo null.</param>
+    /// <returns>EN: Tuple (project name, full sanitized namespace). CZ: Tuple (název projektu, celé sanitizované NS).</returns>
     [Obsolete("everything from here will be converted to CsprojInstance. Don't add a single method here!")]
     public static (string, string) ParseNamespaceFromCsFile(string content, string? path)
     {
