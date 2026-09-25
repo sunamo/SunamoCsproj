@@ -2,21 +2,11 @@ namespace SunamoCsproj;
 
 public class CsprojNsHelper
 {
-    /// <summary>
-    /// EN: Keywords that can appear before the first code element declaration.
-    /// CZ: Klíčová slova která mohou být před první deklarací kódového elementu.
-    /// </summary>
     public static string[] KeywordsBeforeFirstCodeElementDeclaration =
         { "#if", "using ", "namespace", "#elif", "#else", "#endif", ";" };
 
-    /// <summary>
-    /// EN: Writes new #elif directives to .cs file. Parameter reallyOccuredInFilesOrProjectNames is critical - must pass csproj paths, not cs paths, because linked files add elif based on physical project location.
-    /// CZ: Zapíše do .cs nové #elif direktivy. Parametr reallyOccuredInFilesOrProjectNames je kritický - musí předávat csproj cesty, ne cs cesty, protože linkované soubory přidávají elif podle fyzického umístění projektu.
-    /// </summary>
-    /// <param name="reallyOccuredInFilesOrProjectNames">EN: List of files or project names where code really occurs. CZ: Seznam souborů nebo názvů projektů kde se kód skutečně vyskytuje.</param>
-    /// <param name="pathCsToAppendElif">EN: Path to .cs file where to append elif directives. CZ: Cesta k .cs souboru kam připojit elif direktivy.</param>
-    /// <param name="contentCs">EN: Content of .cs file or null to read from file. CZ: Obsah .cs souboru nebo null pro načtení ze souboru.</param>
-    /// <param name="AllNamespaces">EN: All namespaces in the project. CZ: Všechny jmenné prostory v projektu.</param>
+    // EN: Writes new #elif directives to .cs file. Parameter reallyOccuredInFilesOrProjectNames is critical - must pass csproj paths, not cs paths, because linked files add elif based on physical project location.
+    // CZ: Zapíše do .cs nové #elif direktivy. Parametr reallyOccuredInFilesOrProjectNames je kritický - musí předávat csproj cesty, ne cs cesty, protože linkované soubory přidávají elif podle fyzického umístění projektu.
     public static async Task WriteNew(List<string> reallyOccuredInFilesOrProjectNames, string pathCsToAppendElif,
         List<string> contentCs, List<string> AllNamespaces)
     {
@@ -25,7 +15,7 @@ public class CsprojNsHelper
         var isCsFiles = reallyOccuredInFilesOrProjectNames.First().EndsWith(".cs");
         var reallyOccuredInFiles = reallyOccuredInFilesOrProjectNames.ToList();
 
-        var count = contentCs ?? (await File.ReadAllLinesAsync(pathCsToAppendElif)).ToList();
+        var count = contentCs ?? (await FileAsync.ReadAllLinesAsync(pathCsToAppendElif)).ToList();
 
 
 
@@ -69,7 +59,7 @@ public class CsprojNsHelper
             var temp = SHJoin.JoinNL(count);
 
             // TODO2
-            await File.WriteAllTextAsync(pathCsToAppendElif, temp);
+            await FileAsync.WriteAllTextAsync(pathCsToAppendElif, temp);
         }
         else
         {
@@ -149,27 +139,15 @@ public class CsprojNsHelper
 
             var temp = SHJoin.JoinNL(count);
 
-            await File.WriteAllTextAsync(pathCsToAppendElif, temp);
+            await FileAsync.WriteAllTextAsync(pathCsToAppendElif, temp);
         }
     }
 
-    /// <summary>
-    /// EN: Keeps only letters or digits from the text.
-    /// CZ: Nechá jen písmena nebo čísla z textu.
-    /// </summary>
-    /// <param name="text">EN: Text to sanitize. CZ: Text k sanitizaci.</param>
-    /// <returns>EN: Sanitized text with only alphanumeric characters. CZ: Sanitizovaný text pouze s alfanumerickými znaky.</returns>
     public static string SanitizeProjectName(string text)
     {
         return string.Concat(text.Where(character => char.IsLetterOrDigit(character)));
     }
 
-    /// <summary>
-    /// EN: Gets sanitized project name from .cs file path.
-    /// CZ: Získá sanitizovaný název projektu z cesty k .cs souboru.
-    /// </summary>
-    /// <param name="csPath">EN: Path to .cs file. CZ: Cesta k .cs souboru.</param>
-    /// <returns>EN: Sanitized project name. CZ: Sanitizovaný název projektu.</returns>
     public static string ProjectNameFromCsPath(string csPath)
     {
 #pragma warning disable CS0618 // EN: Type or member is obsolete - internal usage allowed / CZ: Typ nebo člen je zastaralý - interní použití povoleno
@@ -179,12 +157,6 @@ public class CsprojNsHelper
         return sanitized;
     }
 
-    /// <summary>
-    /// EN: Generates namespace from file path.
-    /// CZ: Generuje jmenný prostor z cesty k souboru.
-    /// </summary>
-    /// <param name="path">EN: File path. CZ: Cesta k souboru.</param>
-    /// <returns>EN: Generated namespace. CZ: Vygenerovaný jmenný prostor.</returns>
     private static string GenerateNsFromPath(string path)
     {
         // EN: Already handled in _5AddNamespaceByInputFolderName in CommandsToAllCsFiles.Cmd
@@ -215,14 +187,6 @@ public class CsprojNsHelper
         return remain.Replace("\\", ".");
     }
 
-    /// <summary>
-    /// EN: Throws exception if namespace exists outside of #if directive.
-    /// CZ: Vyhodí výjimku pokud jmenný prostor existuje mimo #if direktivu.
-    /// </summary>
-    /// <param name="path">EN: File path. CZ: Cesta k souboru.</param>
-    /// <param name="count">EN: File lines. CZ: Řádky souboru.</param>
-    /// <param name="allNamespaces">EN: All namespaces. CZ: Všechny jmenné prostory.</param>
-    /// <param name="addTo_linked">EN: Add to linked. CZ: Přidat do linkovaných.</param>
     private static async Task ThrowWhenThereIsNamespaceOutsideOfSharpIf(string path, List<string> count,
         List<string> allNamespaces, bool addTo_linked)
     {
@@ -280,7 +244,7 @@ public class CsprojNsHelper
         if (namespaceIndexes.Count != 0)
             ThrowEx.Custom(
                 "All namespaces after #if or #elif were excluded. However, there are still NS at these indexes: " +
-                string.Join(',', namespaceIndexes.ConvertAll(index => index.ToString())));
+                string.Join(",", namespaceIndexes.ConvertAll(index => index.ToString())));
 
         //    var dxNs = parsed.allLinesBefore.Select((middle, index) => new { middle, index })
         //.Where(x => x.middle.StartsWith("#elif "))
@@ -290,15 +254,8 @@ public class CsprojNsHelper
         //.ToList();
     }
 
-    /// <summary>
-    /// EN: Parses #if directives to first code element. This method can be called only when SetAllNamespaces completes, so first check is OK.
-    /// CZ: Parsuje #if direktivy po první kódový element. Tato metoda se může volat jen když SetAllNamespaces se dokoná, proto ta první kontrola je v pohodě.
-    /// </summary>
-    /// <param name="pathCs">EN: Path to .cs file or null. CZ: Cesta k .cs souboru nebo null.</param>
-    /// <param name="content">EN: File content or null to read from file. CZ: Obsah souboru nebo null pro načtení ze souboru.</param>
-    /// <param name="AllNamespaces">EN: All namespaces in project. CZ: Všechny jmenné prostory v projektu.</param>
-    /// <param name="addTo_linked">EN: Add to linked files. CZ: Přidat do linkovaných souborů.</param>
-    /// <returns>EN: Parse result. CZ: Výsledek parsování.</returns>
+    // EN: Parses #if directives to first code element. This method can be called only when SetAllNamespaces completes, so first check is OK.
+    // CZ: Parsuje #if direktivy po první kódový element. Tato metoda se může volat jen když SetAllNamespaces se dokoná, proto ta první kontrola je v pohodě.
     public static async Task<ParseSharpIfToFirstCodeElementResult> ParseSharpIfToFirstCodeElement(string? pathCs,
         List<string> content, List<string> AllNamespaces, bool addTo_linked)
     {
@@ -309,7 +266,7 @@ public class CsprojNsHelper
         var result = new List<string>();
         var linesBefore = new List<string>();
 
-        var count = content ?? (await File.ReadAllLinesAsync(pathCs!)).ToList();
+        var count = content ?? (await FileAsync.ReadAllLinesAsync(pathCs!)).ToList();
 
 
 

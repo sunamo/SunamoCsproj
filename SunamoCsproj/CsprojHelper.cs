@@ -2,21 +2,10 @@ namespace SunamoCsproj;
 
 using System.Xml.Linq;
 
-/// <summary>
-/// Helper methods for working with csproj files.
-/// </summary>
 public class CsprojHelper : CsprojConsts
 {
-    /// <summary>
-    /// Keywords that indicate class-level code elements.
-    /// </summary>
     public static readonly List<string> ClassCodeElements = ["class ", "interface ", "enum ", "struct ", "delegate "];
 
-    /// <summary>
-    /// Formats XML for better readability.
-    /// </summary>
-    /// <param name="xml">Unformatted XML.</param>
-    /// <returns>Formatted XML.</returns>
     private static string FormatXml(string xml)
     {
         try
@@ -29,12 +18,9 @@ public class CsprojHelper : CsprojConsts
             return xml;
         }
     }
-    /// <summary>
-    /// EN: Must be here, works with multiple csproj files at once.
-    /// CZ: Musí být zde, pracuje s více csproj najednou.
-    /// </summary>
-    /// <param name="csprojs">EN: List of csproj file paths. CZ: Seznam cest k csproj souborům.</param>
-    /// <returns>EN: String with duplicates report. CZ: Řetězec s reportem duplicit.</returns>
+
+    // EN: Must be here, works with multiple csproj files at once.
+    // CZ: Musí být zde, pracuje s více csproj najednou.
     public static async Task<string> DetectDuplicatedProjectAndPackageReferences(List<string> csprojs)
     {
         var stringBuilder = new StringBuilder();
@@ -58,13 +44,9 @@ public class CsprojHelper : CsprojConsts
     public static async Task AddLinkToCsproj(string target, string source, string csprojPath)
     {
     }
-    /// <summary>
-    /// EN: Returns path to csproj file, not folder.
-    /// CZ: Vrací cestu k csproj souboru, nikoliv složce.
-    /// </summary>
-    /// <param name="path">EN: Path to .cs file. CZ: Cesta k .cs souboru.</param>
-    /// <param name="slnFolder">EN: Solution folder or null. CZ: Složka solution nebo null.</param>
-    /// <returns>EN: Path to csproj file. CZ: Cesta k csproj souboru.</returns>
+
+    // EN: Returns path to csproj file, not folder.
+    // CZ: Vrací cestu k csproj souboru, nikoliv složce.
     [Obsolete("everything from here will be converted to CsprojInstance. Don't add a single method here!")]
     public static string GetCsprojFromCsPath(string path, string? slnFolder = null)
     {
@@ -75,7 +57,7 @@ public class CsprojHelper : CsprojConsts
             var projectName = SH.RemoveAfterFirst(path, "\\");
             return Path.Combine(slnFolder, projectName, projectName + ".csproj");
         }
-        var pathCopy = new string(path);
+        var pathCopy = path;
         while (true)
         {
             path = Path.GetDirectoryName(path)!;
@@ -91,7 +73,7 @@ public class CsprojHelper : CsprojConsts
 #pragma warning disable CS0618 // EN: Type or member is obsolete - internal usage allowed / CZ: Typ nebo člen je zastaralý - interní použití povoleno
             var xmlContent = await csprojInstance.RemoveDuplicatedProjectAndPackageReferences();
 #pragma warning restore CS0618
-            await File.WriteAllTextAsync(item, xmlContent);
+            await FileAsync.WriteAllTextAsync(item, xmlContent);
         }
     }
     [Obsolete("everything from here will be converted to CsprojInstance. Don't add a single method here!")]
@@ -102,7 +84,7 @@ public class CsprojHelper : CsprojConsts
         // CZ: Testy mají připojovat jen assembly kterou testují, případně projekt s testovacími daty. Nicméně takto to nepůjde - pak milion chyb jako: "Unable to satisfy conflicting requests for 'Diacritics'" (mix via project/package). Pokud připojím nuget místo projektu, chyba zmizí. Zkouším zda by to fungovalo s testy ve samostatné sln - zatím vypadá že ano. V testech nepřipojovat žádné nugety, zejména ne SunamoShared (má spoustu deps, dělalo by to neplechu). Tímhle testy nebudou fungovat v pipeline ale to se dořeší později.
         if (!pathOrContentCsproj.StartsWith("<") && (pathOrContentCsproj.EndsWith("Tests.csproj") ||
                                                      pathOrContentCsproj.Contains("TestValues")))
-            return await File.ReadAllTextAsync(pathOrContentCsproj);
+            return await FileAsync.ReadAllTextAsync(pathOrContentCsproj);
         var xmlDocument = new XmlDocument();
         if (pathOrContentCsproj.StartsWith("<"))
         {
@@ -135,14 +117,6 @@ public class CsprojHelper : CsprojConsts
         return XHelper.FormatXmlInMemory(xmlDocument.OuterXml);
     }
 
-    /// <summary>
-    /// EN: Replaces ProjectReference with PackageReference and returns new csproj content + names of replaced projects.
-    /// CZ: Nahradí ProjectReference za PackageReference a vrátí nový obsah csproj + názvy projektů, které byly nahrazeny.
-    /// </summary>
-    /// <param name="contentCsproj">EN: Content of csproj file. CZ: Obsah csproj souboru.</param>
-    /// <param name="availableNugetPackagesS">EN: List of available NuGet packages. CZ: Seznam dostupných NuGet balíčků.</param>
-    /// <param name="isTests">EN: Whether this is a test project. CZ: Zda je to testovací projekt.</param>
-    /// <returns>EN: Tuple of (new csproj content, list of removed project names). CZ: Tuple (nový obsah csproj, seznam odstraněných názvů projektů).</returns>
 #pragma warning disable IDE0060 // Remove unused parameter
     public static async Task<(string, List<string>)> ReplaceProjectReferenceForPackageReferenceWithRemoved(string contentCsproj, List<string> availableNugetPackagesS, bool isTests)
 #pragma warning restore IDE0060 // Remove unused parameter
@@ -189,15 +163,11 @@ public class CsprojHelper : CsprojConsts
         return (FormatXml(xmlDocument.OuterXml), removedProjects);
     }
 
-    /// <summary>
-    ///     Use RHSE2.SetPropertyToInnerClass
-    /// </summary>
-    /// <param name="contentOrPath"></param>
-    /// <returns></returns>
+    // Use RHSE2.SetPropertyToInnerClass
     [Obsolete("everything from here will be converted to CsprojInstance. Don't add a single method here!")]
     public static async Task ParseCsproj(string contentOrPath)
     {
-        if (!contentOrPath.StartsWith("<")) contentOrPath = await File.ReadAllTextAsync(contentOrPath);
+        if (!contentOrPath.StartsWith("<")) contentOrPath = await FileAsync.ReadAllTextAsync(contentOrPath);
         var data = new CsprojData();
         var xDocument = XDocument.Parse(contentOrPath);
         foreach (var item in xDocument.Root!.Descendants())
@@ -206,13 +176,9 @@ public class CsprojHelper : CsprojConsts
                 //RH.SetPropertyToInnerClass(data.PropertyGroup, item.Name, item.Value);
             }
     }
-    /// <summary>
-    /// EN: Parses namespace from .cs file. Item1 is project name, Item2 is sanitized full namespace.
-    /// CZ: Parsuje jmenný prostor z .cs souboru. Item1 je název projektu, Item2 je sanitizované celé NS.
-    /// </summary>
-    /// <param name="content">EN: File content. CZ: Obsah souboru.</param>
-    /// <param name="path">EN: File path or null. CZ: Cesta k souboru nebo null.</param>
-    /// <returns>EN: Tuple (project name, full sanitized namespace). CZ: Tuple (název projektu, celé sanitizované NS).</returns>
+
+    // EN: Parses namespace from .cs file. Item1 is project name, Item2 is sanitized full namespace.
+    // CZ: Parsuje jmenný prostor z .cs souboru. Item1 je název projektu, Item2 je sanitizované celé NS.
     [Obsolete("everything from here will be converted to CsprojInstance. Don't add a single method here!")]
     public static (string, string) ParseNamespaceFromCsFile(string content, string? path)
     {
@@ -237,24 +203,6 @@ public class CsprojHelper : CsprojConsts
                 var namespaceLine = item.Trim().TrimEnd(';').TrimEnd('{').Trim();
                 namespaceLine = namespaceLine.Replace("namespace ", "");
                 var firstPart = namespaceLine.Split('.')[0];
-#if DEBUG
-                //if (namespaceLine.Contains(";"))
-                //{
-                //    ThrowEx.Custom("NS can't contains ;");
-                //}
-                //if (namespaceLine == "SunamoDateTime")
-                //{
-                //}
-                if (namespaceLine == "SunamoData")
-                {
-                }
-                if (namespaceLine == "SunamoData.Data")
-                {
-                }
-                if (firstPart == "SunamoText" || namespaceLine == "SunamoText")
-                {
-                }
-#endif
                 return (firstPart, CsprojNsHelper.SanitizeProjectName(namespaceLine));
             }
         }
