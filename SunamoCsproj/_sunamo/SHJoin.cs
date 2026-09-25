@@ -10,8 +10,5 @@ internal class SHJoin
     /// </summary>
     /// <param name="lines">The lines to join.</param>
     /// <returns>Joined string with newline separators.</returns>
-    internal static string JoinNL(List<string> lines)
-    {
-        return string.Join('\n', lines);
-    }
+    internal static string JoinNL(List<string> lines) => string.Join("\n", lines);
 }

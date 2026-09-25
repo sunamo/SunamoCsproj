@@ -13,8 +13,7 @@ internal class CAG
     /// <returns>List of duplicate items.</returns>
     internal static List<T> GetDuplicities<T>(List<T> list)
     {
-        List<T> alreadyProcessed;
-        return GetDuplicities<T>(list, out alreadyProcessed);
+        return GetDuplicities<T>(list, out _);
     }
 
     /// <summary>

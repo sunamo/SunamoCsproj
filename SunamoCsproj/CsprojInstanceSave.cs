@@ -21,7 +21,7 @@ partial class CsprojInstance
         {
             var innerXml = node.InnerXml;
             var parts = innerXml.Split(';').Distinct().ToList();
-            node.InnerXml = string.Join(';', parts);
+            node.InnerXml = string.Join(";", parts);
         }
     }
     private void JoinMultiPropertyGroupToOne()

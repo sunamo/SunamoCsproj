@@ -25,7 +25,7 @@ public class CsprojNsHelper
         var isCsFiles = reallyOccuredInFilesOrProjectNames.First().EndsWith(".cs");
         var reallyOccuredInFiles = reallyOccuredInFilesOrProjectNames.ToList();
 
-        var count = contentCs ?? (await File.ReadAllLinesAsync(pathCsToAppendElif)).ToList();
+        var count = contentCs ?? (await FileAsync.ReadAllLinesAsync(pathCsToAppendElif)).ToList();
 
 
 
@@ -69,7 +69,7 @@ public class CsprojNsHelper
             var temp = SHJoin.JoinNL(count);
 
             // TODO2
-            await File.WriteAllTextAsync(pathCsToAppendElif, temp);
+            await FileAsync.WriteAllTextAsync(pathCsToAppendElif, temp);
         }
         else
         {
@@ -149,7 +149,7 @@ public class CsprojNsHelper
 
             var temp = SHJoin.JoinNL(count);
 
-            await File.WriteAllTextAsync(pathCsToAppendElif, temp);
+            await FileAsync.WriteAllTextAsync(pathCsToAppendElif, temp);
         }
     }
 
@@ -280,7 +280,7 @@ public class CsprojNsHelper
         if (namespaceIndexes.Count != 0)
             ThrowEx.Custom(
                 "All namespaces after #if or #elif were excluded. However, there are still NS at these indexes: " +
-                string.Join(',', namespaceIndexes.ConvertAll(index => index.ToString())));
+                string.Join(",", namespaceIndexes.ConvertAll(index => index.ToString())));
 
         //    var dxNs = parsed.allLinesBefore.Select((middle, index) => new { middle, index })
         //.Where(x => x.middle.StartsWith("#elif "))
@@ -309,7 +309,7 @@ public class CsprojNsHelper
         var result = new List<string>();
         var linesBefore = new List<string>();
 
-        var count = content ?? (await File.ReadAllLinesAsync(pathCs!)).ToList();
+        var count = content ?? (await FileAsync.ReadAllLinesAsync(pathCs!)).ToList();
 
 
 

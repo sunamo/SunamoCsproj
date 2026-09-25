@@ -9,8 +9,5 @@ internal class ThrowEx
     /// Throws a custom exception with specified message.
     /// </summary>
     /// <param name="message">The exception message.</param>
-    internal static void Custom(string message)
-    {
-        throw new Exception(message);
-    }
+    internal static void Custom(string message) => throw new Exception(message);
 }

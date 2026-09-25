@@ -53,7 +53,6 @@ public partial class CsprojInstance : CsprojConsts
     /// </summary>
     private CsprojInstance()
     {
-        // EN: XmlDocument will be initialized by caller / CZ: XmlDocument bude inicializován volajícím
         XmlDocument = null!;
     }
 
@@ -335,7 +334,7 @@ public partial class CsprojInstance : CsprojConsts
             return parts[0];
         }
 
-        return string.Join(';', parts);
+        return string.Join(";", parts);
     }
 
     /// <summary>
@@ -515,11 +514,6 @@ public partial class CsprojInstance : CsprojConsts
         {
             var value = XmlHelper.GetAttrValueOrInnerElement(item, Include);
             var key = Path.GetFileName(value)!.Replace(".csproj", string.Empty);
-#if DEBUG
-            if (!csprojNameToRelativePath.ContainsKey(key)) csprojNameToRelativePath.Add(key, value!);
-#else
-csprojNameToRelativePath.Add(key, value!);
-#endif
         }
 
         var alreadyProcessedPackages = new List<string>();

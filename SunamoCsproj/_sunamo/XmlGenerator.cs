@@ -39,10 +39,7 @@ internal class XmlGenerator
     /// Returns the generated XML as a string.
     /// </summary>
     /// <returns>The generated XML string.</returns>
-    public override string ToString()
-    {
-        return StringBuilder.ToString();
-    }
+    public override string ToString() => StringBuilder.ToString();
 
     /// <summary>
     /// Writes a tag with attributes from a list.
@@ -86,7 +83,7 @@ internal class XmlGenerator
     /// <param name="attributes">Array of attribute name/value pairs (alternating).</param>
     private void WriteTagWithAttrs(bool isAppendingNull, string tagName, params string[] attributes)
     {
-        StringBuilder tagBuilder = new StringBuilder();
+        var tagBuilder = new StringBuilder();
         tagBuilder.AppendFormat("<{0} ", tagName);
         for (int i = 0; i < attributes.Length; i++)
         {
@@ -101,7 +98,7 @@ internal class XmlGenerator
             }
         }
         tagBuilder.Append("<");
-        string tagString = tagBuilder.ToString();
+        var tagString = tagBuilder.ToString();
         if (_useStack)
         {
             _stack!.Push(tagString); // EN: Safe because _stack is initialized when _useStack is true / CZ: Bezpečné protože _stack je inicializován když _useStack je true

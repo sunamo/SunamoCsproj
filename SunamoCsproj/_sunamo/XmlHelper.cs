@@ -34,7 +34,7 @@ internal class XmlHelper
     /// <returns>List of child nodes.</returns>
     internal static List<XmlNode> ChildNodes(XmlNode node)
     {
-        List<XmlNode> result = new List<XmlNode>();
+        var result = new List<XmlNode>();
 
         foreach (XmlNode item in node.ChildNodes)
         {
