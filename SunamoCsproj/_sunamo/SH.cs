@@ -28,7 +28,7 @@ internal class SH
     /// <returns>List of indexes where predicate returns true.</returns>
     internal static List<int> GetIndexesOfLinesStartingWith(List<string> list, Func<string, bool> predicate)
     {
-        List<int> allIndices = list.Select((str, i) => new { Str = str, Index = i })
+        var allIndices = list.Select((str, i) => new { Str = str, Index = i })
             .Where(x => predicate(x.Str))
             .Select(x => x.Index).ToList();
         return allIndices;

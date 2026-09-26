@@ -75,7 +75,7 @@ public class CsprojHelper : CsprojConsts
             var projectName = SH.RemoveAfterFirst(path, "\\");
             return Path.Combine(slnFolder, projectName, projectName + ".csproj");
         }
-        var pathCopy = new string(path);
+        var pathCopy = path;
         while (true)
         {
             path = Path.GetDirectoryName(path)!;
@@ -91,7 +91,7 @@ public class CsprojHelper : CsprojConsts
 #pragma warning disable CS0618 // EN: Type or member is obsolete - internal usage allowed / CZ: Typ nebo člen je zastaralý - interní použití povoleno
             var xmlContent = await csprojInstance.RemoveDuplicatedProjectAndPackageReferences();
 #pragma warning restore CS0618
-            await File.WriteAllTextAsync(item, xmlContent);
+            await FileAsync.WriteAllTextAsync(item, xmlContent);
         }
     }
     [Obsolete("everything from here will be converted to CsprojInstance. Don't add a single method here!")]
@@ -102,7 +102,7 @@ public class CsprojHelper : CsprojConsts
         // CZ: Testy mají připojovat jen assembly kterou testují, případně projekt s testovacími daty. Nicméně takto to nepůjde - pak milion chyb jako: "Unable to satisfy conflicting requests for 'Diacritics'" (mix via project/package). Pokud připojím nuget místo projektu, chyba zmizí. Zkouším zda by to fungovalo s testy ve samostatné sln - zatím vypadá že ano. V testech nepřipojovat žádné nugety, zejména ne SunamoShared (má spoustu deps, dělalo by to neplechu). Tímhle testy nebudou fungovat v pipeline ale to se dořeší později.
         if (!pathOrContentCsproj.StartsWith("<") && (pathOrContentCsproj.EndsWith("Tests.csproj") ||
                                                      pathOrContentCsproj.Contains("TestValues")))
-            return await File.ReadAllTextAsync(pathOrContentCsproj);
+            return await FileAsync.ReadAllTextAsync(pathOrContentCsproj);
         var xmlDocument = new XmlDocument();
         if (pathOrContentCsproj.StartsWith("<"))
         {
@@ -197,7 +197,7 @@ public class CsprojHelper : CsprojConsts
     [Obsolete("everything from here will be converted to CsprojInstance. Don't add a single method here!")]
     public static async Task ParseCsproj(string contentOrPath)
     {
-        if (!contentOrPath.StartsWith("<")) contentOrPath = await File.ReadAllTextAsync(contentOrPath);
+        if (!contentOrPath.StartsWith("<")) contentOrPath = await FileAsync.ReadAllTextAsync(contentOrPath);
         var data = new CsprojData();
         var xDocument = XDocument.Parse(contentOrPath);
         foreach (var item in xDocument.Root!.Descendants())
@@ -237,24 +237,6 @@ public class CsprojHelper : CsprojConsts
                 var namespaceLine = item.Trim().TrimEnd(';').TrimEnd('{').Trim();
                 namespaceLine = namespaceLine.Replace("namespace ", "");
                 var firstPart = namespaceLine.Split('.')[0];
-#if DEBUG
-                //if (namespaceLine.Contains(";"))
-                //{
-                //    ThrowEx.Custom("NS can't contains ;");
-                //}
-                //if (namespaceLine == "SunamoDateTime")
-                //{
-                //}
-                if (namespaceLine == "SunamoData")
-                {
-                }
-                if (namespaceLine == "SunamoData.Data")
-                {
-                }
-                if (firstPart == "SunamoText" || namespaceLine == "SunamoText")
-                {
-                }
-#endif
                 return (firstPart, CsprojNsHelper.SanitizeProjectName(namespaceLine));
             }
         }

@@ -14,7 +14,7 @@ internal class XHelper
     {
         try
         {
-            XDocument doc = XDocument.Parse(xml);
+            var doc = XDocument.Parse(xml);
             return doc.ToString();
         }
         catch (Exception)

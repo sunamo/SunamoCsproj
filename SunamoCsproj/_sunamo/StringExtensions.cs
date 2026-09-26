@@ -13,10 +13,8 @@ internal static class StringExtensions
     /// <returns>True if text contains searchValue, false if text is null or doesn't contain searchValue.</returns>
     internal static bool ContainsNullAllow(this string? text, string searchValue)
     {
-        if (text == null)
-        {
+        if (text is null)
             return false;
-        }
         return text.Contains(searchValue);
     }
 }
