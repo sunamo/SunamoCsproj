@@ -1,5 +1,10 @@
 # SunamoCsproj
 
+## Short description
+
+Knihovna pro práci se soubory csproj v rámci jednoho balíčku. Je součástí sady balíčků Sunamo.
+
+
 Working with csprojs at one package
 
 ## Overview
