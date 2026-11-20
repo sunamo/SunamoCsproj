@@ -33,8 +33,8 @@ public class SwdRepoNames
     #endregion
 
 
-    public const string DalšíCoSeVyužívajíSkoroKdekoliv = ":";
-    #region Další co se využívají skoro kdekoliv
+    public const string OthersUsedAlmostEverywhere = ":";
+    #region Others that are used almost everywhere
     public const string SunamoCollections = "SunamoCollections";
     public const string SunamoCollectionsGeneric = "SunamoCollectionsGeneric";
     public const string SunamoFileIO = "SunamoFileIO";

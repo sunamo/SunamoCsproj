@@ -13,7 +13,7 @@ public partial class CsprojInstance : CsprojConsts
     /// <summary>
     /// Constructor taking XmlDocument directly.
     /// </summary>
-    /// <param name="xmlDocument">EN: XML document. CZ: XML dokument.</param>
+    /// <param name="xmlDocument">XML document.</param>
     public CsprojInstance(XmlDocument xmlDocument)
     {
         this.XmlDocument = xmlDocument;
@@ -22,7 +22,7 @@ public partial class CsprojInstance : CsprojConsts
     /// <summary>
     /// Constructor taking path or content.
     /// </summary>
-    /// <param name="path">EN: Path to csproj file. CZ: Cesta k csproj souboru.</param>
+    /// <param name="path">Path to csproj file.</param>
     /// <param name="content">Content or null to load from path.</param>
     public CsprojInstance(string path, string? content = null)
     {
@@ -76,8 +76,8 @@ public partial class CsprojInstance : CsprojConsts
     /// </summary>
     /// <param name="tagName">Item group tag name.</param>
     /// <param name="attributeName">Attribute name.</param>
-    /// <param name="attributeValue">EN: Attribute value. CZ: Hodnota atributu.</param>
-    /// <returns>EN: XML node or null. CZ: XML uzel nebo null.</returns>
+    /// <param name="attributeValue">Attribute value.</param>
+    /// <returns>XML node or null.</returns>
     private XmlNode? GetItemGroup(ItemGroupTagName tagName, string attributeName, string attributeValue)
     {
         var node = XmlDocument.SelectSingleNode($"/Project/ItemGroup/{tagName}[@{attributeName}='{attributeValue}']");
@@ -145,10 +145,10 @@ public partial class CsprojInstance : CsprojConsts
     /// Returns value xml. If parameter not needed, insert null. Only creates new element and returns it, whether I insert it via ReplaceChild or AppendChild is up to me.
     /// </summary>
     /// <param name="tagName">Tag name.</param>
-    /// <param name="include">EN: Include attribute value or null. CZ: Hodnota atributu Include nebo null.</param>
-    /// <param name="version">EN: Version attribute value or null. CZ: Hodnota atributu Version nebo null.</param>
-    /// <param name="pack">EN: Pack attribute value or null. CZ: Hodnota atributu Pack nebo null.</param>
-    /// <param name="packagePath">EN: PackagePath attribute value or null. CZ: Hodnota atributu PackagePath nebo null.</param>
+    /// <param name="include">Include attribute value or null.</param>
+    /// <param name="version">Version attribute value or null.</param>
+    /// <param name="pack">Pack attribute value or null.</param>
+    /// <param name="packagePath">PackagePath attribute value or null.</param>
     /// <returns>Created XML element.</returns>
     public XmlElement CreateNewItemGroupElement(ItemGroupTagName tagName, string include, string version, bool? pack,
         string packagePath)
@@ -524,7 +524,7 @@ public partial class CsprojInstance : CsprojConsts
     /// <summary>
     /// Returns always XML content of the csproj after removing duplicates.
     /// </summary>
-    /// <returns>EN: XML content. CZ: XML obsah.</returns>
+    /// <returns>XML content.</returns>
     [Obsolete("everything from here will be converted to CsprojInstance. Don't add a single method here!")]
     public async Task<string> RemoveDuplicatedProjectAndPackageReferences()
     {
@@ -542,7 +542,7 @@ public partial class CsprojInstance : CsprojConsts
     /// Universal method for modifying attribute of existing element in ItemGroup.
     /// </summary>
     /// <param name="tagName">Element type (e.g. PackageReference).</param>
-    /// <param name="includeValue">EN: Include attribute value. CZ: Hodnota atributu Include.</param>
+    /// <param name="includeValue">Include attribute value.</param>
     /// <param name="attributeName">Name of attribute to modify.</param>
     /// <param name="newValue">New attribute value.</param>
     public void UpdateItemGroupElementAttribute(ItemGroupTagName tagName, string includeValue, string attributeName, string newValue)

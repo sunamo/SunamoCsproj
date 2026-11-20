@@ -60,9 +60,9 @@ public class CsprojHelper : CsprojConsts
     /// <summary>
     /// Returns path to csproj file, not folder.
     /// </summary>
-    /// <param name="path">EN: Path to .cs file. CZ: Cesta k .cs souboru.</param>
+    /// <param name="path">Path to .cs file.</param>
     /// <param name="slnFolder">Solution folder or null.</param>
-    /// <returns>EN: Path to csproj file. CZ: Cesta k csproj souboru.</returns>
+    /// <returns>Path to csproj file.</returns>
     [Obsolete("everything from here will be converted to CsprojInstance. Don't add a single method here!")]
     public static string GetCsprojFromCsPath(string path, string? slnFolder = null)
     {
@@ -131,7 +131,7 @@ public class CsprojHelper : CsprojConsts
     /// <summary>
     /// Replaces ProjectReference with PackageReference and returns new csproj content + names of replaced projects.
     /// </summary>
-    /// <param name="contentCsproj">EN: Content of csproj file. CZ: Obsah csproj souboru.</param>
+    /// <param name="contentCsproj">Content of csproj file.</param>
     /// <param name="availableNugetPackagesS">List of available NuGet packages.</param>
     /// <param name="isTests">Whether this is a test project.</param>
     /// <returns>Tuple of (new csproj content, list of removed project names).</returns>
@@ -196,8 +196,8 @@ public class CsprojHelper : CsprojConsts
     /// <summary>
     /// Parses namespace from .cs file. Item1 is project name, Item2 is sanitized full namespace.
     /// </summary>
-    /// <param name="content">EN: File content. CZ: Obsah souboru.</param>
-    /// <param name="path">EN: File path or null. CZ: Cesta k souboru nebo null.</param>
+    /// <param name="content">File content.</param>
+    /// <param name="path">File path or null.</param>
     /// <returns>Tuple (project name, full sanitized namespace).</returns>
     [Obsolete("everything from here will be converted to CsprojInstance. Don't add a single method here!")]
     public static (string, string) ParseNamespaceFromCsFile(string content, string? path)
