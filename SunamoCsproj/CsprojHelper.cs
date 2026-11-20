@@ -45,6 +45,12 @@ public class CsprojHelper : CsprojConsts
         }
         return stringBuilder.ToString();
     }
+    /// <summary>
+    /// Csproj path from name.
+    /// </summary>
+    /// <param name="slnFolder">The sln folder.</param>
+    /// <param name="fileNameWithoutExtension">The file name without extension.</param>
+    /// <returns>The csproj path from name result.</returns>
     [Obsolete("everything from here will be converted to CsprojInstance. Don't add a single method here!")]
     public static string CsprojPathFromName(string slnFolder, string fileNameWithoutExtension)
     {
@@ -53,6 +59,12 @@ public class CsprojHelper : CsprojConsts
         if (!File.Exists(path)) ThrowEx.Custom(path + " does not exists!");
         return path;
     }
+    /// <summary>
+    /// Add link to csproj.
+    /// </summary>
+    /// <param name="target">The target.</param>
+    /// <param name="source">The source.</param>
+    /// <param name="csprojPath">The csproj path.</param>
     [Obsolete("everything from here will be converted to CsprojInstance. Don't add a single method here!")]
     public static async Task AddLinkToCsproj(string target, string source, string csprojPath)
     {
@@ -81,6 +93,10 @@ public class CsprojHelper : CsprojConsts
             if (csprojs.Any()) return csprojs.First();
         }
     }
+    /// <summary>
+    /// Remove duplicated project and package references.
+    /// </summary>
+    /// <param name="list">The list.</param>
     public static async Task RemoveDuplicatedProjectAndPackageReferences(List<string> list)
     {
         foreach (var item in list)
@@ -92,6 +108,13 @@ public class CsprojHelper : CsprojConsts
             await FileAsync.WriteAllTextAsync(item, xmlContent);
         }
     }
+    /// <summary>
+    /// Replace project reference for package reference.
+    /// </summary>
+    /// <param name="pathOrContentCsproj">The path or content csproj.</param>
+    /// <param name="availableNugetPackages">The available nuget packages.</param>
+    /// <param name="isTests">The is tests.</param>
+    /// <returns>The replace project reference for package reference result.</returns>
     [Obsolete("everything from here will be converted to CsprojInstance. Don't add a single method here!")]
     public static async Task<string> ReplaceProjectReferenceForPackageReference(string pathOrContentCsproj,
         List<string> availableNugetPackages, bool isTests)

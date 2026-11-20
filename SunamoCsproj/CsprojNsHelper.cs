@@ -1,11 +1,25 @@
 namespace SunamoCsproj;
 
+/// <summary>
+/// Represents the csproj ns helper type.
+/// </summary>
 public class CsprojNsHelper
 {
+    /// <summary>
+    /// The keywords before first code element declaration.
+    /// </summary>
     public static string[] KeywordsBeforeFirstCodeElementDeclaration =
         { "#if", "using ", "namespace", "#elif", "#else", "#endif", ";" };
 
     // Writes new #elif directives to .cs file. Parameter reallyOccuredInFilesOrProjectNames is critical - must pass csproj paths, not cs paths, because linked files add elif based on physical project location.
+    /// <summary>
+    /// Write new.
+    /// </summary>
+    /// <param name="reallyOccuredInFilesOrProjectNames">The really occured in files or project names.</param>
+    /// <param name="pathCsToAppendElif">The path cs to append elif.</param>
+    /// <param name="contentCs">The content cs.</param>
+    /// <param name="AllNamespaces">The all namespaces.</param>
+    /// <returns>The write new result.</returns>
     public static async Task WriteNew(List<string> reallyOccuredInFilesOrProjectNames, string pathCsToAppendElif,
         List<string> contentCs, List<string> AllNamespaces)
     {
@@ -132,11 +146,21 @@ public class CsprojNsHelper
         }
     }
 
+    /// <summary>
+    /// Sanitize project name.
+    /// </summary>
+    /// <param name="text">The text.</param>
+    /// <returns>The sanitize project name result.</returns>
     public static string SanitizeProjectName(string text)
     {
         return string.Concat(text.Where(character => char.IsLetterOrDigit(character)));
     }
 
+    /// <summary>
+    /// Project name from cs path.
+    /// </summary>
+    /// <param name="text.Where(character">The text where character.</param>
+    /// <returns>The project name from cs path result.</returns>
     public static string ProjectNameFromCsPath(string csPath)
     {
 #pragma warning disable CS0618 // Type or member is obsolete - internal usage allowed /
@@ -234,6 +258,14 @@ public class CsprojNsHelper
     }
 
     // Parses #if directives to first code element. This method can be called only when SetAllNamespaces completes, so first check is OK.
+    /// <summary>
+    /// Parse sharp if to first code element.
+    /// </summary>
+    /// <param name="pathCs">The path cs.</param>
+    /// <param name="content">The content.</param>
+    /// <param name="AllNamespaces">The all namespaces.</param>
+    /// <param name="addTo_linked">The add to linked.</param>
+    /// <returns>The parse sharp if to first code element result.</returns>
     public static async Task<ParseSharpIfToFirstCodeElementResult> ParseSharpIfToFirstCodeElement(string? pathCs,
         List<string> content, List<string> AllNamespaces, bool addTo_linked)
     {

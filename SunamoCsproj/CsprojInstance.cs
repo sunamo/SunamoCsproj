@@ -106,6 +106,11 @@ public partial class CsprojInstance : CsprojConsts
         node?.ParentNode?.RemoveChild(node);
     }
 
+    /// <summary>
+    /// Add property group item if not exists.
+    /// </summary>
+    /// <param name="key">The key.</param>
+    /// <returns>The add property group item if not exists result.</returns>
     public string AddPropertyGroupItemIfNotExists(string key)
     {
         var content = PropertyGroupItemContent(key);
@@ -123,6 +128,11 @@ public partial class CsprojInstance : CsprojConsts
 
 
 
+    /// <summary>
+    /// Property group item content.
+    /// </summary>
+    /// <param name="tagName">The tag name.</param>
+    /// <returns>The property group item content result.</returns>
     public string? PropertyGroupItemContent(string tagName)
     {
         var node = XmlDocument.SelectSingleNode("/Project/PropertyGroup/" + tagName);
@@ -130,12 +140,23 @@ public partial class CsprojInstance : CsprojConsts
         return node.InnerText;
     }
 
+    /// <summary>
+    /// Remove single item group.
+    /// </summary>
+    /// <param name="attributeValue">The attribute value.</param>
+    /// <param name="tagName">The tag name.</param>
     public void RemoveSingleItemGroup(string attributeValue, ItemGroupTagName tagName)
     {
         var node = XmlDocument.SelectSingleNode($"/Project/ItemGroup/{tagName}[@{Include} = '{attributeValue}']");
         node?.ParentNode?.RemoveChild(node);
     }
 
+    /// <summary>
+    /// Create new package reference.
+    /// </summary>
+    /// <param name="include">The include.</param>
+    /// <param name="version">The version.</param>
+    /// <returns>The create new package reference result.</returns>
     public XmlElement CreateNewPackageReference(string include, string version)
     {
         return CreateNewItemGroupElement(ItemGroupTagName.PackageReference, include, version, null, null!);
@@ -181,6 +202,10 @@ public partial class CsprojInstance : CsprojConsts
         return newElement;
     }
 
+    /// <summary>
+    /// Add xml element to item group or create.
+    /// </summary>
+    /// <param name="element">The element.</param>
     public void AddXmlElementToItemGroupOrCreate(XmlElement element)
     {
         var itemGroup = XmlDocument.SelectSingleNode("/Project/ItemGroup");
@@ -203,11 +228,22 @@ public partial class CsprojInstance : CsprojConsts
         return appendedAttribute;
     }
 
+    /// <summary>
+    /// Turn on off async conditional compilation symbol.
+    /// </summary>
+    /// <param name="add">The add.</param>
+    /// <returns>The turn on off async conditional compilation symbol result.</returns>
     public string TurnOnOffAsyncConditionalCompilationSymbol(bool add)
     {
         return AddRemoveDefineConstant(add, ASYNC);
     }
 
+    /// <summary>
+    /// Add or edit property group item.
+    /// </summary>
+    /// <param name="tagName">The tag name.</param>
+    /// <param name="content">The content.</param>
+    /// <param name="forceValueForKey">The force value for key.</param>
     public void AddOrEditPropertyGroupItem(string tagName, string content, ForceValueForKey forceValueForKey)
     {
         var existingElement = XmlDocument.SelectSingleNode("/Project/PropertyGroup/" + tagName);
@@ -226,16 +262,35 @@ public partial class CsprojInstance : CsprojConsts
         }
     }
 
+    /// <summary>
+    /// Add remove no warn.
+    /// </summary>
+    /// <param name="add">The add.</param>
+    /// <param name="warn">The warn.</param>
+    /// <returns>The add remove no warn result.</returns>
     public string AddRemoveNoWarn(bool add, string warn)
     {
         return AddRemovePropertyGroupItem(add, "NoWarn", warn);
     }
 
+    /// <summary>
+    /// Add remove define constant.
+    /// </summary>
+    /// <param name="add">The add.</param>
+    /// <param name="defineConstant">The define constant.</param>
+    /// <returns>The add remove define constant result.</returns>
     public string AddRemoveDefineConstant(bool add, string defineConstant)
     {
         return AddRemovePropertyGroupItem(add, "DefineConstants", defineConstant);
     }
 
+    /// <summary>
+    /// Add remove property group item.
+    /// </summary>
+    /// <param name="add">The add.</param>
+    /// <param name="tagName">The tag name.</param>
+    /// <param name="partValue">The part value.</param>
+    /// <returns>The add remove property group item result.</returns>
     public string AddRemovePropertyGroupItem(bool add, string tagName, string partValue)
     {
         var nodes = XmlDocument.SelectNodes("/Project/PropertyGroup");
@@ -402,6 +457,13 @@ public partial class CsprojInstance : CsprojConsts
     }
 
 
+    /// <summary>
+    /// Filter by attr and contains.
+    /// </summary>
+    /// <param name="list">The list.</param>
+    /// <param name="attributeName">The attribute name.</param>
+    /// <param name="mustContain">The must contain.</param>
+    /// <returns>The filter by attr and contains result.</returns>
     public List<ItemGroupElement> FilterByAttrAndContains(List<ItemGroupElement> list, string attributeName,
         string mustContain)
     {
@@ -412,6 +474,12 @@ public partial class CsprojInstance : CsprojConsts
             .ContainsNullAllow(mustContain)).ToList();
     }
 
+    /// <summary>
+    /// Remove all items in item group which contains in include.
+    /// </summary>
+    /// <param name="tagName">The tag name.</param>
+    /// <param name="attributeName">The attribute name.</param>
+    /// <param name="mustContain">The must contain.</param>
     public void RemoveAllItemsInItemGroupWhichContainsInInclude(ItemGroupTagName tagName, string attributeName,
         string mustContain)
     {
@@ -445,6 +513,10 @@ public partial class CsprojInstance : CsprojConsts
     }
 
 
+    /// <summary>
+    /// Replace package reference for project reference.
+    /// </summary>
+    /// <param name="pathCsproj">The path csproj.</param>
     public async Task ReplacePackageReferenceForProjectReference(string pathCsproj)
     {
         var csprojInstance = new CsprojInstance(pathCsproj);
@@ -462,6 +534,10 @@ public partial class CsprojInstance : CsprojConsts
     }
 
 
+    /// <summary>
+    /// Detect duplicated project and package references.
+    /// </summary>
+    /// <returns>The detect duplicated project and package references result.</returns>
     public async Task<DuplicatesInItemGroup> DetectDuplicatedProjectAndPackageReferences()
     {
         var packages = ItemsInItemGroup(ItemGroupTagName.PackageReference);
@@ -485,6 +561,11 @@ public partial class CsprojInstance : CsprojConsts
     }
 
 
+    /// <summary>
+    /// Remove duplicated project and package references.
+    /// </summary>
+    /// <param name="data">The data.</param>
+    /// <returns>The remove duplicated project and package references result.</returns>
     [Obsolete("everything from here will be converted to CsprojInstance. Don't add a single method here!")]
     public async Task<string> RemoveDuplicatedProjectAndPackageReferences(DuplicatesInItemGroup data)
     {

@@ -1,17 +1,39 @@
 namespace SunamoCsproj.Data;
 
+/// <summary>
+/// Represents the item group element type.
+/// </summary>
 public class ItemGroupElement
 {
+    /// <summary>
+    /// Gets or sets the include.
+    /// </summary>
     public string? Include { get; set; }
 
+    /// <summary>
+    /// Gets or sets the version.
+    /// </summary>
     public string? Version { get; set; }
 
+    /// <summary>
+    /// Gets or sets the link.
+    /// </summary>
     public string? Link { get; set; }
 
+    /// <summary>
+    /// Gets or sets the xml node.
+    /// </summary>
     public XmlNode? XmlNode { get; set; }
 
+    /// <summary>
+    /// Gets or sets the item group tag name.
+    /// </summary>
     public ItemGroupTagName ItemGroupTagName { get; set; }
 
+    /// <summary>
+    /// To string.
+    /// </summary>
+    /// <returns>The to string result.</returns>
     public override string ToString()
     {
         List<string> attributes = [];
@@ -39,6 +61,10 @@ public class ItemGroupElement
         return xmlGenerator.ToString();
     }
 
+    /// <summary>
+    /// Initializes a new instance of the parse class.
+    /// </summary>
+    /// <param name="CsprojConsts.Version">The csproj consts version.</param>
     public static ItemGroupElement? Parse(XmlNode item)
     {
         var tagName = item.Name;
@@ -57,6 +83,10 @@ public class ItemGroupElement
         return element;
     }
 
+    /// <summary>
+    /// Initializes a new instance of the add to item group class.
+    /// </summary>
+    /// <param name="itemGroupTagName)">The item group tag name.</param>
     public void AddToItemGroup(XmlElement itemGroup)
     {
         var document = itemGroup.OwnerDocument;

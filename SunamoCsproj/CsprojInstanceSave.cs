@@ -2,6 +2,9 @@ namespace SunamoCsproj;
 
 partial class CsprojInstance
 {
+    /// <summary>
+    /// Save.
+    /// </summary>
     public void Save()
     {
         JoinMultiPropertyGroupToOne();
