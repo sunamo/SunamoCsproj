@@ -5,8 +5,7 @@ public class CsprojNsHelper
     public static string[] KeywordsBeforeFirstCodeElementDeclaration =
         { "#if", "using ", "namespace", "#elif", "#else", "#endif", ";" };
 
-    // EN: Writes new #elif directives to .cs file. Parameter reallyOccuredInFilesOrProjectNames is critical - must pass csproj paths, not cs paths, because linked files add elif based on physical project location.
-    // CZ: Zapíše do .cs nové #elif direktivy. Parametr reallyOccuredInFilesOrProjectNames je kritický - musí předávat csproj cesty, ne cs cesty, protože linkované soubory přidávají elif podle fyzického umístění projektu.
+    // Writes new #elif directives to .cs file. Parameter reallyOccuredInFilesOrProjectNames is critical - must pass csproj paths, not cs paths, because linked files add elif based on physical project location.
     public static async Task WriteNew(List<string> reallyOccuredInFilesOrProjectNames, string pathCsToAppendElif,
         List<string> contentCs, List<string> AllNamespaces)
     {
@@ -22,19 +21,16 @@ public class CsprojNsHelper
         var result = await ParseSharpIfToFirstCodeElement(pathCsToAppendElif, count, AllNamespaces, addTo_linked);
 
         var existingNamespace = result.FoundedNamespaces!;
-        // EN: If #if is already introduced
-        // CZ: Pokud už je #if zavedený
+        // If #if is already introduced
         if (existingNamespace.Count > 0)
         {
             var indexElse = count.IndexOf("#else");
 
             var stringBuilder = new StringBuilder();
 
-            // EN: Not needed because we will add at #else position
-            // CZ: Nepotřebuji, protože budu přidávat až na místo #else
+            // Not needed because we will add at #else position
 
-            // EN: Critical: how will this work when class is partial - should have tokens bound to file, so ns will be added only to files where needed
-            // CZ: Nejzásadnější: jak to bude pracovat když je třída partial - mělo by to mít svázané tokeny se souborem, takže ns jen do souborů kde jsou potřeba
+            // Critical: how will this work when class is partial - should have tokens bound to file, so ns will be added only to files where needed
 
             foreach (var item in reallyOccuredInFiles)
             {
@@ -58,11 +54,9 @@ public class CsprojNsHelper
         }
         else
         {
-            // EN: No #if here yet
-            // CZ: Žádný #if tu ještě není
+            // No #if here yet
 
-            // EN: Otherwise must write all + else. NS will be taken from what's already in file
-            // CZ: V opačném případě musím zapsat všechny + else. NS vezmu z toho co už v souboru bude
+            // Otherwise must write all + else. NS will be taken from what's already in file
 
             var namespaceLines = count.Where(text => text.StartsWith("namespace ") && text.Trim() != "namespace");
             string? nsToElse = null;
@@ -154,8 +148,7 @@ public class CsprojNsHelper
 
     private static string GenerateNsFromPath(string path)
     {
-        // EN: Already handled in _5AddNamespaceByInputFolderName in CommandsToAllCsFiles.Cmd
-        // CZ: Už řeším v _5AddNamespaceByInputFolderName v CommandsToAllCsFiles.Cmd
+        // Already handled in _5AddNamespaceByInputFolderName in CommandsToAllCsFiles.Cmd
 
 #pragma warning disable CS0618 // EN: Type or member is obsolete - internal usage allowed / CZ: Typ nebo člen je zastaralý - interní použití povoleno
         var csprojPath = CsprojHelper.GetCsprojFromCsPath(path);
@@ -171,8 +164,7 @@ public class CsprojNsHelper
 
         var parameter = remain!.Split('\\');
 
-        // EN: Sanitize only the last element instead of unreachable loop
-        // CZ: Sanitizovat pouze poslední element místo nedosažitelné smyčky
+        // Sanitize only the last element instead of unreachable loop
         var lastIndex = parameter.Length - 1;
         if (lastIndex >= 0)
         {
@@ -185,8 +177,7 @@ public class CsprojNsHelper
     private static async Task ThrowWhenThereIsNamespaceOutsideOfSharpIf(string path, List<string> count,
         List<string> allNamespaces, bool addTo_linked)
     {
-        // EN: Continue here next time - find indexes of #if and #elif
-        // CZ: Zde příště pokračovat - zjistím indexy #if a #elif
+        // Continue here next time - find indexes of #if and #elif
 
         var parsed = await ParseSharpIfToFirstCodeElement(path, count, allNamespaces, addTo_linked);
         var allLinesBefore = parsed.AllLinesBefore!;
@@ -242,8 +233,7 @@ public class CsprojNsHelper
 
     }
 
-    // EN: Parses #if directives to first code element. This method can be called only when SetAllNamespaces completes, so first check is OK.
-    // CZ: Parsuje #if direktivy po první kódový element. Tato metoda se může volat jen když SetAllNamespaces se dokoná, proto ta první kontrola je v pohodě.
+    // Parses #if directives to first code element. This method can be called only when SetAllNamespaces completes, so first check is OK.
     public static async Task<ParseSharpIfToFirstCodeElementResult> ParseSharpIfToFirstCodeElement(string? pathCs,
         List<string> content, List<string> AllNamespaces, bool addTo_linked)
     {
@@ -271,8 +261,7 @@ public class CsprojNsHelper
                 (addTo_linked ? !AllNamespaces!.Contains(line) : true))
                 break;
 
-            // EN: Another problem: NS checked if on line, can have dots if in project name or nested deeper in folder structure - means more elif, growing text by folder count. Won't look nice but won't remove folders now after organizing. Hopefully not too many #elif
-            // CZ: Další problém: NS kontroluji zda jsou na řádku, můžou se tam vyskytovat i tečky pokud jsou v názvu projektu nebo jsou zanořené níže v adresářové struktuře - to znamená více elif, vzrůstající text počtem složek. Nebude vypadat hezky ale nebudu se složek zbavovat po tom co jsem do nich třídil. Snad těch #elif nebude moc
+            // Another problem: NS checked if on line, can have dots if in project name or nested deeper in folder structure - means more elif, growing text by folder count. Won't look nice but won't remove folders now after organizing. Hopefully not too many #elif
 
             if (addTo_linked)
             {

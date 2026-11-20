@@ -98,8 +98,7 @@ public class CsprojHelper : CsprojConsts
     public static async Task<string> ReplaceProjectReferenceForPackageReference(string pathOrContentCsproj,
         List<string> availableNugetPackages, bool isTests)
     {
-        // EN: Tests should connect only assembly they test, or project with test data. However, this won't work - then million errors like: "Unable to satisfy conflicting requests for 'Diacritics'" (via project/package mix). If I connect nuget instead of project, error disappears. Trying if it would work with tests in separate sln - so far looks yes. In tests don't connect any nugets, especially not SunamoShared (has many deps, would cause mess). This way tests won't work in pipeline but will be solved later.
-        // CZ: Testy mají připojovat jen assembly kterou testují, případně projekt s testovacími daty. Nicméně takto to nepůjde - pak milion chyb jako: "Unable to satisfy conflicting requests for 'Diacritics'" (mix via project/package). Pokud připojím nuget místo projektu, chyba zmizí. Zkouším zda by to fungovalo s testy ve samostatné sln - zatím vypadá že ano. V testech nepřipojovat žádné nugety, zejména ne SunamoShared (má spoustu deps, dělalo by to neplechu). Tímhle testy nebudou fungovat v pipeline ale to se dořeší později.
+        // Tests should connect only assembly they test, or project with test data. However, this won't work - then million errors like: "Unable to satisfy conflicting requests for 'Diacritics'" (via project/package mix). If I connect nuget instead of project, error disappears. Trying if it would work with tests in separate sln - so far looks yes. In tests don't connect any nugets, especially not SunamoShared (has many deps, would cause mess). This way tests won't work in pipeline but will be solved later.
         if (!pathOrContentCsproj.StartsWith("<") && (pathOrContentCsproj.EndsWith("Tests.csproj") ||
                                                      pathOrContentCsproj.Contains("TestValues")))
             return await FileAsync.ReadAllTextAsync(pathOrContentCsproj);
@@ -119,18 +118,15 @@ public class CsprojHelper : CsprojConsts
         {
             var include = XmlHelper.GetAttrValueOrInnerElement(item, Include);
             var projectName = Path.GetFileNameWithoutExtension(include)!;
-            // EN: If I already have it as nuget
-            // CZ: Pokud už jej mám na nugetu
+            // If I already have it as nuget
             if (availableNugetPackages.Contains(projectName))
             {
                 var newPackageReference = csprojInstance.CreateNewPackageReference(projectName, "*");
                 item.ParentNode?.ReplaceChild(newPackageReference, item);
             }
-            // EN: Can't break here when I want to replace in whole file - would replace only first one
-            // CZ: Tady break nemůže být když chci nahradit v celém souboru - nahradil by se mi pouze první
+            // Can't break here when I want to replace in whole file - would replace only first one
         }
-        // EN: TODO: make format from SunamoXml
-        // CZ: TODO: z SunamoXml udělat formát
+        // TODO: make format from SunamoXml
         return XHelper.FormatXmlInMemory(xmlDocument.OuterXml);
     }
 
@@ -147,8 +143,7 @@ public class CsprojHelper : CsprojConsts
 #pragma warning restore IDE0060 // Remove unused parameter
     {
         var removedProjects = new List<string>();
-        // EN: Original replacement logic
-        // CZ: Původní logika nahrazování
+        // Original replacement logic
         var xmlDocument = new XmlDocument();
         xmlDocument.LoadXml(contentCsproj);
         var projectReferences = xmlDocument.GetElementsByTagName("ProjectReference");
@@ -166,14 +161,12 @@ public class CsprojHelper : CsprojConsts
                 }
             }
         }
-        // EN: Remove ProjectReference and optionally add PackageReference
-        // CZ: Odstraň ProjectReference a případně přidej PackageReference
+        // Remove ProjectReference and optionally add PackageReference
         foreach (var projectReference in toRemove)
         {
             var projectName = Path.GetFileNameWithoutExtension(projectReference.Attributes!["Include"]!.Value);
             projectReference.ParentNode!.RemoveChild(projectReference);
-            // EN: Add PackageReference
-            // CZ: Přidej PackageReference
+            // Add PackageReference
             var itemGroup = xmlDocument.CreateElement("ItemGroup");
             var packageReference = xmlDocument.CreateElement("PackageReference");
             var includeAttribute = xmlDocument.CreateAttribute("Include");
@@ -183,8 +176,7 @@ public class CsprojHelper : CsprojConsts
             xmlDocument.DocumentElement!.AppendChild(itemGroup);
         }
 
-        // EN: Return formatted XML instead of unformatted
-        // CZ: Vrať formátovaný XML místo neformátovaného
+        // Return formatted XML instead of unformatted
         return (FormatXml(xmlDocument.OuterXml), removedProjects);
     }
 
@@ -214,11 +206,9 @@ public class CsprojHelper : CsprojConsts
     [Obsolete("everything from here will be converted to CsprojInstance. Don't add a single method here!")]
     public static (string, string) ParseNamespaceFromCsFile(string content, string? path)
     {
-        // EN: Cannot contain ; SunamoDateTime is missing
-        // CZ: Nemůže obsahovat ; SunamoDateTime chybí
+        // Cannot contain ; SunamoDateTime is missing
 
-        // EN: Find out if I have SunamoPercentCalculator here and if not, why?
-        // CZ: Zjistit zda tu mám SunamoPercentCalculator a pokud ne, proč?
+        // Find out if I have SunamoPercentCalculator here and if not, why?
         var list = SHGetLines.GetLines(content);
         for (var index = 0; index < list.Count; index++)
         {

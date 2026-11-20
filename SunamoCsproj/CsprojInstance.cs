@@ -394,8 +394,7 @@ public partial class CsprojInstance : CsprojConsts
     public void RemoveItemsFromItemGroupWithAttr(ItemGroupTagName tagName, string attributeName)
     {
         var nodes = XmlDocument.SelectNodes($"/Project/ItemGroup/{tagName}[@{attributeName}]");
-        // EN: Must check in detail what will be deleted - no easy reverse path exists
-        // CZ: Nutno zkontrolovat detailně co se bude mazat - snadná reverzní cesta neexistuje
+        // Must check in detail what will be deleted - no easy reverse path exists
         foreach (XmlNode item in nodes!) item.ParentNode!.RemoveChild(item);
     }
 

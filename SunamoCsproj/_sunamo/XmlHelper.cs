@@ -18,7 +18,7 @@ internal class XmlHelper
         return null;
     }
 
-    // EN: Converts XmlNodeList to List of XmlNode. XmlNodeList only inherits from IEnumerable and IDisposable.
+    // Converts XmlNodeList to List of XmlNode. XmlNodeList only inherits from IEnumerable and IDisposable.
     internal static List<XmlNode> ChildNodes(XmlNode node)
     {
         var result = new List<XmlNode>();

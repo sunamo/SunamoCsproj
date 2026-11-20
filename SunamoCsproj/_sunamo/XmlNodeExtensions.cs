@@ -1,7 +1,6 @@
 namespace SunamoCsproj._sunamo;
 
-// EN: Variable names have been checked and replaced with self-descriptive names
-// CZ: Názvy proměnných byly zkontrolovány a nahrazeny samopopisnými názvy
+// Variable names have been checked and replaced with self-descriptive names
 internal static class XmlNodeExtensions
 {
     internal static XmlElement AddElement(this XmlNode element, string name)
