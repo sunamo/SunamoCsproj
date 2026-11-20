@@ -1,4 +1,3 @@
-// variables names: ok
 namespace SunamoCsproj.Tests;
 public class CsprojNsHelperTests
 {

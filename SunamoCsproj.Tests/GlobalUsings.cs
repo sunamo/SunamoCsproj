@@ -1,4 +1,3 @@
-// variables names: ok
 global using Xunit;
 global using System.Diagnostics;
 global using System.Threading.Tasks;

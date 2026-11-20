@@ -1,4 +1,3 @@
-// variables names: ok
 namespace SunamoCsproj.Results;
 
 public class ParseSharpIfToFirstCodeElementResult

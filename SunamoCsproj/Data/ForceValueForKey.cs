@@ -1,4 +1,3 @@
-// variables names: ok
 namespace SunamoCsproj.Data;
 
 // Must be passed to each method individually to maintain clarity about what affects method behavior.

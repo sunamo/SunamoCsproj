@@ -1,4 +1,3 @@
-// variables names: ok
 using System.IO.Compression;
 
 namespace SunamoCsproj.Tests;
