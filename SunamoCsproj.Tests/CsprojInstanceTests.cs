@@ -79,7 +79,6 @@ public class CsprojInstanceTests : SwdRepoNames
     {
         CsprojInstance csprojInstance = new(@"E:\vs\Projects\PlatformIndependentNuGetPackages\SunamoCsproj\SunamoCsproj.csproj");
 
-        //var data = await CsprojHelper.PropertyGroupItemContent(@"E:\vs\Projects\_ut2\PlatformIndependentNuGetPackages.Tests\SunamoCsproj.Tests\SunamoCsproj.Tests.csproj", "Description");
         var description = csprojInstance.PropertyGroupItemContent("Description");
     }
 
@@ -117,6 +116,5 @@ public class CsprojInstanceTests : SwdRepoNames
     [Fact]
     public void AddTagsForNugetReadmeFile()
     {
-        //var csi = new CsprojInstance();
     }
 }

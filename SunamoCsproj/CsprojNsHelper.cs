@@ -32,11 +32,6 @@ public class CsprojNsHelper
 
             // EN: Not needed because we will add at #else position
             // CZ: Nepotřebuji, protože budu přidávat až na místo #else
-            //if (addEarlierAddedToFile)
-            //{
-            //    reallyOccuredInFiles.AddRange(existingNamespace);
-            //    reallyOccuredInFiles = reallyOccuredInFiles.Distinct().ToList();
-            //}
 
             // EN: Critical: how will this work when class is partial - should have tokens bound to file, so ns will be added only to files where needed
             // CZ: Nejzásadnější: jak to bude pracovat když je třída partial - mělo by to mít svázané tokeny se souborem, takže ns jen do souborů kde jsou potřeba
@@ -196,7 +191,6 @@ public class CsprojNsHelper
         var parsed = await ParseSharpIfToFirstCodeElement(path, count, allNamespaces, addTo_linked);
         var allLinesBefore = parsed.AllLinesBefore!;
         var elifIndexes = SH.GetIndexesOfLinesStartingWith(allLinesBefore, line => line.StartsWith("#elif"));
-        //var namespaceIndexes = SH.GetIndexesOfLinesStartingWith(allLinesBefore, line => line.StartsWith("namespace "));
         var namespaceIndexes = SH.GetIndexesOfLinesWhichContainsAnyOfStrings(allLinesBefore, allNamespaces);
 
         foreach (var item in elifIndexes)
@@ -246,12 +240,6 @@ public class CsprojNsHelper
                 "All namespaces after #if or #elif were excluded. However, there are still NS at these indexes: " +
                 string.Join(",", namespaceIndexes.ConvertAll(index => index.ToString())));
 
-        //    var dxNs = parsed.allLinesBefore.Select((middle, index) => new { middle, index })
-        //.Where(x => x.middle.StartsWith("#elif "))
-        //.Select(x => new { x.middle })
-        //.Where(x => x.dt >= czas11 && x.dt <= czas22)
-        //.Select(x => x.index)
-        //.ToList();
     }
 
     // EN: Parses #if directives to first code element. This method can be called only when SetAllNamespaces completes, so first check is OK.
@@ -281,10 +269,6 @@ public class CsprojNsHelper
 
             if (!KeywordsBeforeFirstCodeElementDeclaration.Any(keyword => line.Contains(keyword)) &&
                 (addTo_linked ? !AllNamespaces!.Contains(line) : true))
-                //if (line.Contains("<"))
-                //{
-                //    result2.IsGeneric = true;
-                //}
                 break;
 
             // EN: Another problem: NS checked if on line, can have dots if in project name or nested deeper in folder structure - means more elif, growing text by folder count. Won't look nice but won't remove folders now after organizing. Hopefully not too many #elif

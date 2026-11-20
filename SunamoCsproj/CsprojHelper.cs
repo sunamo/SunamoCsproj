@@ -128,7 +128,6 @@ public class CsprojHelper : CsprojConsts
             }
             // EN: Can't break here when I want to replace in whole file - would replace only first one
             // CZ: Tady break nemůže být když chci nahradit v celém souboru - nahradil by se mi pouze první
-            //break;
         }
         // EN: TODO: make format from SunamoXml
         // CZ: TODO: z SunamoXml udělat formát
@@ -203,7 +202,6 @@ public class CsprojHelper : CsprojConsts
         foreach (var item in xDocument.Root!.Descendants())
             if (item.Name == "PropertyGroup")
             {
-                //RH.SetPropertyToInnerClass(data.PropertyGroup, item.Name, item.Value);
             }
     }
     /// <summary>
