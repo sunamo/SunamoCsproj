@@ -1,12 +1,12 @@
 namespace SunamoCsproj._sunamo;
 
 /// <summary>
-/// EN: Collection analysis generic helper.
+/// Collection analysis generic helper.
 /// </summary>
 internal class CAG
 {
     /// <summary>
-    /// EN: Gets duplicate items from a list.
+    /// Gets duplicate items from a list.
     /// </summary>
     /// <typeparam name="T">Item type.</typeparam>
     /// <param name="list">List to analyze.</param>
@@ -17,7 +17,7 @@ internal class CAG
     }
 
     /// <summary>
-    /// EN: Gets duplicate items from a list and outputs already processed items.
+    /// Gets duplicate items from a list and outputs already processed items.
     /// </summary>
     /// <typeparam name="T">Item type.</typeparam>
     /// <param name="list">List to analyze.</param>

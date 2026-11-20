@@ -67,7 +67,7 @@ internal class XmlGenerator
         var tagString = tagBuilder.ToString();
         if (_useStack)
         {
-            _stack!.Push(tagString); // EN: Safe because _stack is initialized when _useStack is true / CZ: Bezpečné protože _stack je inicializován když _useStack je true
+            _stack!.Push(tagString); // Safe because _stack is initialized when _useStack is true /
         }
         this.StringBuilder.Append(tagString);
     }

@@ -17,7 +17,7 @@ public class CsprojNsHelper
         List<string> allNamespaces = new List<string>();
         var parseResult = await CsprojNsHelper.ParseSharpIfToFirstCodeElement(null, inputLines, allNamespaces, false);
 
-        // nutno si povšimnout že mi to dává pryč všechny prázdné řádky
+        // note that it removes all empty lines for me
         Assert.Equal(SHGetLines.GetLines(@"using System.Threading.Tasks;
 namespace SunamoCsproj;"), parseResult.AllLinesBefore);
         Assert.Equal(new List<string>(), parseResult.FoundedNamespaces);
@@ -25,7 +25,7 @@ namespace SunamoCsproj;"), parseResult.AllLinesBefore);
     }
 
     /// <summary>
-    /// Zde mi to nevyhodí, volá se až ve WriteNew
+    /// It does not throw here, it is called only in WriteNew
     /// </summary>
     /// <returns></returns>
     [Fact]
@@ -43,11 +43,11 @@ public class CsprojNsHelper
 
         var inputLines = SHGetLines.GetLines(input);
 
-        // Nutno předat vše mezi #if, #endif protože jinak by mi to nevrátilo ani všechny řádky před
+        // Everything between #if and #endif must be passed, otherwise it would not return even all the lines before
         List<string> allNamespaces = new List<string>(new string[] { "SunamoString", "SunamoCsproj" });
         var parseResult = await CsprojNsHelper.ParseSharpIfToFirstCodeElement(null, inputLines, allNamespaces, false);
 
-        // nutno si povšimnout že mi to dává pryč všechny prázdné řádky
+        // note that it removes all empty lines for me
         Assert.Equal(SHGetLines.GetLines(@"using System.Threading.Tasks;
 namespace
 ;
@@ -73,7 +73,7 @@ public class CsprojNsHelper
         List<string> allNamespaces = new List<string>(new string[] { "SunamoString", "SunamoCsproj" });
         var parseResult = await CsprojNsHelper.ParseSharpIfToFirstCodeElement(null, inputLines, allNamespaces, false);
 
-        // nutno si povšimnout že mi to dává pryč všechny prázdné řádky
+        // note that it removes all empty lines for me
         Assert.Equal(SHGetLines.GetLines(@"using System.Threading.Tasks;
 namespace
 ;"), parseResult.AllLinesBefore);
@@ -93,7 +93,7 @@ namespace
 public class CsprojNsHelper
 {
 }"),
-// zde musím přidat všechny NS co chci přidat
+// here I must add all NS that I want to add
 new List<string>(new String[] { "SunamoString", "SunamoCsproj", "S1", "S2" }));
 
 

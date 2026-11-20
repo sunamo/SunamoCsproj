@@ -8,7 +8,7 @@ public class CsprojHelperTests
     [Fact]
     public void ParseNamespaceFromCsFileTest()
     {
-#pragma warning disable CS0618 // EN: Type or member is obsolete - internal testing allowed / CZ: Typ nebo člen je zastaralý - interní testování povoleno
+#pragma warning disable CS0618 // Type or member is obsolete - internal testing allowed /
         var braceNamespaceResult = CsprojHelper.ParseNamespaceFromCsFile(@"using a;
 
 namespace c {

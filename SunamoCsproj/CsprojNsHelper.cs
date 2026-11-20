@@ -139,7 +139,7 @@ public class CsprojNsHelper
 
     public static string ProjectNameFromCsPath(string csPath)
     {
-#pragma warning disable CS0618 // EN: Type or member is obsolete - internal usage allowed / CZ: Typ nebo člen je zastaralý - interní použití povoleno
+#pragma warning disable CS0618 // Type or member is obsolete - internal usage allowed /
         var csprojPath = CsprojHelper.GetCsprojFromCsPath(csPath);
 #pragma warning restore CS0618
         var sanitized = SanitizeProjectName(Path.GetFileNameWithoutExtension(csprojPath));
@@ -150,7 +150,7 @@ public class CsprojNsHelper
     {
         // Already handled in _5AddNamespaceByInputFolderName in CommandsToAllCsFiles.Cmd
 
-#pragma warning disable CS0618 // EN: Type or member is obsolete - internal usage allowed / CZ: Typ nebo člen je zastaralý - interní použití povoleno
+#pragma warning disable CS0618 // Type or member is obsolete - internal usage allowed /
         var csprojPath = CsprojHelper.GetCsprojFromCsPath(path);
 #pragma warning restore CS0618
         var csprojDir = FS.WithEndBs(Path.GetDirectoryName(csprojPath)!);
